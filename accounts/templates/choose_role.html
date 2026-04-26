@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+body {
+  background: #eef2ff;
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 420px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.logo {
+  width: 150px;
+  display: block;
+  margin: 0 auto 8px auto;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+/* 🔥 FIX LINK */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ROLE BOX */
+.role-box {
+  display: block; /* biar full klik */
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.role-box:hover {
+  border-color: #4f46e5;
+  background: #f5f7ff;
+  transform: translateY(-2px); /* 🔥 efek naik dikit */
+}
+
+.role-title {
+  font-weight: bold;
+}
+
+.role-desc {
+  font-size: 13px;
+  color: gray;
+}
+</style>
+
+<div class="container">
+  <img src="{% static 'images/logo.png' %}" class="logo">
+
+  <h2>TikTakTuk</h2>
+  <p style="color:gray;">Daftar untuk Memulai</p>
+
+  <div class="card">
+    <h3>Jenis Pengguna</h3>
+    <p style="color:gray;">Pilih jenis akun yang sesuai dengan kebutuhan Anda</p>
+
+    <!-- 🔥 PELANGGAN -->
+    <a href="{% url 'main:register' %}?role=pelanggan" class="role-box">
+      <div class="role-title">👤 Pelanggan</div>
+      <div class="role-desc">Beli dan kelola tiket</div>
+    </a>
+
+    <!-- 🔥 PENYELENGGARA -->
+    <a href="{% url 'main:register' %}?role=penyelenggara" class="role-box">
+      <div class="role-title">🎪 Penyelenggara</div>
+      <div class="role-desc">Buat dan kelola acara</div>
+    </a>
+
+    <a href="{% url 'main:register' %}?role=admin" class="role-link">
+        <div class="role-box">
+          <div class="role-title">🛠️ Admin</div>
+          <div class="role-desc">Kelola seluruh sistem platform</div>
+        </div>
+      </a>
+  </div>
+
+  <p style="margin-top:15px;">
+    Sudah punya akun? 
+    <a href="{% url 'main:login' %}" style="color:#4f46e5;">Login di sini</a>
+  </p>
+</div>
+
+{% endblock %}

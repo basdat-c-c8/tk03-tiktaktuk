@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+body {
+  background: #eef2ff;
+  font-family: sans-serif;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 420px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+/* LOGO */
+.logo {
+  width: 150px;
+  display: block;
+  margin: 0 auto 8px auto; /* 🔥 ini yang ngurangin jarak */
+}
+
+/* CARD */
+.card {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+/* TEXT */
+h1 {
+  margin-top: 5px;   /* biar naik dikit */
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: gray;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* FORM */
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+/* ERROR */
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .container {
+    margin: 30px auto;
+    padding: 0 12px;
+  }
+}
+</style>
+
+<div class="container">
+  <img src="{% static 'images/logo.png' %}" class="logo">
+
+  <h1>TikTakTuk</h1>
+  <p class="subtitle">Platform Manajemen Pertunjukan & Tiket</p>
+
+  <div class="card">
+    <h3>Masuk ke Akun Anda</h3>
+    <p class="subtitle">Gunakan kredensial Anda untuk mengakses platform</p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label>Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <div class="error">{{ form.username.errors }}</div>
+      {% endif %}
+
+      <label>Password</label>
+      {{ form.password }}
+      {% if form.password.errors %}
+        <div class="error">{{ form.password.errors }}</div>
+      {% endif %}
+
+      <button type="submit">Masuk</button>
+    </form>
+  </div>
+
+  <p style="margin-top:15px;">
+    Belum punya akun?
+    <a href="{% url 'main:choose_role' %}" style="color:#4f46e5;">
+      Daftar sekarang
+    </a>
+  </p>
+</div>
+
+{% endblock %}

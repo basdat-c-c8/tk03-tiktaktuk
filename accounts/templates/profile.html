@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+h1 {
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.role-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.username-box {
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 6px;
+  color: #64748b;
+}
+
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #111827;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+}
+
+/* 🔥 LOGOUT BUTTON */
+.logout-btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: #ef4444;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+</style>
+
+<div class="container">
+
+  <a href="{% url 'main:show_main' %}" class="back">← Kembali ke Dashboard</a>
+
+  <h1>Profil Saya</h1>
+  <p class="subtitle">Kelola informasi akun Anda</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- 🔹 PROFILE INFO -->
+  <div class="card">
+    <h2>Informasi Profil</h2>
+
+    <p>
+      <span class="role-badge">
+        {% if role == "admin" %}
+          Admin
+        {% elif role == "penyelenggara" %}
+          Penyelenggara
+        {% else %}
+          Pelanggan
+        {% endif %}
+      </span>
+    </p>
+
+    <label>Username</label>
+    <div class="username-box">{{ request.user.username }}</div>
+    <small>Username tidak dapat diubah.</small>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      {% if role == "pelanggan" %}
+        <label>Nama Lengkap</label>
+        {{ profile_form.full_name }}
+
+        <label>Nomor Telepon</label>
+        {{ profile_form.phone_number }}
+
+      {% elif role == "penyelenggara" %}
+        <label>Nama Organizer</label>
+        {{ profile_form.full_name }}
+
+        <label>Contact Email</label>
+        {{ profile_form.email }}
+
+      {% elif role == "admin" %}
+        <label>Nama Lengkap</label>
+        {{ profile_form.full_name }}
+
+        <label>Email</label>
+        {{ profile_form.email }}
+      {% endif %}
+
+      <button type="submit" name="update_profile">Simpan Perubahan</button>
+    </form>
+  </div>
+
+  <!-- 🔹 PASSWORD -->
+  <div class="card">
+    <h2>Update Password</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label>Password Lama</label>
+      {{ password_form.old_password }}
+      {{ password_form.old_password.errors }}
+
+      <label>Password Baru</label>
+      {{ password_form.new_password1 }}
+      {{ password_form.new_password1.errors }}
+
+      <label>Konfirmasi Password Baru</label>
+      {{ password_form.new_password2 }}
+      {{ password_form.new_password2.errors }}
+
+      <button type="submit" name="update_password">Update Password</button>
+    </form>
+  </div>
+
+  <!-- 🔥 LOGOUT (SUDAH RAPI DALAM CARD) -->
+  <div class="card" style="text-align:center;">
+    <a href="{% url 'main:logout' %}" class="logout-btn">
+      Logout
+    </a>
+  </div>
+
+</div>
+
+{% endblock content %}

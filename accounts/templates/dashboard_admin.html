@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  margin: 0;
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+}
+
+.dashboard-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.header-card {
+  background: #27364d;
+  color: white;
+  border-radius: 14px;
+  padding: 28px 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-card small {
+  color: #cbd5e1;
+}
+
+.header-card h1 {
+  margin: 8px 0;
+  font-size: 28px;
+}
+
+.header-card p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-btn,
+.promo-btn {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  color: #111827;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.stat-card,
+.info-card {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.stat-title {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: bold;
+  margin: 8px 0 4px;
+}
+
+.stat-desc {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.info-card h3 {
+  margin-top: 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0;
+  color: #64748b;
+}
+
+.info-row strong {
+  color: #1f2937;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .stats-grid,
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+</style>
+
+<div class="dashboard-container">
+
+  <div class="header-card">
+    <div>
+      <small>Administrator</small>
+      <h1>System Console</h1>
+      <p>Pantau dan kelola platform TikTakTuk</p>
+    </div>
+
+    <div class="header-actions">
+      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
+      <a href="{% url 'main:event_list' %}" class="profile-btn">Kelola Acara</a>
+      <button class="promo-btn">Promosi</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Total Pengguna</div>
+      <div class="stat-value">2,543</div>
+      <div class="stat-desc">Pengguna aktif</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Total Acara</div>
+      <div class="stat-value">156</div>
+      <div class="stat-desc">Bulan ini</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Omzet Platform</div>
+      <div class="stat-value">Rp 52.4M</div>
+      <div class="stat-desc">Gross volume</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Promosi Aktif</div>
+      <div class="stat-value">3</div>
+      <div class="stat-desc">Running campaigns</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Infrastruktur Venue</h3>
+
+      <div class="info-row">
+        <span>Total Venue Terdaftar</span>
+        <strong>3 Lokasi</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Reserved Seating</span>
+        <strong>2 Venue</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Kapasitas Terbesar</span>
+        <strong>1,000 Kursi</strong>
+      </div>
+
+      <a href="{% url 'main:venue_list' %}">
+        <button class="action-btn">Kelola Venue</button>
+      </a>
+    </div>
+
+    <div class="info-card">
+      <h3>Marketing & Promosi</h3>
+
+      <div class="info-row">
+        <span>Promo Persentase</span>
+        <strong>1 Aktif</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Promo Potongan Nominal</span>
+        <strong>1 Aktif</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Total Penggunaan</span>
+        <strong>57 Kali</strong>
+      </div>
+
+      <button class="action-btn">Kelola Promosi</button>
+    </div>
+  </div>
+
+</div>
+
+{% endblock content %}

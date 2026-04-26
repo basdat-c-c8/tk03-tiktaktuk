@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(to right, #2563eb, #3b82f6);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header button,
+.profile-btn {
+  background: white;
+  color: #111827;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+</style>
+
+<div class="container">
+
+  <div class="header">
+    <div>
+      <p>Selamat datang kembali</p>
+      <h2>{{ request.user.username }}</h2>
+      <small>Acara menarik menunggu Anda</small>
+    </div>
+
+    <div class="header-actions">
+      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
+      <a href="{% url 'main:browse_events' %}" class="profile-btn">Cari Tiket</a>    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Tiket Aktif</h4>
+      <h2>2</h2>
+    </div>
+
+    <div class="card">
+      <h4>Acara Diikuti</h4>
+      <h2>12</h2>
+    </div>
+
+    <div class="card">
+      <h4>Kode Promo</h4>
+      <h2>3</h2>
+    </div>
+
+    <div class="card">
+      <h4>Total Belanja</h4>
+      <h2>Rp 1.6M</h2>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Tiket Mendatang</h3>
+
+    <p><b>Konser Melodi Senja</b><br>Jakarta Convention Center</p>
+    <p><b>Festival Seni Budaya</b><br>Taman Impian Jaya</p>
+  </div>
+
+</div>
+
+{% endblock %}

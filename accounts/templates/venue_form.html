@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+}
+
+.modal {
+  max-width: 520px;
+  margin: 60px auto;
+  background: white;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #64748b;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 16px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.checkbox input {
+  width: auto;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+}
+
+.cancel {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.submit {
+  background: #2563eb;
+  color: white;
+}
+</style>
+
+<div class="modal">
+  <h2>{{ title }}</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <label>Nama Venue (Venue_Name)</label>
+    {{ form.venue_name }}
+
+    <div class="row">
+      <div>
+        <label>Kapasitas (Capacity)</label>
+        {{ form.capacity }}
+      </div>
+
+      <div>
+        <label>Kota (City)</label>
+        {{ form.city }}
+      </div>
+    </div>
+
+    <label>Alamat (Address)</label>
+    {{ form.address }}
+
+    <div class="checkbox">
+      {{ form.has_reserved_seating }}
+      <span>Has Reserved Seating</span>
+    </div>
+
+    <div class="buttons">
+      <a href="{% url 'main:venue_list' %}" class="btn cancel">Batal</a>
+      <button type="submit" class="btn submit">{{ button_text }}</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

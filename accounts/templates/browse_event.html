@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.back {
+  color: #2563eb;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.header {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin-bottom: 6px;
+}
+
+.header p {
+  color: #64748b;
+  margin-top: 0;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 180px 160px;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.filters input,
+.filters select {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: white;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.event-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.event-banner {
+  height: 130px;
+  background: linear-gradient(to right, #2563eb, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  position: relative;
+}
+
+.heart {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: white;
+  color: #64748b;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-body {
+  padding: 18px;
+}
+
+.event-body h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.badge {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 5px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.info {
+  color: #64748b;
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+.price {
+  color: #2563eb;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.buy-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+.empty {
+  color: #64748b;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .filters,
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="container">
+
+  <a href="{% url 'main:show_main' %}" class="back">← Kembali ke Dashboard</a>
+
+  <div class="header">
+    <h1>Jelajahi Acara</h1>
+    <p>Temukan acara terbaik dan beli tiket favorit Anda</p>
+  </div>
+
+  <form method="GET" class="filters">
+    <input type="text" name="q" placeholder="Cari acara atau artis..." value="{{ q }}">
+
+    <select name="venue" onchange="this.form.submit()">
+      <option value="">Semua Venue</option>
+      {% for venue in venues %}
+        <option value="{{ venue.venue_id }}" {% if selected_venue == venue.venue_id|stringformat:"s" %}selected{% endif %}>
+          {{ venue.venue_name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <select name="artist" onchange="this.form.submit()">
+      <option value="">Semua Artis</option>
+      {% for artist in artists %}
+        <option value="{{ artist.artist_id }}" {% if selected_artist == artist.artist_id|stringformat:"s" %}selected{% endif %}>
+          {{ artist.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <div class="event-grid">
+    {% for event in events %}
+      <div class="event-card">
+        <div class="event-banner">
+          🎵
+          <div class="heart">♡</div>
+        </div>
+
+        <div class="event-body">
+          <h3>{{ event.event_title }}</h3>
+
+          <div class="badges">
+            {% for artist in event.artists.all %}
+              <span class="badge">{{ artist.name }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="info">📅 {{ event.event_datetime|date:"Y-m-d H:i" }}</div>
+          <div class="info">📍 {{ event.venue.venue_name }}, {{ event.venue.city }}</div>
+
+          {% if event.ticket_categories.all %}
+            {% with first_category=event.ticket_categories.all.0 %}
+              <div class="price">Mulai Rp {{ first_category.price|floatformat:0 }}</div>
+            {% endwith %}
+
+            <div class="badges">
+              {% for category in event.ticket_categories.all %}
+                <span class="badge">{{ category.category_name }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="price">Harga belum tersedia</div>
+          {% endif %}
+
+          <a href="#" class="buy-btn">Beli Tiket</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="empty">Belum ada acara.</p>
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

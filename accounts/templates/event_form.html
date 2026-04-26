@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+}
+
+.modal {
+  max-width: 760px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.back {
+  color: #2563eb;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.full {
+  grid-column: span 2;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.ticket-item {
+  display: grid;
+  grid-template-columns: 1fr 130px 100px 32px;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.remove-ticket {
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: #ef4444;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-ticket {
+  width: auto;
+  margin-top: 4px;
+  background: transparent;
+  color: #2563eb;
+  padding: 0;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.helptext {
+  display: none;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  color: #1f2937;
+  background: #f8fafc;
+  padding: 8px 10px;
+  border-radius: 12px;
+  margin: 4px;
+}
+
+li input {
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full {
+    grid-column: span 1;
+  }
+
+  .ticket-item {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="modal">
+  <a href="{% url 'main:event_list' %}" class="back">← Kembali</a>
+
+  <h1>{{ title }}</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="form-grid">
+
+      <div class="form-group full">
+        <label>Judul Acara</label>
+        {{ form.event_title }}
+      </div>
+
+      <div class="form-group">
+        <label>Tanggal & Waktu</label>
+        {{ form.event_datetime }}
+      </div>
+
+      <div class="form-group">
+        <label>Venue</label>
+        {{ form.venue }}
+      </div>
+
+      <div class="form-group">
+        <label>Organizer</label>
+        {{ form.organizer }}
+      </div>
+
+      <div class="form-group">
+        <label>Artis</label>
+        {{ form.artists }}
+      </div>
+
+      <div class="form-group">
+        <label>Kategori Tiket</label>
+
+        <div id="ticket-container">
+          <div class="ticket-item">
+            <input type="text" name="category_name[]" placeholder="Regular">
+
+            <div>
+              <input type="text" class="price-input" placeholder="Harga">
+              <input type="hidden" name="price[]">
+            </div>
+
+            <input type="number" name="quota[]" placeholder="Kuota">
+            <button type="button" class="remove-ticket" onclick="removeTicket(this)">×</button>
+          </div>
+        </div>
+
+        <button type="button" class="add-ticket" onclick="addTicket()">+ Tambah Kategori</button>
+      </div>
+
+      <div class="form-group full">
+        <label>Deskripsi</label>
+        {{ form.description }}
+      </div>
+
+    </div>
+
+    <button type="submit" class="submit-btn">{{ button_text }}</button>
+  </form>
+</div>
+
+<script>
+function formatNumber(value) {
+  return value
+    .replace(/\D/g, "")
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function setupPriceFormatting() {
+  const inputs = document.querySelectorAll(".price-input");
+
+  inputs.forEach(function(input) {
+    input.oninput = function() {
+      const raw = this.value.replace(/\D/g, "");
+      this.value = formatNumber(raw);
+
+      const hiddenInput = this.parentElement.querySelector('input[type="hidden"]');
+      hiddenInput.value = raw;
+    };
+  });
+}
+
+function addTicket() {
+  const container = document.getElementById("ticket-container");
+
+  const html = `
+    <div class="ticket-item">
+      <input type="text" name="category_name[]" placeholder="Nama kategori">
+
+      <div>
+        <input type="text" class="price-input" placeholder="Harga">
+        <input type="hidden" name="price[]">
+      </div>
+
+      <input type="number" name="quota[]" placeholder="Kuota">
+      <button type="button" class="remove-ticket" onclick="removeTicket(this)">×</button>
+    </div>
+  `;
+
+  container.insertAdjacentHTML("beforeend", html);
+  setupPriceFormatting();
+}
+
+function removeTicket(button) {
+  const items = document.querySelectorAll(".ticket-item");
+
+  if (items.length > 1) {
+    button.parentElement.remove();
+  } else {
+    alert("Minimal harus ada 1 kategori tiket.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  setupPriceFormatting();
+});
+</script>
+
+{% endblock %}

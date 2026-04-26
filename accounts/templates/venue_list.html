@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #2563eb;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header p {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.stat-card small {
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.stat-card h2 {
+  margin: 8px 0 0;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 160px 180px;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+}
+
+.venue-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.venue-left {
+  display: flex;
+  gap: 16px;
+}
+
+.icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.venue-card h3 {
+  margin: 0;
+}
+
+.venue-card p {
+  color: #64748b;
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.capacity {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+  width: 220px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  height: fit-content;
+}
+
+.badge.free {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn-edit,
+.btn-delete {
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.btn-edit {
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.btn-delete {
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 768px) {
+  .stats,
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-card {
+    flex-direction: column;
+  }
+}
+</style>
+
+<div class="container">
+
+  <div class="header">
+    <div>
+    <a href="{% url 'main:show_main' %}" class="back-btn">← Kembali ke Dashboard</a>
+      <h1>Manajemen Venue</h1>
+      <p>Kelola lokasi pertunjukan dan kapasitas tempat duduk</p>
+    </div>
+
+    {% if role == "admin" or role == "penyelenggara" %}
+      <a href="{% url 'main:create_venue' %}" class="btn-primary">+ Tambah Venue</a>
+    {% endif %}
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <small>Total Venue</small>
+      <h2>{{ total_venue }}</h2>
+    </div>
+
+    <div class="stat-card">
+      <small>Reserved Seating</small>
+      <h2>{{ reserved_count }}</h2>
+    </div>
+
+    <div class="stat-card">
+      <small>Total Kapasitas</small>
+      <h2>{{ total_capacity }}</h2>
+    </div>
+  </div>
+
+  <form method="GET" class="filters">
+    <input type="text" name="q" placeholder="Cari nama atau alamat..." value="{{ request.GET.q }}">
+
+    <select name="city">
+      <option value="">Semua Kota</option>
+      {% for city in cities %}
+        <option value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>{{ city }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="seating">
+      <option value="">Semua Tipe Seating</option>
+      <option value="reserved" {% if request.GET.seating == "reserved" %}selected{% endif %}>Reserved Seating</option>
+      <option value="free" {% if request.GET.seating == "free" %}selected{% endif %}>Free Seating</option>
+    </select>
+
+    <button type="submit" hidden>Filter</button>
+  </form>
+
+  {% for venue in venues %}
+    <div class="venue-card">
+      <div class="venue-left">
+        <div class="icon">🏢</div>
+
+        <div>
+          <h3>{{ venue.venue_name }}</h3>
+          <p>📍 {{ venue.address }}, {{ venue.city }}</p>
+
+          <div class="capacity">
+            <small>KAPASITAS</small><br>
+            <b>{{ venue.capacity }} Kursi</b>
+          </div>
+
+          {% if role == "admin" or role == "penyelenggara" %}
+            <div class="actions">
+              <a href="{% url 'main:update_venue' venue.venue_id %}" class="btn-edit">Edit</a>
+              <a href="{% url 'main:delete_venue' venue.venue_id %}" class="btn-delete">Hapus</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if venue.has_reserved_seating %}
+        <div class="badge">Reserved Seating</div>
+      {% else %}
+        <div class="badge free">Free Seating</div>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p>Belum ada venue.</p>
+  {% endfor %}
+
+</div>
+
+<script>
+document.querySelectorAll('.filters select').forEach(function(select) {
+  select.addEventListener('change', function() {
+    this.form.submit();
+  });
+});
+</script>
+
+{% endblock content %}

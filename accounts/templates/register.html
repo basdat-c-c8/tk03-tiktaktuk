@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+
+<style>
+body {
+  background: #eef2ff;
+  font-family: sans-serif;
+}
+
+/* CONTAINER */
+.container {
+  width: 100%;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 0 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* LOGO */
+.logo {
+  width: 160px;
+  height: auto;
+  display: block;
+  margin: 10px auto 20px auto;
+  border-radius: 20px;
+}
+
+/* CARD */
+.card {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+/* BACK BUTTON */
+.back {
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+/* TEXT */
+h1 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: gray;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* FORM */
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* ERROR */
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+/* HIDE DJANGO HELP TEXT */
+.helptext {
+  display: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .container {
+    margin: 24px auto;
+    padding: 0 12px;
+  }
+
+  .card {
+    padding: 24px 18px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .logo {
+    width: 70px;
+    height: 70px;
+  }
+}
+</style>
+
+<div class="container">
+  <img src="{% static 'images/logo.png' %}" class="logo">
+
+  <h1>TikTakTuk</h1>
+  <p class="subtitle">Daftar untuk Memulai</p>
+
+  <div class="card">
+    <a href="{% url 'main:login' %}" class="back">← Kembali</a>
+
+    <h2>{{ role_title }}</h2>
+    <p class="subtitle">Buat akun baru untuk memulai pengalaman Anda</p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label>Nama Lengkap</label>
+      {{ form.full_name }}
+      {% if form.full_name.errors %}
+        <div class="error">{{ form.full_name.errors }}</div>
+      {% endif %}
+
+      <label>Email</label>
+      {{ form.email }}
+      {% if form.email.errors %}
+        <div class="error">{{ form.email.errors }}</div>
+      {% endif %}
+
+      <label>Nomor Telepon</label>
+      {{ form.phone_number }}
+      {% if form.phone_number.errors %}
+        <div class="error">{{ form.phone_number.errors }}</div>
+      {% endif %}
+
+      <label>Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <div class="error">{{ form.username.errors }}</div>
+      {% endif %}
+
+      <label>Password</label>
+      {{ form.password1 }}
+      {% if form.password1.errors %}
+        <div class="error">{{ form.password1.errors }}</div>
+      {% endif %}
+
+      <label>Konfirmasi Password</label>
+      {{ form.password2 }}
+      {% if form.password2.errors %}
+        <div class="error">{{ form.password2.errors }}</div>
+      {% endif %}
+
+      <label style="margin-top:15px;">
+        <input type="checkbox" required>
+        Saya setuju dengan <span style="color:#4f46e5;">Syarat & Ketentuan</span>
+      </label>
+
+      <button type="submit">Daftar</button>
+    </form>
+  </div>
+
+  <p style="margin-top:15px;">
+    Sudah punya akun?
+    <a href="{% url 'main:login' %}" style="color:#4f46e5;">Login di sini</a>
+  </p>
+</div>
+
+{% endblock content %}

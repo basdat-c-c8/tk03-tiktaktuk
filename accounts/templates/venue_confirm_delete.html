@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: Arial, sans-serif;
+}
+
+.modal {
+  max-width: 520px;
+  margin: 100px auto;
+  background: white;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+h2 {
+  color: red;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.cancel {
+  background: white;
+  border: 1px solid #ddd;
+  color: black;
+}
+
+.delete {
+  background: red;
+  color: white;
+}
+</style>
+
+<div class="modal">
+  <h2>Hapus Venue</h2>
+  <p>Apakah Anda yakin ingin menghapus venue <b>{{ venue.venue_name }}</b>? Tindakan ini tidak dapat dibatalkan.</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="buttons">
+      <a href="{% url 'main:venue_list' %}" class="btn cancel">Batal</a>
+      <button type="submit" class="btn delete">Hapus</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

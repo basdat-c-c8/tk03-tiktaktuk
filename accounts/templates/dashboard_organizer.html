@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+body {
+  background: #f8fafc;
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+/* HEADER */
+.header {
+  background: #0f172a;
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header small {
+  color: #94a3b8;
+}
+
+.header h2 {
+  margin: 5px 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-actions button,
+.profile-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: white;
+  color: #111827;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* CARDS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.item {
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+</style>
+
+<div class="container">
+
+  <div class="header">
+    <div>
+      <small>Dashboard Penyelenggara</small>
+      <h2>{{ request.user.username }}</h2>
+      <p style="color:#94a3b8;">Kelola acara Anda</p>
+    </div>
+
+    <div class="header-actions">
+      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
+      <button>Kelola Acara</button>
+      <a href="{% url 'main:venue_list' %}" class="profile-btn">Venue</a>
+      <a href="{% url 'main:event_list' %}" class="profile-btn">Kelola Acara</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Acara Aktif</h4>
+      <h2>3</h2>
+      <small>Dalam koordinasi</small>
+    </div>
+
+    <div class="card">
+      <h4>Tiket Terjual</h4>
+      <h2>1,243</h2>
+      <small>Total terjual</small>
+    </div>
+
+    <div class="card">
+      <h4>Revenue</h4>
+      <h2>Rp 4.8M</h2>
+      <small>Bulan ini</small>
+    </div>
+
+    <div class="card">
+      <h4>Venue Mitra</h4>
+      <h2>3</h2>
+      <small>Lokasi aktif</small>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Performa Acara</h3>
+
+    <div class="item">
+      <b>Konser Melodi Senja</b><br>
+      <small>Jakarta Convention Center</small>
+    </div>
+
+    <div class="item">
+      <b>Festival Seni Budaya</b><br>
+      <small>Taman Impian Jaya</small>
+    </div>
+
+    <div class="item">
+      <b>Malam Akustik Bandung</b><br>
+      <small>Bandung Hall Center</small>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
