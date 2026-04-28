@@ -1,0 +1,693 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  body {
+    background: #f1f5f9;
+    font-family: Arial, sans-serif;
+    color: #1f2937;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 28px auto;
+    padding: 0 16px 28px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #0f172a;
+  }
+
+  .step-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .stack {
+    display: grid;
+    gap: 14px;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .card-header {
+    padding: 16px 18px 0;
+  }
+
+  .card-body {
+    padding: 16px 18px 18px;
+  }
+
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .tag-blue {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .tag-slate {
+    background: #e2e8f0;
+    color: #334155;
+  }
+
+  .event-title {
+    margin: 0;
+    font-size: 22px;
+    color: #0f172a;
+  }
+
+  .event-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .info-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .info-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .info-value {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .section-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #0f172a;
+  }
+
+  .ticket-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .ticket-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .ticket-item.active {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
+  }
+
+  .ticket-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid #cbd5e1;
+    background: #ffffff;
+  }
+
+  .ticket-item.active .ticket-dot {
+    border-color: #2563eb;
+    background: #2563eb;
+  }
+
+  .ticket-name {
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .ticket-sub {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .ticket-price {
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .form-row {
+    display: grid;
+    gap: 12px;
+  }
+
+  .quantity-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    padding: 8px 12px;
+    width: fit-content;
+  }
+
+  .qty-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: default;
+  }
+
+  .qty-value {
+    font-size: 16px;
+    font-weight: 800;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .helper-text {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .seat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .seat {
+    appearance: none;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #334155;
+    cursor: pointer;
+  }
+
+  .seat.selected {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .seat.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .promo-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .promo-row input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-size: 14px;
+    background: #ffffff;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: default;
+  }
+
+  .btn-blue {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .promo-note {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .promo-note.success {
+    color: #166534;
+  }
+
+  .promo-note.error {
+    color: #b91c1c;
+  }
+
+  .summary-card {
+    position: sticky;
+    top: 18px;
+  }
+
+  .summary-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .summary-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: #334155;
+  }
+
+  .summary-row.total {
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 15px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .summary-amount {
+    white-space: nowrap;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .total-amount {
+    font-size: 22px;
+    color: #0f172a;
+  }
+
+  .pay-btn {
+    width: 100%;
+    margin-top: 14px;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 14px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+    cursor: default;
+  }
+
+  .summary-note {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #64748b;
+    text-align: center;
+  }
+
+  .summary-highlight {
+    color: #2563eb;
+    font-weight: 800;
+  }
+
+  @media (max-width: 980px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .event-info {
+      grid-template-columns: 1fr;
+    }
+
+    .seat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .promo-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Checkout Tiket</h1>
+    <div class="step-text">Pilih &gt; Bayar &gt; Selesai</div>
+  </div>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="card">
+        <div class="card-header">
+          <div class="event-meta">
+            <span class="tag tag-blue">Festival / Musik</span>
+            <span class="tag tag-slate">Konser Melodi Senja</span>
+          </div>
+          <h2 class="event-title">Konser Melodi Senja</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="event-info">
+            <div class="info-box">
+              <span class="info-label">Tanggal</span>
+              <p class="info-value">2024-05-15, 19:00</p>
+            </div>
+            <div class="info-box">
+              <span class="info-label">Lokasi</span>
+              <p class="info-value">Jakarta Convention Center</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Pilih Kategori Tiket</h3>
+        </div>
+        <div class="card-body">
+          <div class="ticket-list">
+            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="VVIP" data-ticket-price="1500000" data-ticket-category="VVIP" data-ticket-quota="50">
+              <div class="ticket-dot"></div>
+              <div>
+                <p class="ticket-name">VVIP</p>
+                <p class="ticket-sub">Kuota 50 tiket</p>
+              </div>
+              <div class="ticket-price">Rp 1.500.000</div>
+            </div>
+
+            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="VIP" data-ticket-price="750000" data-ticket-category="VIP" data-ticket-quota="150">
+              <div class="ticket-dot"></div>
+              <div>
+                <p class="ticket-name">VIP</p>
+                <p class="ticket-sub">Kuota 150 tiket</p>
+              </div>
+              <div class="ticket-price">Rp 750.000</div>
+            </div>
+
+            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="Category 1" data-ticket-price="450000" data-ticket-category="Category 1" data-ticket-quota="300">
+              <div class="ticket-dot"></div>
+              <div>
+                <p class="ticket-name">Category 1</p>
+                <p class="ticket-sub">Kuota 300 tiket</p>
+              </div>
+              <div class="ticket-price">Rp 450.000</div>
+            </div>
+
+            <div class="ticket-item active" role="button" tabindex="0" data-ticket-name="Category 2" data-ticket-price="250000" data-ticket-category="Category 2" data-ticket-quota="500">
+              <div class="ticket-dot"></div>
+              <div>
+                <p class="ticket-name">Category 2</p>
+                <p class="ticket-sub">Kuota 500 tiket</p>
+              </div>
+              <div class="ticket-price">Rp 250.000</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Jumlah Tiket</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="quantity-box">
+              <button type="button" class="qty-btn" id="qtyMinus">−</button>
+              <div class="qty-value" id="qtyValue">2</div>
+              <button type="button" class="qty-btn" id="qtyPlus">+</button>
+            </div>
+            <p class="helper-text">Max 10 tiket per transaksi</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Pilih Kursi</h3>
+        </div>
+        <div class="card-body">
+          <div class="seat-grid">
+            <button type="button" class="seat" data-seat="A1">A1</button>
+            <button type="button" class="seat" data-seat="A2">A2</button>
+            <button type="button" class="seat" data-seat="A3">A3</button>
+            <button type="button" class="seat" data-seat="A4">A4</button>
+            <button type="button" class="seat" data-seat="A5">A5</button>
+            <button type="button" class="seat" data-seat="B1">B1</button>
+            <button type="button" class="seat" data-seat="B2">B2</button>
+            <button type="button" class="seat" data-seat="B3">B3</button>
+            <button type="button" class="seat" data-seat="B4">B4</button>
+            <button type="button" class="seat" data-seat="B5">B5</button>
+            <button type="button" class="seat" data-seat="C1">C1</button>
+            <button type="button" class="seat" data-seat="C2">C2</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h3 class="section-title">Kode Promo</h3>
+        </div>
+        <div class="card-body">
+          <div class="promo-row">
+            <input id="promoInput" type="text" placeholder="CONTOH: TIKTAK20">
+            <button type="button" class="btn btn-blue" id="applyPromoBtn">Terapkan</button>
+          </div>
+          <p class="promo-note" id="promoNote">Kode promo tidak valid.</p>
+        </div>
+      </section>
+    </div>
+
+    <aside class="card summary-card">
+      <div class="card-header">
+        <h3 class="section-title">Ringkasan Pesanan</h3>
+      </div>
+      <div class="card-body">
+        <div class="summary-list">
+          <div class="summary-row">
+            <span id="summaryTicketLine">Category 2 x 2</span>
+            <span class="summary-amount" id="summaryTicketAmount">Rp 500.000</span>
+          </div>
+          <div class="summary-row">
+            <span>Biaya Layanan</span>
+            <span class="summary-amount" id="serviceFee">Rp 0</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span class="summary-amount total-amount" id="summaryTotal">Rp 500.000</span>
+          </div>
+        </div>
+
+        <button type="button" class="pay-btn" id="payBtn">Bayar Sekarang</button>
+        <p class="summary-note">Konfirmasi tiket akan dikirim ke email Anda</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const ticketItems = Array.from(document.querySelectorAll('.ticket-item'));
+    const seatItems = Array.from(document.querySelectorAll('.seat'));
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus = document.getElementById('qtyPlus');
+    const qtyValue = document.getElementById('qtyValue');
+    const promoInput = document.getElementById('promoInput');
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    const promoNote = document.getElementById('promoNote');
+    const payBtn = document.getElementById('payBtn');
+    const summaryTicketLine = document.getElementById('summaryTicketLine');
+    const summaryTicketAmount = document.getElementById('summaryTicketAmount');
+    const summaryTotal = document.getElementById('summaryTotal');
+
+    let selectedTicket = ticketItems.find(function (item) {
+      return item.classList.contains('active');
+    }) || ticketItems[0];
+
+    let quantity = 2;
+    let selectedSeats = [];
+
+    function formatRupiah(number) {
+      return 'Rp ' + number.toLocaleString('id-ID');
+    }
+
+    function getSelectedPrice() {
+      return Number(selectedTicket.getAttribute('data-ticket-price'));
+    }
+
+    function getSelectedTicketName() {
+      return selectedTicket.getAttribute('data-ticket-name');
+    }
+
+    function updateSelectedTicketState() {
+      ticketItems.forEach(function (item) {
+        item.classList.toggle('active', item === selectedTicket);
+      });
+    }
+
+    function updateSummary() {
+      const lineTotal = getSelectedPrice() * quantity;
+      summaryTicketLine.textContent = getSelectedTicketName() + ' x ' + quantity;
+      summaryTicketAmount.textContent = formatRupiah(lineTotal);
+      summaryTotal.textContent = formatRupiah(lineTotal);
+    }
+
+    function syncSeatState() {
+      seatItems.forEach(function (seat) {
+        const seatName = seat.getAttribute('data-seat');
+        const isSelected = selectedSeats.includes(seatName);
+        seat.classList.toggle('selected', isSelected);
+        seat.classList.toggle('disabled', !isSelected && selectedSeats.length >= quantity);
+      });
+    }
+
+    ticketItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        selectedTicket = item;
+        updateSelectedTicketState();
+        updateSummary();
+      });
+
+      item.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          item.click();
+        }
+      });
+    });
+
+    qtyMinus.addEventListener('click', function () {
+      if (quantity > 1) {
+        quantity -= 1;
+        qtyValue.textContent = quantity;
+        if (selectedSeats.length > quantity) {
+          selectedSeats = selectedSeats.slice(0, quantity);
+        }
+        updateSummary();
+        syncSeatState();
+      }
+    });
+
+    qtyPlus.addEventListener('click', function () {
+      if (quantity < 10) {
+        quantity += 1;
+        qtyValue.textContent = quantity;
+        updateSummary();
+        syncSeatState();
+      }
+    });
+
+    seatItems.forEach(function (seat) {
+      seat.addEventListener('click', function () {
+        const seatName = seat.getAttribute('data-seat');
+
+        if (seat.classList.contains('selected')) {
+          selectedSeats = selectedSeats.filter(function (value) {
+            return value !== seatName;
+          });
+          seat.classList.remove('selected');
+        } else {
+          if (selectedSeats.length >= quantity) {
+            return;
+          }
+          selectedSeats.push(seatName);
+          seat.classList.add('selected');
+        }
+
+        syncSeatState();
+      });
+    });
+
+    applyPromoBtn.addEventListener('click', function () {
+      if (promoInput.value.trim().toUpperCase() === 'TIKTAK20') {
+        promoNote.textContent = 'Kode promo berhasil diterapkan.';
+        promoNote.classList.remove('error');
+        promoNote.classList.add('success');
+      } else {
+        promoNote.textContent = 'Kode promo tidak valid.';
+        promoNote.classList.remove('success');
+        promoNote.classList.add('error');
+      }
+    });
+
+    payBtn.addEventListener('click', function () {
+      alert('Order berhasil dibuat dengan status Pending');
+    });
+
+    updateSelectedTicketState();
+    updateSummary();
+    syncSeatState();
+  })();
+</script>
+
+{% endblock %}

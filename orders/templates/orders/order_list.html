@@ -1,0 +1,728 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  body {
+    background: #f1f5f9;
+    font-family: Arial, sans-serif;
+    color: #1f2937;
+    font-size: 14px;
+  }
+
+  .container {
+    max-width: 1040px;
+    margin: 24px auto;
+    padding: 0 14px;
+  }
+
+  .role-box {
+    background: #ffffff;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .role-box label {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #475569;
+  }
+
+  .role-box select {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    background: #ffffff;
+  }
+
+  .page-title {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  .subtitle {
+    margin: 4px 0 4px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .filter-note {
+    margin: 0 0 12px;
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  .toolbar input,
+  .toolbar select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: #ffffff;
+    font-size: 13px;
+  }
+
+  .toolbar .search-wrap input {
+    padding-left: 30px;
+  }
+
+  .stats {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: stretch;
+  }
+
+  .stats-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 72px;
+  }
+
+  .stat-title {
+    margin: 0;
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .stat-value {
+    margin: 6px 0 0;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .role-section {
+    display: none;
+  }
+
+  .role-section.active {
+    display: block;
+  }
+
+  .stats.role-section.active {
+    display: grid;
+  }
+
+  .table-wrapper {
+    background: #ffffff;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #eef2f6;
+    color: #475569;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .money {
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .status-paid {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .mini-btn {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #ffffff;
+  }
+
+  .mini-btn.edit {
+    color: #1d4ed8;
+  }
+
+  .mini-btn.delete {
+    color: #b91c1c;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 999;
+  }
+
+  .modal.show {
+    display: flex;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .modal-card h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .modal-title-danger {
+    color: #dc2626;
+  }
+
+  .modal-close {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+  }
+
+  .modal-close:hover {
+    color: #0f172a;
+  }
+
+  .modal-meta {
+    margin: 0 0 12px;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .modal-meta-small {
+    margin: -8px 0 12px;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  .modal-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #334155;
+  }
+
+  .readonly-field,
+  .modal-card select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    background: #ffffff;
+  }
+
+  .readonly-field {
+    background: #f8fafc;
+    color: #334155;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    .toolbar {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-3,
+    .stats-4 {
+      grid-template-columns: unset;
+    }
+
+    .stats-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      min-width: 760px;
+    }
+  }
+</style>
+
+<div class="container">
+  <!-- Dummy role selector for frontend-only -->
+  <div class="role-box">
+    <label for="roleSelector">Role Dummy</label>
+    <select id="roleSelector" onchange="switchRole(this.value)">
+      <option value="customer">Customer</option>
+      <option value="organizer">Organizer</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
+
+  <h1 class="page-title">Daftar Order</h1>
+  <p class="subtitle" id="roleSubtitle">Riwayat pembelian tiket Anda</p>
+
+  <section class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Cari order ID...">
+    </div>
+
+    <select>
+      <option>Semua Status</option>
+      <option>Lunas</option>
+      <option>Pending</option>
+      <option>Dibatalkan</option>
+    </select>
+  </section>
+
+  <section class="stats stats-3 role-section" data-role="customer">
+    <div class="stat-card">
+      <p class="stat-title">Total Order</p>
+      <p class="stat-value">2</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Lunas</p>
+      <p class="stat-value">1</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Pending</p>
+      <p class="stat-value">1</p>
+    </div>
+  </section>
+
+  <section class="stats stats-4 role-section" data-role="organizer">
+    <div class="stat-card">
+      <p class="stat-title">Total Order</p>
+      <p class="stat-value">4</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Lunas</p>
+      <p class="stat-value">2</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Pending</p>
+      <p class="stat-value">1</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Total Revenue</p>
+      <p class="stat-value">Rp 2.190.000</p>
+    </div>
+  </section>
+
+  <section class="stats stats-4 role-section" data-role="admin">
+    <div class="stat-card">
+      <p class="stat-title">Total Order</p>
+      <p class="stat-value">4</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Lunas</p>
+      <p class="stat-value">2</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Pending</p>
+      <p class="stat-value">1</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-title">Total Revenue</p>
+      <p class="stat-value">Rp 2.190.000</p>
+    </div>
+  </section>
+
+  <section class="table-wrapper role-section" data-role="customer">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+          <th class="money">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ORD-C002</td>
+          <td>2026-04-27 09:15</td>
+          <td><span class="status status-pending">Pending</span></td>
+          <td class="money">Rp 480.000</td>
+        </tr>
+        <tr>
+          <td>ORD-C001</td>
+          <td>2026-04-25 14:32</td>
+          <td><span class="status status-paid">Lunas</span></td>
+          <td class="money">Rp 150.000</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="table-wrapper role-section" data-role="organizer">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Pelanggan</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+          <th class="money">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ORD-O104</td>
+          <td>Bagus Pratama</td>
+          <td>2026-04-27 13:05</td>
+          <td><span class="status status-cancelled">Dibatalkan</span></td>
+          <td class="money">Rp 0</td>
+        </tr>
+        <tr>
+          <td>ORD-O103</td>
+          <td>Gita Ayu</td>
+          <td>2026-04-26 16:20</td>
+          <td><span class="status status-paid">Lunas</span></td>
+          <td class="money">Rp 1.120.000</td>
+        </tr>
+        <tr>
+          <td>ORD-O102</td>
+          <td>Dika Saputra</td>
+          <td>2026-04-25 10:12</td>
+          <td><span class="status status-pending">Pending</span></td>
+          <td class="money">Rp 420.000</td>
+        </tr>
+        <tr>
+          <td>ORD-O101</td>
+          <td>Rani Putri</td>
+          <td>2026-04-24 19:40</td>
+          <td><span class="status status-paid">Lunas</span></td>
+          <td class="money">Rp 650.000</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="table-wrapper role-section" data-role="admin">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Pelanggan</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+          <th class="money">Total</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ORD-A204</td>
+          <td>Shafa Azka</td>
+          <td>2026-04-27 13:05</td>
+          <td><span class="status status-cancelled">Dibatalkan</span></td>
+          <td class="money">Rp 0</td>
+          <td>
+            <div class="actions">
+              <button type="button" class="mini-btn edit" data-order-id="ORD-A204" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
+              <button type="button" class="mini-btn delete" data-order-id="ORD-A204" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>ORD-A203</td>
+          <td>Rindu Zahra</td>
+          <td>2026-04-26 16:20</td>
+          <td><span class="status status-paid">Lunas</span></td>
+          <td class="money">Rp 1.120.000</td>
+          <td>
+            <div class="actions">
+              <button type="button" class="mini-btn edit" data-order-id="ORD-A203" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
+              <button type="button" class="mini-btn delete" data-order-id="ORD-A203" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>ORD-A202</td>
+          <td>Nita Pasaribu</td>
+          <td>2026-04-25 10:12</td>
+          <td><span class="status status-pending">Pending</span></td>
+          <td class="money">Rp 420.000</td>
+          <td>
+            <div class="actions">
+              <button type="button" class="mini-btn edit" data-order-id="ORD-A202" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
+              <button type="button" class="mini-btn delete" data-order-id="ORD-A202" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>ORD-A201</td>
+          <td>Flora Cahaya</td>
+          <td>2026-04-24 19:40</td>
+          <td><span class="status status-paid">Lunas</span></td>
+          <td class="money">Rp 650.000</td>
+          <td>
+            <div class="actions">
+              <button type="button" class="mini-btn edit" data-order-id="ORD-A201" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
+              <button type="button" class="mini-btn delete" data-order-id="ORD-A201" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<div class="modal" id="updateModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title">Update Status Order</h3>
+      <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('updateModal')">&times;</button>
+    </div>
+
+    <label class="modal-label" for="updateOrderIdInput">Order ID</label>
+    <input id="updateOrderIdInput" class="readonly-field" type="text" readonly value="-">
+
+    <label class="modal-label" for="paymentStatus">PAYMENT STATUS</label>
+    <select id="paymentStatus">
+      <option>Lunas</option>
+      <option>Pending</option>
+      <option>Dibatalkan</option>
+    </select>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Batal</button>
+      <button type="button" class="btn btn-primary" onclick="submitUpdateOrder()">Update</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="deleteModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="modal-title modal-title-danger">Hapus Order</h3>
+      <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('deleteModal')">&times;</button>
+    </div>
+    <p class="modal-meta" id="deleteText">Apakah Anda yakin ingin menghapus catatan order ini?</p>
+    <p class="modal-meta-small">Tindakan ini tidak dapat dibatalkan.</p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Batal</button>
+      <button type="button" class="btn btn-danger" onclick="confirmDeleteOrder()">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    document.getElementById(id).classList.add('show');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  function openUpdateModal(button) {
+    const orderId = button.getAttribute('data-order-id');
+    document.getElementById('updateOrderIdInput').value = orderId;
+    openModal('updateModal');
+  }
+
+  function openDeleteModal(button) {
+    const orderId = button.getAttribute('data-order-id');
+    document.getElementById('deleteText').textContent =
+      'Apakah Anda yakin ingin menghapus catatan order ini? (Order ID: ' + orderId + ')';
+    openModal('deleteModal');
+  }
+
+  function submitUpdateOrder() {
+    closeModal('updateModal');
+    alert('Status order berhasil diperbarui');
+  }
+
+  function confirmDeleteOrder() {
+    closeModal('deleteModal');
+    alert('Order berhasil dihapus');
+  }
+
+  function switchRole(role) {
+    const subtitleMap = {
+      customer: 'Riwayat pembelian tiket Anda',
+      organizer: 'Order dari event yang Anda selenggarakan',
+      admin: 'Kelola seluruh order pada sistem'
+    };
+
+    const noteMap = {
+      customer: 'Menampilkan order milik Anda (filtered by customer_id)',
+      organizer: 'Menampilkan order dari event yang Anda selenggarakan (filtered by organizer_id)',
+      admin: 'Menampilkan semua order'
+    };
+
+    const placeholderMap = {
+      customer: 'Cari order ID...',
+      organizer: 'Cari ID atau pelanggan...',
+      admin: 'Cari ID atau pelanggan...'
+    };
+
+    document.querySelectorAll('.role-section').forEach(function(section) {
+      section.classList.remove('active');
+      if (section.getAttribute('data-role') === role) {
+        section.classList.add('active');
+      }
+    });
+
+    document.getElementById('roleSubtitle').textContent = subtitleMap[role];
+    document.getElementById('roleFilterNote').textContent = noteMap[role];
+    document.getElementById('searchInput').placeholder = placeholderMap[role];
+  }
+
+  document.getElementById('updateModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+      closeModal('updateModal');
+    }
+  });
+
+  document.getElementById('deleteModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+      closeModal('deleteModal');
+    }
+  });
+
+  switchRole('customer');
+</script>
+
+{% endblock %}
