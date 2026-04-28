@@ -42,20 +42,28 @@ body {
 
 .header-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.profile-btn,
-.promo-btn {
+/* 🔥 SATU CLASS UNTUK SEMUA BUTTON */
+.header-btn {
   background: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 18px;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
   color: #111827;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+
+  font-size: 16px;        /* 🔥 SAMAIN FONT */
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .stats-grid {
@@ -146,10 +154,11 @@ body {
       <p>Pantau dan kelola platform TikTakTuk</p>
     </div>
 
+    <!-- 🔥 SEMUA PAKAI header-btn -->
     <div class="header-actions">
-      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
-      <a href="{% url 'main:event_list' %}" class="profile-btn">Kelola Acara</a>
-      <button class="promo-btn">Promosi</button>
+      <a href="{% url 'main:profile' %}" class="header-btn">Profil Saya</a>
+      <a href="{% url 'main:event_list' %}" class="header-btn">Kelola Acara</a>
+      <button class="header-btn">Promosi</button>
     </div>
   </div>
 
