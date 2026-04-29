@@ -32,24 +32,28 @@ body {
   margin: 5px 0;
 }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
+.header p {
+  margin: 0;
 }
 
-.header-actions button,
-.profile-btn {
+.header-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.header-btn {
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
+  padding: 10px 18px;
+  border-radius: 999px;
   background: white;
   color: #111827;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-/* CARDS */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -59,20 +63,132 @@ body {
 
 .card {
   background: white;
-  padding: 20px;
+  padding: 24px 20px;
   border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  position: relative;
+  min-height: 120px;
+}
+
+.card h4 {
+  color: #94a3b8;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.card h2 {
+  margin: 8px 0;
+  font-size: 26px;
+}
+
+.card small {
+  color: #64748b;
+}
+
+.card-icon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.icon-blue {
+  background: #e0ecff;
+  color: #2563eb;
+}
+
+.icon-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.icon-purple {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.icon-orange {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* SECTION */
+.section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-top: 20px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
-.section {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
 }
 
-.item {
-  margin-top: 15px;
+.section-header h3 {
+  margin: 0 0 6px;
+}
+
+.section-subtitle {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.section-header a {
+  font-size: 14px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* EVENT ITEM */
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.event-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.event-sub {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.badge {
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+}
+
+.arrow {
+  color: #9ca3af;
+  font-size: 20px;
 }
 
 @media (max-width: 768px) {
@@ -84,6 +200,11 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+
+  .header-actions {
+    margin-left: 0;
+    flex-wrap: wrap;
   }
 }
 </style>
@@ -98,33 +219,36 @@ body {
     </div>
 
     <div class="header-actions">
-      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
-      <button>Kelola Acara</button>
-      <a href="{% url 'main:venue_list' %}" class="profile-btn">Venue</a>
-      <a href="{% url 'main:event_list' %}" class="profile-btn">Kelola Acara</a>
+      <a href="{% url 'main:profile' %}" class="header-btn">Profil Saya</a>
+      <a href="{% url 'main:event_list' %}" class="header-btn">Kelola Acara</a>
+      <a href="{% url 'main:venue_list' %}" class="header-btn">Venue</a>
     </div>
   </div>
 
   <div class="grid">
     <div class="card">
+      <div class="card-icon icon-blue">📅</div>
       <h4>Acara Aktif</h4>
       <h2>3</h2>
       <small>Dalam koordinasi</small>
     </div>
 
     <div class="card">
+      <div class="card-icon icon-green">🎟️</div>
       <h4>Tiket Terjual</h4>
       <h2>1,243</h2>
       <small>Total terjual</small>
     </div>
 
     <div class="card">
+      <div class="card-icon icon-purple">📈</div>
       <h4>Revenue</h4>
       <h2>Rp 4.8M</h2>
       <small>Bulan ini</small>
     </div>
 
     <div class="card">
+      <div class="card-icon icon-orange">📍</div>
       <h4>Venue Mitra</h4>
       <h2>3</h2>
       <small>Lokasi aktif</small>
@@ -132,22 +256,47 @@ body {
   </div>
 
   <div class="section">
-    <h3>Performa Acara</h3>
-
-    <div class="item">
-      <b>Konser Melodi Senja</b><br>
-      <small>Jakarta Convention Center</small>
+    <div class="section-header">
+      <div>
+        <h3>Performa Acara</h3>
+        <p class="section-subtitle">Status acara yang Anda kelola</p>
+      </div>
+      <a href="{% url 'main:event_list' %}">Lihat Semua</a>
     </div>
 
-    <div class="item">
-      <b>Festival Seni Budaya</b><br>
-      <small>Taman Impian Jaya</small>
+    <div class="event-item">
+      <div class="event-left">
+        <div class="event-title">
+          Konser Melodi Senja
+          <span class="badge">LIVE</span>
+        </div>
+        <div class="event-sub">↗ 85% terjual &nbsp;&nbsp; 📍 Jakarta Convention Center</div>
+      </div>
+      <div class="arrow">›</div>
     </div>
 
-    <div class="item">
-      <b>Malam Akustik Bandung</b><br>
-      <small>Bandung Hall Center</small>
+    <div class="event-item">
+      <div class="event-left">
+        <div class="event-title">
+          Festival Seni Budaya
+          <span class="badge">LIVE</span>
+        </div>
+        <div class="event-sub">↗ 85% terjual &nbsp;&nbsp; 📍 Taman Impian Jayakarta</div>
+      </div>
+      <div class="arrow">›</div>
     </div>
+
+    <div class="event-item" style="border-bottom:none;">
+      <div class="event-left">
+        <div class="event-title">
+          Malam Akustik Bandung
+          <span class="badge">LIVE</span>
+        </div>
+        <div class="event-sub">↗ 85% terjual &nbsp;&nbsp; 📍 Bandung Hall Center</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
   </div>
 
 </div>

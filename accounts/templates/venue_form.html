@@ -8,6 +8,20 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* 🔥 BACK BUTTON */
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
 .modal {
   max-width: 520px;
   margin: 60px auto;
@@ -70,6 +84,7 @@ input, textarea {
   font-weight: bold;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .cancel {
@@ -85,6 +100,10 @@ input, textarea {
 </style>
 
 <div class="modal">
+
+  <!-- 🔥 TAMBAHAN INI -->
+  <a href="{% url 'main:show_main' %}" class="back-btn">← Kembali ke Dashboard</a>
+
   <h2>{{ title }}</h2>
 
   <form method="POST">
@@ -118,6 +137,7 @@ input, textarea {
       <button type="submit" class="btn submit">{{ button_text }}</button>
     </div>
   </form>
+
 </div>
 
 {% endblock %}

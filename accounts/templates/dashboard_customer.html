@@ -4,62 +4,189 @@
 
 <style>
 body {
+  margin: 0;
   background: #f8fafc;
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
 }
 
 .container {
   max-width: 1000px;
   margin: 40px auto;
+  padding: 0 20px;
 }
 
-/* HEADER */
 .header {
   background: linear-gradient(to right, #2563eb, #3b82f6);
   color: white;
-  padding: 25px;
-  border-radius: 12px;
+  padding: 32px;
+  border-radius: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header button,
-.profile-btn {
-  background: white;
-  color: #111827;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: bold;
+.header p {
+  margin: 0 0 8px;
+  color: #dbeafe;
+}
+
+.header h2 {
+  margin: 0 0 10px;
+  font-size: 30px;
+}
+
+.header small {
+  color: #dbeafe;
+  font-size: 15px;
 }
 
 .header-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* GRID */
+.header-btn {
+  background: white;
+  color: #111827;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-top: 20px;
+  gap: 18px;
+  margin-top: 24px;
 }
 
 .card {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  padding: 26px 22px;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 118px;
 }
+
+.card h4 {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.card h2 {
+  margin: 8px 0 6px;
+  font-size: 26px;
+}
+
+.card small {
+  color: #64748b;
+}
+
+.icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.blue { background: #eff6ff; }
+.green { background: #ecfdf5; }
+.purple { background: #faf5ff; }
+.orange { background: #fff7ed; }
 
 .section {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
+  padding: 24px;
+  border-radius: 14px;
+  margin-top: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.section-header h3 {
+  margin: 0 0 6px;
+}
+
+.section-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.see-all {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ticket-row:last-child {
+  border-bottom: none;
+}
+
+.ticket-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+}
+
+.ticket-meta {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.arrow {
+  color: #94a3b8;
+  font-size: 22px;
+}
+
+.profile-btn {
+  background: white;
+  color: #111827;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {
@@ -70,7 +197,11 @@ body {
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 18px;
+  }
+
+  .header-actions {
+    width: 100%;
   }
 }
 </style>
@@ -81,41 +212,83 @@ body {
     <div>
       <p>Selamat datang kembali</p>
       <h2>{{ request.user.username }}</h2>
-      <small>Acara menarik menunggu Anda</small>
+      <small>3 acara menarik menunggu Anda</small>
     </div>
 
     <div class="header-actions">
-      <a href="{% url 'main:profile' %}" class="profile-btn">Profil Saya</a>
-      <a href="{% url 'main:browse_events' %}" class="profile-btn">Cari Tiket</a>    </div>
+      <a href="{% url 'main:profile' %}" class="header-btn">Profil Saya</a>
+      <a href="{% url 'main:browse_events' %}" class="profile-btn">Jelajahi Acara</a>
+      <a href="{% url ' ' %}" class="header-btn">Cari Tiket</a>
+    </div>
   </div>
 
   <div class="grid">
     <div class="card">
-      <h4>Tiket Aktif</h4>
-      <h2>2</h2>
+      <div>
+        <h4>Tiket Aktif</h4>
+        <h2>2</h2>
+        <small>Siap digunakan</small>
+      </div>
+      <div class="icon blue">🎟️</div>
     </div>
 
     <div class="card">
-      <h4>Acara Diikuti</h4>
-      <h2>12</h2>
+      <div>
+        <h4>Acara Diikuti</h4>
+        <h2>12</h2>
+        <small>Total pengalaman</small>
+      </div>
+      <div class="icon green">📅</div>
     </div>
 
     <div class="card">
-      <h4>Kode Promo</h4>
-      <h2>3</h2>
+      <div>
+        <h4>Kode Promo</h4>
+        <h2>3</h2>
+        <small>Tersedia untuk Anda</small>
+      </div>
+      <div class="icon purple">↗️</div>
     </div>
 
     <div class="card">
-      <h4>Total Belanja</h4>
-      <h2>Rp 1.6M</h2>
+      <div>
+        <h4>Total Belanja</h4>
+        <h2>Rp 1.6M</h2>
+        <small>Bulan ini</small>
+      </div>
+      <div class="icon orange">🎵</div>
     </div>
   </div>
 
   <div class="section">
-    <h3>Tiket Mendatang</h3>
+    <div class="section-header">
+      <div>
+        <h3>Tiket Mendatang</h3>
+        <p>Tiket pertunjukan yang akan datang</p>
+      </div>
 
-    <p><b>Konser Melodi Senja</b><br>Jakarta Convention Center</p>
-    <p><b>Festival Seni Budaya</b><br>Taman Impian Jaya</p>
+      <a href="{% url 'main:browse_events' %}" class="see-all">Lihat Semua</a>
+    </div>
+
+    <div class="ticket-row">
+      <div>
+        <div class="ticket-title">
+          Konser Melodi Senja <span class="badge">VVIP</span>
+        </div>
+        <div class="ticket-meta">📅 15 Mei 2024 &nbsp;&nbsp; 📍 Jakarta Convention Center</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="ticket-row">
+      <div>
+        <div class="ticket-title">
+          Festival Seni Budaya <span class="badge">GENERAL</span>
+        </div>
+        <div class="ticket-meta">📅 22 Mei 2024 &nbsp;&nbsp; 📍 Taman Impian Jayakarta</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
   </div>
 
 </div>

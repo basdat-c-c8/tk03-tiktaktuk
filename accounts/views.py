@@ -406,4 +406,4 @@ def browse_events(request):
         "selected_artist": artist_id,
     }
 
-    return render(request, "browse_events.html", context)
+    return render(request, "browse_event.html", context)

@@ -11,16 +11,16 @@ body {
 }
 
 .dashboard-container {
-  max-width: 1000px;
+  max-width: 1180px;
   margin: 40px auto;
   padding: 0 20px;
 }
 
 .header-card {
-  background: #27364d;
+  background: linear-gradient(to right, #1f2f46, #32445f);
   color: white;
   border-radius: 14px;
-  padding: 28px 34px;
+  padding: 34px 38px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,70 +28,62 @@ body {
 
 .header-card small {
   color: #cbd5e1;
+  font-size: 14px;
 }
 
 .header-card h1 {
-  margin: 8px 0;
-  font-size: 28px;
+  margin: 10px 0;
+  font-size: 30px;
 }
 
 .header-card p {
   margin: 0;
   color: #cbd5e1;
+  font-size: 16px;
 }
 
-.header-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-/* 🔥 SATU CLASS UNTUK SEMUA BUTTON */
 .header-btn {
   background: white;
   color: #111827;
   border: none;
   border-radius: 999px;
-  padding: 12px 22px;
-
-  font-size: 16px;        /* 🔥 SAMAIN FONT */
+  padding: 10px 20px;
+  font-size: 14px;
   font-weight: 700;
   font-family: Arial, sans-serif;
-
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-top: 24px;
+  gap: 22px;
+  margin-top: 28px;
 }
 
-.stat-card,
-.info-card {
+.stat-card {
   background: white;
   border-radius: 14px;
-  padding: 24px;
+  padding: 28px 24px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 120px;
 }
 
 .stat-title {
   color: #94a3b8;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .stat-value {
-  font-size: 26px;
-  font-weight: bold;
-  margin: 8px 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 8px 0 6px;
 }
 
 .stat-desc {
@@ -99,22 +91,57 @@ body {
   font-size: 13px;
 }
 
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.icon-blue {
+  background: #eff6ff;
+}
+
+.icon-green {
+  background: #ecfdf5;
+}
+
+.icon-purple {
+  background: #faf5ff;
+}
+
+.icon-orange {
+  background: #fff7ed;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-top: 24px;
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .info-card h3 {
-  margin-top: 0;
+  margin: 0 0 24px;
+  font-size: 22px;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  margin: 16px 0;
+  margin: 18px 0;
   color: #64748b;
+  font-size: 16px;
 }
 
 .info-row strong {
@@ -123,12 +150,20 @@ body {
 
 .action-btn {
   width: 100%;
-  padding: 10px;
+  margin-top: 12px;
+  padding: 12px;
   border: 1px solid #e5e7eb;
-  border-radius: 20px;
+  border-radius: 999px;
   background: white;
-  font-weight: bold;
+  color: #111827;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
   cursor: pointer;
+}
+
+.action-link {
+  display: block;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {
@@ -140,7 +175,7 @@ body {
   .header-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 18px;
   }
 }
 </style>
@@ -154,37 +189,49 @@ body {
       <p>Pantau dan kelola platform TikTakTuk</p>
     </div>
 
-    <!-- 🔥 SEMUA PAKAI header-btn -->
     <div class="header-actions">
       <a href="{% url 'main:profile' %}" class="header-btn">Profil Saya</a>
       <a href="{% url 'main:event_list' %}" class="header-btn">Kelola Acara</a>
-      <button class="header-btn">Promosi</button>
+      <button class="header-btn" type="button">Promosi</button>
     </div>
+
   </div>
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-title">Total Pengguna</div>
-      <div class="stat-value">2,543</div>
-      <div class="stat-desc">Pengguna aktif</div>
+      <div>
+        <div class="stat-title">Total Pengguna</div>
+        <div class="stat-value">2,543</div>
+        <div class="stat-desc">Pengguna aktif</div>
+      </div>
+      <div class="stat-icon icon-blue">👥</div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-title">Total Acara</div>
-      <div class="stat-value">156</div>
-      <div class="stat-desc">Bulan ini</div>
+      <div>
+        <div class="stat-title">Total Acara</div>
+        <div class="stat-value">156</div>
+        <div class="stat-desc">Bulan ini</div>
+      </div>
+      <div class="stat-icon icon-green">📅</div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-title">Omzet Platform</div>
-      <div class="stat-value">Rp 52.4M</div>
-      <div class="stat-desc">Gross volume</div>
+      <div>
+        <div class="stat-title">Omzet Platform</div>
+        <div class="stat-value">Rp 52.4M</div>
+        <div class="stat-desc">Gross volume</div>
+      </div>
+      <div class="stat-icon icon-purple">↗️</div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-title">Promosi Aktif</div>
-      <div class="stat-value">3</div>
-      <div class="stat-desc">Running campaigns</div>
+      <div>
+        <div class="stat-title">Promosi Aktif</div>
+        <div class="stat-value">3</div>
+        <div class="stat-desc">Running campaigns</div>
+      </div>
+      <div class="stat-icon icon-orange">🎟️</div>
     </div>
   </div>
 
@@ -207,8 +254,8 @@ body {
         <strong>1,000 Kursi</strong>
       </div>
 
-      <a href="{% url 'main:venue_list' %}">
-        <button class="action-btn">Kelola Venue</button>
+      <a href="{% url 'main:venue_list' %}" class="action-link">
+        <button class="action-btn" type="button">Kelola Venue</button>
       </a>
     </div>
 
@@ -230,7 +277,7 @@ body {
         <strong>57 Kali</strong>
       </div>
 
-      <button class="action-btn">Kelola Promosi</button>
+      <button class="action-btn" type="button">Kelola Promosi</button>
     </div>
   </div>
 
