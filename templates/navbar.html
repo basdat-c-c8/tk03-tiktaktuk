@@ -1,27 +1,31 @@
 {% load static %}
 
+{% if user.is_authenticated %}
+
 <!-- ================= TOPBAR ================= -->
 <div class="topbar">
 
   <div class="top-left">
-
-    {% if user.is_authenticated %}
+    {% if role != "pelanggan" %}
       <div class="menu-btn" onclick="toggleSidebar()">☰</div>
     {% endif %}
 
-    <!-- LOGO -->
     <a href="/">
       <img src="{% static 'images/logo.png' %}" class="logo">
     </a>
-
   </div>
 
   <div class="top-right">
 
-    {% if not user.is_authenticated %}
-      <a href="{% url 'login' %}" class="btn btn-light">Login</a>
-      <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
-
+    {% if role == "pelanggan" %}
+      <a href="{% url 'main:show_main' %}">Dashboard</a>
+      <a href="#">Tiket Saya</a>
+      <a href="#">Pesanan</a>
+      <a href="{% url 'main:browse_events' %}">Cari Event</a>
+      <a href="#">Promosi</a>
+      <a href="#">Venue</a>
+      <a href="#">Artis</a>
+      <a href="{% url 'main:logout' %}" class="btn btn-light">Logout</a>
     {% else %}
       <div class="profile">
         <img src="https://i.pravatar.cc/30" style="border-radius:50%">
@@ -32,64 +36,36 @@
   </div>
 </div>
 
-<!-- ================= BODY ================= -->
-
-{% if user.is_authenticated and user.role != 'customer' %}
+{% if role != "pelanggan" %}
 
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <div id="sidebar" class="sidebar">
 
     <h4>MENU</h4>
 
-    <a href="#">Dashboard</a>
+    <a href="{% url 'main:show_main' %}">Dashboard</a>
 
-    {% if user.role == 'organizer' %}
-      <a href="#">Event Saya</a>
+    {% if role == "penyelenggara" %}
+      <a href="{% url 'main:event_list' %}">Event Saya</a>
     {% endif %}
 
-    <a href="#">Manajemen Venue</a>
+    <a href="{% url 'main:venue_list' %}">Manajemen Venue</a>
     <a href="#">Manajemen Kursi</a>
     <a href="#">Kategori Tiket</a>
     <a href="#">Manajemen Tiket</a>
     <a href="#">Semua Order</a>
 
     <h4>ASET</h4>
-
     <a href="#">Tiket</a>
     <a href="#">Order</a>
 
     <h4>AKUN</h4>
-
-    <a href="#">Profile</a>
-    <a href="#">Logout</a>
+    <a href="{% url 'main:profile' %}">Profile</a>
+    <a href="{% url 'main:logout' %}">Logout</a>
 
   </div>
-
-  <!-- CONTENT -->
-  <div class="content">
-    {% block content %}{% endblock %}
-  </div>
-
-</div>
-
-{% else %}
-
-<div class="content">
-  {% block content %}{% endblock %}
-</div>
 
 {% endif %}
 
-<script>
-function toggleSidebar(){
-  const sidebar = document.getElementById("sidebar");
-
-  if(window.innerWidth < 768){
-    sidebar.classList.toggle("active");
-  }else{
-    sidebar.classList.toggle("collapsed");
-  }
-}
-</script>
+{% endif %}

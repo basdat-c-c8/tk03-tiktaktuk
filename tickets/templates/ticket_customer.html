@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Tiket Saya{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="mb-3">
+    <h1 class="page-title">Tiket Saya</h1>
+    <p class="muted">Kelola dan akses tiket pertunjukan Anda</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid-3 mb-4">
+    <div class="card p-3">
+      <div class="stat-title">TOTAL TIKET</div>
+      <div class="stat-value">3</div>
+    </div>
+
+    <div class="card p-3">
+      <div class="stat-title">VALID</div>
+      <div class="stat-value">2</div>
+    </div>
+
+    <div class="card p-3">
+      <div class="stat-title">TERPAKAI</div>
+      <div class="stat-value">1</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="flex gap-3 mb-4">
+    <input type="text" placeholder="Cari kode tiket atau nama acara...">
+    <select>
+      <option>Semua Status</option>
+      <option>Valid</option>
+      <option>Terpakai</option>
+    </select>
+  </div>
+
+  <!-- LIST -->
+  <div class="ticket-list">
+
+    <div class="ticket-card">
+
+      <!-- LEFT -->
+      <div class="ticket-left">
+
+        <div class="ticket-icon">🎫</div>
+
+        <div class="ticket-info">
+
+          <div class="ticket-badges">
+            <span class="badge badge-primary">VALID</span>
+            <span class="badge badge-slate">VIP</span>
+          </div>
+
+          <h3>Konser Melodi Senja</h3>
+          <small class="muted">TIK-EVT001-VIP-001</small>
+
+          <div class="ticket-meta">
+
+            <div>
+              <div class="muted">JADWAL</div>
+              <strong>2024-05-15 19:00</strong>
+            </div>
+
+            <div>
+              <div class="muted">LOKASI</div>
+              <strong>Jakarta Convention Center</strong>
+            </div>
+
+            <div>
+              <div class="muted">KURSI</div>
+              <strong>VIP B-1</strong>
+            </div>
+
+            <div>
+              <div class="muted">HARGA</div>
+              <strong>Rp 750.000</strong>
+            </div>
+
+          </div>
+
+          <!-- ACTION -->
+          <div class="ticket-actions">
+            <button class="btn btn-primary btn-pill">Tampilkan QR</button>
+            <button class="btn btn-light">⬇</button>
+            <button class="btn btn-light">🔗</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- QR -->
+      <div class="ticket-qr">
+        <div class="qr-box">QR</div>
+        <small class="muted">SCAN ENTRY</small>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

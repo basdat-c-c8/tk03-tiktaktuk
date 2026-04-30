@@ -9,13 +9,20 @@
 
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
-
 </head>
 
 <body>
 
-    <!-- NAVBAR + SIDEBAR -->
+    <!-- NAVBAR -->
     {% include 'navbar.html' %}
+
+    <!-- CONTENT (WAJIB ADA) -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- EXTRA JS PER PAGE -->
+    {% block extra_js %}{% endblock %}
 
 </body>
 </html>

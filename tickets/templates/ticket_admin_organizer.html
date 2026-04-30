@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Manajemen Tiket{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="flex-between mb-3">
+    <div>
+      <h1 class="page-title">Manajemen Tiket</h1>
+      <p class="muted">Kelola tiket: tambah, ubah status, dan hapus tiket</p>
+    </div>
+
+    <a href="#" class="btn btn-primary" onclick="openModal()">+ Tambah Tiket</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid-3 mb-4">
+    <div class="card p-3">
+      <div class="stat-title">TOTAL TIKET</div>
+      <div class="stat-value">4</div>
+    </div>
+
+    <div class="card p-3">
+      <div class="stat-title">VALID</div>
+      <div class="stat-value">2</div>
+    </div>
+
+    <div class="card p-3">
+      <div class="stat-title">TERPAKAI</div>
+      <div class="stat-value">1</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="flex gap-3 mb-4">
+    <input type="text" placeholder="Cari kode tiket atau nama acara...">
+    <select>
+      <option>Semua Status</option>
+      <option>Valid</option>
+      <option>Terpakai</option>
+    </select>
+  </div>
+
+  <!-- LIST -->
+  <div class="ticket-list">
+
+    <div class="ticket-card">
+
+      <!-- LEFT -->
+      <div class="ticket-left">
+
+        <div class="ticket-icon">🎫</div>
+
+        <div class="ticket-info">
+
+          <div class="ticket-badges">
+            <span class="badge badge-primary">VALID</span>
+            <span class="badge badge-slate">VIP</span>
+          </div>
+
+          <h3>Konser Melodi Senja</h3>
+          <small class="muted">TIK-EVT001-VIP-001</small>
+
+          <div class="ticket-meta">
+
+            <div>
+              <div class="muted">JADWAL</div>
+              <strong>2024-05-15 19:00</strong>
+            </div>
+
+            <div>
+              <div class="muted">LOKASI</div>
+              <strong>Jakarta Convention Center</strong>
+            </div>
+
+            <div>
+              <div class="muted">KURSI</div>
+              <strong>VIP B-1</strong>
+            </div>
+
+            <div>
+              <div class="muted">ORDER</div>
+              <strong>ord_001</strong>
+            </div>
+
+            <div>
+              <div class="muted">HARGA</div>
+              <strong>Rp 750.000</strong>
+            </div>
+
+            <div>
+              <div class="muted">PELANGGAN</div>
+              <strong>Budi Santoso</strong>
+            </div>
+
+          </div>
+
+          <!-- ACTION -->
+          <div class="ticket-actions">
+            <button class="btn btn-light" onclick="openUpdateModal()">Update</button>
+            {% if request.user.role == 'admin' %}
+            <button class="btn btn-light" style="color:red;" onclick="openDeleteTicketModal()">Hapus</button>
+            {% endif %}
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div id="modalOverlay" class="modal-overlay">
+
+  <!-- MODAL -->
+  <div class="modal">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h3>Tambah Tiket Baru</h3>
+      <span class="close-btn" onclick="closeModal()">✕</span>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <label>ORDER</label>
+      <select>
+        <option>ord_001 — Budi Santoso — Konser Melodi Senja</option>
+      </select>
+
+      <label>KATEGORI TIKET</label>
+      <select>
+        <option>VIP — Rp 750.000 (3/150)</option>
+      </select>
+
+      <label>KURSI <span class="optional">(optional — reserved seating)</span></label>
+      <select>
+        <option>Category 1 — Baris C, No. 1</option>
+      </select>
+
+      <label>KODE TIKET</label>
+      <input type="text" placeholder="Auto-generate saat dibuat" disabled>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <button class="btn btn-light" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary">Buat Tiket</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL UPDATE TIKET -->
+<div id="updateModalOverlay" class="modal-overlay">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>Update Tiket</h3>
+      <span class="close-btn" onclick="closeUpdateModal()">×</span>
+    </div>
+
+    <div class="modal-body">
+      <label>KODE TIKET</label>
+      <input type="text" value="TIK-EVT001-VIP-001" disabled>
+
+      <label>STATUS</label>
+      <select>
+        <option>Valid</option>
+        <option>Terpakai</option>
+        <option>Dibatalkan</option>
+      </select>
+
+      <label>KURSI <span class="optional">(opsional)</span></label>
+      <select>
+        <option>VIP — Baris B, No. 1</option>
+        <option>VIP — Baris B, No. 2</option>
+        <option>VIP — Baris C, No. 1</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-light" onclick="closeUpdateModal()">Batal</button>
+      <button class="btn btn-primary">✓ Simpan</button>
+    </div>
+
+  </div>
+</div>
+
+{% if request.user.role == 'admin' %}
+<!-- MODAL HAPUS TIKET - ADMIN -->
+<div id="deleteTicketModalOverlay" class="modal-overlay">
+  <div class="delete-ticket-modal">
+
+    <div class="delete-modal-header">
+      <div>
+        <h3>Hapus Tiket</h3>
+        <p>Apakah Anda yakin ingin menghapus tiket ini? Relasi kursi akan dilepaskan. Tindakan ini tidak dapat dibatalkan.</p>
+      </div>
+
+      <span class="close-btn" onclick="closeDeleteTicketModal()">×</span>
+    </div>
+
+    <div class="delete-modal-footer">
+      <button class="btn btn-light" onclick="closeDeleteTicketModal()">Batal</button>
+      <button class="btn btn-danger">Hapus</button>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+<script>
+function openModal(){
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+function openUpdateModal(){
+  document.getElementById('updateModalOverlay').style.display = 'flex';
+}
+
+function closeUpdateModal(){
+  document.getElementById('updateModalOverlay').style.display = 'none';
+}
+function openDeleteTicketModal(){
+  document.getElementById('deleteTicketModalOverlay').style.display = 'flex';
+}
+
+function closeDeleteTicketModal(){
+  document.getElementById('deleteTicketModalOverlay').style.display = 'none';
+}
+</script>
+
+{% endblock %}
