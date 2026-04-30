@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('orders.urls')),
     path('', include('events.urls')),
     path('', include('seats.urls')),
+    path('', include('tickets.urls')),
 ]
