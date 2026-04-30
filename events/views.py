@@ -3,13 +3,16 @@ from django.shortcuts import render
 
 # Create your views here.
 def artist_list(request):
-    return render(request, 'events/RArtist.html')
-
-def ticket_category_list(request):
-    return render(request, 'events/CUDTicketCategory.html')
-
+    return render(request, 'events/cudartist.html')
+ 
+ 
+def artist_read(request):
+    return render(request, 'events/rartist.html')
+ 
+ 
 def ticket_category_manage(request):
-    return render(request, 'events/CUDTicketCategory.html')
-
+    return render(request, 'events/cudticketcategory.html')
+ 
+ 
 def ticket_category_read(request):
-    return render(request, 'events/RTicketCategory.html')
+    return render(request, 'events/rticketcategory.html')
