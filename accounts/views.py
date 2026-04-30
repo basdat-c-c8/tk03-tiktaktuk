@@ -408,5 +408,5 @@ def browse_events(request):
 
     return render(request, "browse_event.html", context)
 
-def cpengguna(request):
+def create_pengguna(request):
     return render(request, 'cpengguna.html')
