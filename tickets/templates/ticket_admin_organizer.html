@@ -4,39 +4,313 @@
 
 {% block content %}
 
-<div class="container">
+<style>
+  .ticket-page {
+    padding: 4px 0;
+    font-family: Inter, Arial, sans-serif;
+    color: #0f172a;
+  }
+
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+  }
+
+  .ticket-title {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .ticket-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .ticket-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .ticket-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 26px 24px;
+    min-height: 105px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .ticket-stat-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ticket-stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .ticket-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .ticket-search-wrap {
+    position: relative;
+    width: 380px;
+  }
+
+  .ticket-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .ticket-filter input,
+  .ticket-filter select {
+    height: 40px;
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 13px;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .ticket-filter input {
+    width: 100%;
+    padding: 0 14px 0 40px;
+  }
+
+  .ticket-filter select {
+    width: 150px;
+    padding: 0 14px;
+    font-weight: 600;
+  }
+
+  .admin-ticket-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .admin-ticket-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 26px 24px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .admin-ticket-main {
+    display: flex;
+    gap: 14px;
+  }
+
+  .admin-ticket-icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .admin-ticket-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-ticket-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  .ticket-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .ticket-badge-valid {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .ticket-badge-type {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .admin-ticket-content h3 {
+    margin: 0 0 3px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .ticket-code {
+    display: block;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .admin-ticket-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    gap: 16px 28px;
+    margin-bottom: 18px;
+  }
+
+  .meta-label {
+    margin-bottom: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    font-size: 12px;
+    font-weight: 800;
+    color: #334155;
+  }
+
+  .ticket-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ticket-action-btn {
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .ticket-action-btn:hover {
+    background: #f8fafc;
+  }
+
+  .ticket-action-danger {
+    color: #ef4444;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 11px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+
+  @media (max-width: 768px) {
+    .ticket-header {
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .ticket-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .ticket-filter {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ticket-search-wrap,
+    .ticket-filter select {
+      width: 100%;
+    }
+
+    .admin-ticket-meta {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="container ticket-page">
 
   <!-- HEADER -->
-  <div class="flex-between mb-3">
+  <div class="ticket-header">
     <div>
-      <h1 class="page-title">Manajemen Tiket</h1>
-      <p class="muted">Kelola tiket: tambah, ubah status, dan hapus tiket</p>
+      <h1 class="ticket-title">Manajemen Tiket</h1>
+      <p class="ticket-subtitle">Kelola tiket: tambah, ubah status, dan hapus tiket</p>
     </div>
 
-    <a href="#" class="btn btn-primary" onclick="openModal()">+ Tambah Tiket</a>
+    <button class="btn-primary" onclick="openModal()">+ Tambah Tiket</button>
   </div>
 
   <!-- STATS -->
-  <div class="grid-3 mb-4">
-    <div class="card p-3">
-      <div class="stat-title">TOTAL TIKET</div>
-      <div class="stat-value">4</div>
+  <div class="ticket-stats">
+    <div class="ticket-stat-card">
+      <div class="ticket-stat-label">Total Tiket</div>
+      <div class="ticket-stat-value">4</div>
     </div>
 
-    <div class="card p-3">
-      <div class="stat-title">VALID</div>
-      <div class="stat-value">2</div>
+    <div class="ticket-stat-card">
+      <div class="ticket-stat-label">Valid</div>
+      <div class="ticket-stat-value">2</div>
     </div>
 
-    <div class="card p-3">
-      <div class="stat-title">TERPAKAI</div>
-      <div class="stat-value">1</div>
+    <div class="ticket-stat-card">
+      <div class="ticket-stat-label">Terpakai</div>
+      <div class="ticket-stat-value">1</div>
     </div>
   </div>
 
   <!-- FILTER -->
-  <div class="flex gap-3 mb-4">
-    <input type="text" placeholder="Cari kode tiket atau nama acara...">
+  <div class="ticket-filter">
+    <div class="ticket-search-wrap">
+      <span class="ticket-search-icon">⌕</span>
+      <input type="text" placeholder="Cari kode tiket atau nama acara...">
+    </div>
+
     <select>
       <option>Semua Status</option>
       <option>Valid</option>
@@ -45,92 +319,128 @@
   </div>
 
   <!-- LIST -->
-  <div class="ticket-list">
+  <div class="admin-ticket-list">
 
-    <div class="ticket-card">
+    <div class="admin-ticket-card">
+      <div class="admin-ticket-main">
+        <div class="admin-ticket-icon">🎫</div>
 
-      <!-- LEFT -->
-      <div class="ticket-left">
-
-        <div class="ticket-icon">🎫</div>
-
-        <div class="ticket-info">
-
-          <div class="ticket-badges">
-            <span class="badge badge-primary">VALID</span>
-            <span class="badge badge-slate">VIP</span>
+        <div class="admin-ticket-content">
+          <div class="admin-ticket-badges">
+            <span class="ticket-badge ticket-badge-valid">Valid</span>
+            <span class="ticket-badge ticket-badge-type">VIP</span>
           </div>
 
           <h3>Konser Melodi Senja</h3>
-          <small class="muted">TIK-EVT001-VIP-001</small>
+          <small class="ticket-code">TIK-EVT001-VIP-001</small>
 
-          <div class="ticket-meta">
-
+          <div class="admin-ticket-meta">
             <div>
-              <div class="muted">JADWAL</div>
-              <strong>2024-05-15 19:00</strong>
+              <div class="meta-label">Jadwal</div>
+              <div class="meta-value">2024-05-15 19:00</div>
             </div>
 
             <div>
-              <div class="muted">LOKASI</div>
-              <strong>Jakarta Convention Center</strong>
+              <div class="meta-label">Lokasi</div>
+              <div class="meta-value">Jakarta Convention Center</div>
             </div>
 
             <div>
-              <div class="muted">KURSI</div>
-              <strong>VIP B-1</strong>
+              <div class="meta-label">Kursi</div>
+              <div class="meta-value">VIP B-1</div>
             </div>
 
             <div>
-              <div class="muted">ORDER</div>
-              <strong>ord_001</strong>
+              <div class="meta-label">Harga</div>
+              <div class="meta-value">Rp 750.000</div>
             </div>
 
             <div>
-              <div class="muted">HARGA</div>
-              <strong>Rp 750.000</strong>
+              <div class="meta-label">Order</div>
+              <div class="meta-value">ord_001</div>
             </div>
 
             <div>
-              <div class="muted">PELANGGAN</div>
-              <strong>Budi Santoso</strong>
+              <div class="meta-label">Pelanggan</div>
+              <div class="meta-value">Budi Santoso</div>
             </div>
-
           </div>
 
-          <!-- ACTION -->
           <div class="ticket-actions">
-            <button class="btn btn-light" onclick="openUpdateModal()">Update</button>
-            {% if request.user.role == 'admin' %}
-            <button class="btn btn-light" style="color:red;" onclick="openDeleteTicketModal()">Hapus</button>
-            {% endif %}
-
+            <button class="ticket-action-btn" onclick="openUpdateModal()">Update</button>
+            <button class="ticket-action-btn ticket-action-danger" onclick="openDeleteTicketModal()">Hapus</button>
           </div>
-
         </div>
       </div>
+    </div>
 
+    <div class="admin-ticket-card">
+      <div class="admin-ticket-main">
+        <div class="admin-ticket-icon">🎫</div>
+
+        <div class="admin-ticket-content">
+          <div class="admin-ticket-badges">
+            <span class="ticket-badge ticket-badge-valid">Valid</span>
+            <span class="ticket-badge ticket-badge-type">VIP</span>
+          </div>
+
+          <h3>Konser Melodi Senja</h3>
+          <small class="ticket-code">TIK-EVT001-VIP-002</small>
+
+          <div class="admin-ticket-meta">
+            <div>
+              <div class="meta-label">Jadwal</div>
+              <div class="meta-value">2024-05-15 19:00</div>
+            </div>
+
+            <div>
+              <div class="meta-label">Lokasi</div>
+              <div class="meta-value">Jakarta Convention Center</div>
+            </div>
+
+            <div>
+              <div class="meta-label">Kursi</div>
+              <div class="meta-value">VIP B-2</div>
+            </div>
+
+            <div>
+              <div class="meta-label">Harga</div>
+              <div class="meta-value">Rp 750.000</div>
+            </div>
+
+            <div>
+              <div class="meta-label">Order</div>
+              <div class="meta-value">ord_002</div>
+            </div>
+
+            <div>
+              <div class="meta-label">Pelanggan</div>
+              <div class="meta-value">Siti Aminah</div>
+            </div>
+          </div>
+
+          <div class="ticket-actions">
+            <button class="ticket-action-btn" onclick="openUpdateModal()">Update</button>
+            <button class="ticket-action-btn ticket-action-danger" onclick="openDeleteTicketModal()">Hapus</button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 
 </div>
 
-<!-- OVERLAY -->
+<!-- MODAL TAMBAH TIKET -->
 <div id="modalOverlay" class="modal-overlay">
-
-  <!-- MODAL -->
   <div class="modal">
 
-    <!-- HEADER -->
     <div class="modal-header">
       <h3>Tambah Tiket Baru</h3>
-      <span class="close-btn" onclick="closeModal()">✕</span>
+      <span class="close-btn" onclick="closeModal()">×</span>
     </div>
 
-    <!-- BODY -->
     <div class="modal-body">
-
       <label>ORDER</label>
       <select>
         <option>ord_001 — Budi Santoso — Konser Melodi Senja</option>
@@ -148,10 +458,8 @@
 
       <label>KODE TIKET</label>
       <input type="text" placeholder="Auto-generate saat dibuat" disabled>
-
     </div>
 
-    <!-- FOOTER -->
     <div class="modal-footer">
       <button class="btn btn-light" onclick="closeModal()">Batal</button>
       <button class="btn btn-primary">Buat Tiket</button>
@@ -196,8 +504,7 @@
   </div>
 </div>
 
-{% if request.user.role == 'admin' %}
-<!-- MODAL HAPUS TIKET - ADMIN -->
+<!-- MODAL HAPUS TIKET -->
 <div id="deleteTicketModalOverlay" class="modal-overlay">
   <div class="delete-ticket-modal">
 
@@ -217,7 +524,6 @@
 
   </div>
 </div>
-{% endif %}
 
 <script>
 function openModal(){
@@ -227,6 +533,7 @@ function openModal(){
 function closeModal(){
   document.getElementById('modalOverlay').style.display = 'none';
 }
+
 function openUpdateModal(){
   document.getElementById('updateModalOverlay').style.display = 'flex';
 }
@@ -234,6 +541,7 @@ function openUpdateModal(){
 function closeUpdateModal(){
   document.getElementById('updateModalOverlay').style.display = 'none';
 }
+
 function openDeleteTicketModal(){
   document.getElementById('deleteTicketModalOverlay').style.display = 'flex';
 }

@@ -11,6 +11,41 @@
     color: #0f172a;
   }
 
+  .role-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  }
+
+  .role-switcher label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  .role-switcher select {
+    height: 30px;
+    border: 2px solid #0f172a;
+    border-radius: 8px;
+    padding: 0 28px 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    background: #ffffff;
+  }
+
+  .role-admin-organizer,
+  .role-admin-only {
+    display: none;
+  }
+
   .seats-header {
     display: flex;
     justify-content: space-between;
@@ -23,7 +58,6 @@
     font-size: 24px;
     font-weight: 800;
     color: #0f172a;
-    letter-spacing: 0;
   }
 
   .seats-subtitle {
@@ -241,6 +275,7 @@
     font-size: 13px;
     font-weight: 700;
     box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    cursor: pointer;
   }
 
   .btn-primary:hover {
@@ -253,9 +288,19 @@
       flex-direction: column;
     }
 
-    .stats-grid,
-    .filter-row {
+    .stats-grid {
       grid-template-columns: 1fr;
+    }
+
+    .filter-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .search-box,
+    .filter-select {
+      width: 100%;
+      flex: none;
     }
 
     .seats-table-card {
@@ -270,14 +315,22 @@
 
 <div class="container seats-page">
 
+  <div class="role-switcher">
+    <label>Role</label>
+    <select id="roleSelect" onchange="changeRole()">
+      <option value="admin">Admin</option>
+      <option value="organizer" selected>Organizer</option>
+      <option value="customer">Customer</option>
+    </select>
+  </div>
+
   <div class="seats-header">
     <div>
       <h1 class="seats-title">Manajemen Kursi</h1>
       <p class="seats-subtitle">Kelola kursi dan denah tempat duduk venue</p>
     </div>
-    {% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-    <button class="btn btn-primary" onclick="openSeatModal()">+ Tambah Kursi</button>
-    {% endif %}
+
+    <button class="btn btn-primary role-admin-organizer" onclick="openSeatModal()">+ Tambah Kursi</button>
   </div>
 
   <div class="stats-grid">
@@ -336,13 +389,8 @@
           <td><span class="status-badge status-filled">⊗ TERISI</span></td>
           <td>
             <div class="action-cell">
-                {% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-                <button class="action-btn" onclick="openEditSeatModal()">✎</button>
-                {% endif %}
-
-                {% if request.user.role == 'admin' %}
-                <button class="action-btn" onclick="openDeleteSeatModal()">⌫</button>
-                {% endif %}
+              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
+              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
             </div>
           </td>
         </tr>
@@ -360,13 +408,8 @@
           <td><span class="status-badge status-available">⊙ TERSEDIA</span></td>
           <td>
             <div class="action-cell">
-                {% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-                <button class="action-btn" onclick="openEditSeatModal()">✎</button>
-                {% endif %}
-
-                {% if request.user.role == 'admin' %}
-                <button class="action-btn" onclick="openDeleteSeatModal()">⌫</button>
-                {% endif %}
+              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
+              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
             </div>
           </td>
         </tr>
@@ -384,13 +427,8 @@
           <td><span class="status-badge status-available">⊙ TERSEDIA</span></td>
           <td>
             <div class="action-cell">
-                {% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-                <button class="action-btn" onclick="openEditSeatModal()">✎</button>
-                {% endif %}
-
-                {% if request.user.role == 'admin' %}
-                <button class="action-btn" onclick="openDeleteSeatModal()">⌫</button>
-                {% endif %}
+              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
+              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
             </div>
           </td>
         </tr>
@@ -408,13 +446,8 @@
           <td><span class="status-badge status-filled">⊗ TERISI</span></td>
           <td>
             <div class="action-cell">
-              {% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-              <button class="action-btn" onclick="openEditSeatModal()">✎</button>
-              {% endif %}
-
-              {% if request.user.role == 'admin' %}
-              <button class="action-btn" onclick="openDeleteSeatModal()">⌫</button>
-              {% endif %}
+              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
+              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
             </div>
           </td>
         </tr>
@@ -424,8 +457,7 @@
 
 </div>
 
-{% if request.user.role == 'admin' or request.user.role == 'organizer' %}
-<!-- MODAL TAMBAH KURSI - ADMIN & ORGANIZER -->
+<!-- MODAL TAMBAH KURSI -->
 <div id="seatModalOverlay" class="modal-overlay">
   <div class="seat-modal">
 
@@ -466,7 +498,7 @@
   </div>
 </div>
 
-<!-- MODAL EDIT KURSI - ADMIN & ORGANIZER -->
+<!-- MODAL EDIT KURSI -->
 <div id="editSeatModalOverlay" class="modal-overlay">
   <div class="seat-modal">
 
@@ -506,10 +538,8 @@
 
   </div>
 </div>
-{% endif %}
 
-{% if request.user.role == 'admin' %}
-<!-- MODAL HAPUS KURSI - ADMIN -->
+<!-- MODAL HAPUS KURSI -->
 <div id="deleteSeatModalOverlay" class="modal-overlay">
   <div class="delete-seat-modal">
 
@@ -529,8 +559,6 @@
 
   </div>
 </div>
-{% endif %}
-
 
 <script>
 function openSeatModal(){
@@ -540,6 +568,7 @@ function openSeatModal(){
 function closeSeatModal(){
   document.getElementById('seatModalOverlay').style.display = 'none';
 }
+
 function openEditSeatModal(){
   document.getElementById('editSeatModalOverlay').style.display = 'flex';
 }
@@ -547,6 +576,7 @@ function openEditSeatModal(){
 function closeEditSeatModal(){
   document.getElementById('editSeatModalOverlay').style.display = 'none';
 }
+
 function openDeleteSeatModal(){
   document.getElementById('deleteSeatModalOverlay').style.display = 'flex';
 }
@@ -554,6 +584,20 @@ function openDeleteSeatModal(){
 function closeDeleteSeatModal(){
   document.getElementById('deleteSeatModalOverlay').style.display = 'none';
 }
+
+function changeRole(){
+  const role = document.getElementById('roleSelect').value;
+
+  document.querySelectorAll('.role-admin-organizer').forEach(function(element){
+    element.style.display = (role === 'admin' || role === 'organizer') ? 'inline-flex' : 'none';
+  });
+
+  document.querySelectorAll('.role-admin-only').forEach(function(element){
+    element.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', changeRole);
 </script>
 
 {% endblock %}
