@@ -1,0 +1,95 @@
+{% load static %}
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+
+  <div class="top-left">
+
+    {% if user.is_authenticated %}
+      <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+    {% endif %}
+
+    <!-- LOGO -->
+    <a href="/">
+      <img src="{% static 'images/logo.png' %}" class="logo">
+    </a>
+
+  </div>
+
+  <div class="top-right">
+
+    {% if not user.is_authenticated %}
+      <a href="{% url 'login' %}" class="btn btn-light">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+
+    {% else %}
+      <div class="profile">
+        <img src="https://i.pravatar.cc/30" style="border-radius:50%">
+        <span>{{ user.username }}</span>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ================= BODY ================= -->
+
+{% if user.is_authenticated and user.role != 'customer' %}
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar" class="sidebar">
+
+    <h4>MENU</h4>
+
+    <a href="#">Dashboard</a>
+
+    {% if user.role == 'organizer' %}
+      <a href="#">Event Saya</a>
+    {% endif %}
+
+    <a href="#">Manajemen Venue</a>
+    <a href="#">Manajemen Kursi</a>
+    <a href="#">Kategori Tiket</a>
+    <a href="#">Manajemen Tiket</a>
+    <a href="#">Semua Order</a>
+
+    <h4>ASET</h4>
+
+    <a href="#">Tiket</a>
+    <a href="#">Order</a>
+
+    <h4>AKUN</h4>
+
+    <a href="#">Profile</a>
+    <a href="#">Logout</a>
+
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+</div>
+
+{% else %}
+
+<div class="content">
+  {% block content %}{% endblock %}
+</div>
+
+{% endif %}
+
+<script>
+function toggleSidebar(){
+  const sidebar = document.getElementById("sidebar");
+
+  if(window.innerWidth < 768){
+    sidebar.classList.toggle("active");
+  }else{
+    sidebar.classList.toggle("collapsed");
+  }
+}
+</script>

@@ -1,11 +1,21 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TikTakTuk</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}TikTakTuk{% endblock %}</title>
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
 </head>
+
 <body>
-  {% block content %}
-  {% endblock content %}
+
+    <!-- NAVBAR + SIDEBAR -->
+    {% include 'navbar.html' %}
+
 </body>
 </html>
