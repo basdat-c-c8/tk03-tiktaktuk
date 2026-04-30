@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kategori Tiket – TikTakTuk</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --primary: #2563EB;
@@ -32,81 +32,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text-primary);
       min-height: 100vh;
     }
 
-    /* ── NAVBAR ── */
-    .navbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow-sm);
-    }
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 18px;
-      color: var(--primary);
-      text-decoration: none;
-    }
-    .navbar-brand .logo-icon {
-      width: 32px; height: 32px;
-      background: var(--primary);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .navbar-nav {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      list-style: none;
-    }
-    .navbar-nav a {
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: var(--radius-sm);
-      transition: background .15s, color .15s;
-    }
-    .navbar-nav a:hover { background: var(--bg); color: var(--text-primary); }
-    .navbar-nav a.active { background: var(--primary-light); color: var(--primary); }
-    .navbar-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .avatar {
-      width: 32px; height: 32px;
-      background: var(--primary);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
     /* ── LAYOUT ── */
-    .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 36px 28px; }
 
     /* ── TOAST NOTIFICATION ── */
     #toast-container {
@@ -200,11 +133,12 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
-      font-size: 15px;
+      display: flex;
+      align-items: center;
       pointer-events: none;
     }
     input[type="text"], select {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 14px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -219,7 +153,7 @@
       box-shadow: 0 0 0 3px rgba(37,99,235,.12);
     }
     .search-input { padding-left: 36px; width: 100%; }
-    select { min-width: 180px; cursor: pointer; }
+    select { min-width: 180px; cursor: pointer; font-family: 'Inter', sans-serif; }
 
     /* ── TABLE SECTION ── */
     .table-section {
@@ -248,9 +182,9 @@
       font-weight: 500;
       color: var(--text-secondary);
       transition: background .15s, color .15s;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
-    .view-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .view-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
     table {
       width: 100%;
@@ -296,25 +230,27 @@
       cursor: pointer;
       border: none;
       transition: background .15s, transform .1s;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       text-decoration: none;
     }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-primary:hover { background: var(--primary-hover); }
-    .btn-sm { padding: 5px 12px; font-size: 13px; }
+    .btn-sm { padding: 5px 11px; font-size: 13px; }
     .btn-edit {
       background: #EFF6FF;
       color: var(--primary);
       border: 1px solid #BFDBFE;
+      gap: 5px;
     }
     .btn-edit:hover { background: #DBEAFE; }
     .btn-delete {
-      background: var(--danger-light);
-      color: var(--danger);
+      background: #FFF1F0;
+      color: #E55A4E;
       border: 1px solid #FECACA;
+      gap: 5px;
     }
-    .btn-delete:hover { background: #FEE2E2; }
+    .btn-delete:hover { background: #FFE4E1; }
     .btn-outline {
       background: transparent;
       color: var(--text-secondary);
@@ -399,7 +335,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       color: var(--text-primary);
       background: var(--surface);
       outline: none;
@@ -487,33 +423,11 @@
     @media (max-width: 768px) {
       .stats-row { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
-      .navbar-nav { display: none; }
       .page-header { flex-direction: column; gap: 12px; }
     }
   </style>
 </head>
 <body>
-
-<!-- ════════ NAVBAR ════════ -->
-<nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <div class="logo-icon">TT</div>
-    TikTakTuk
-  </a>
-  <ul class="navbar-nav">
-    <li><a href="#">Dashboard</a></li>
-    <li><a href="#">Manajemen Venue</a></li>
-    <li><a href="#">Manajemen Kursi</a></li>
-    <li><a href="#" class="active">Kategori Tiket</a></li>
-    <li><a href="#">Manajemen Tiket</a></li>
-    <li><a href="#">Semua Order</a></li>
-    <li><a href="#">Profil</a></li>
-  </ul>
-  <div class="navbar-user">
-    <div class="avatar">A</div>
-    Admin
-  </div>
-</nav>
 
 <!-- ════════ TOAST CONTAINER ════════ -->
 <div id="toast-container"></div>
@@ -551,7 +465,13 @@
   <!-- Filter Bar -->
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="icon">🔍</span>
+      <span class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
       <input type="text" id="searchInput" class="search-input" placeholder="Cari kategori..." oninput="filterTable()"/>
     </div>
     <select id="eventFilter" onchange="filterTable()">
@@ -760,8 +680,14 @@
           <td class="td-quota">${Number(c.quota).toLocaleString('id-ID')} tiket</td>
           <td>
             <div class="btn-actions">
-              <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">✏️ Edit</button>
-              <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">🗑️ Hapus</button>
+              <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </button>
+              <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Hapus
+              </button>
             </div>
           </td>
         </tr>
@@ -794,8 +720,14 @@
           </div>
         </div>
         <div class="card-actions">
-          <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">✏️ Edit</button>
-          <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">🗑️ Hapus</button>
+          <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Hapus
+          </button>
         </div>
       </div>
     `).join('');
