@@ -42,6 +42,12 @@ body {
   font-size: 16px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .header-btn {
   background: white;
   color: #111827;
@@ -177,6 +183,10 @@ body {
     align-items: flex-start;
     gap: 18px;
   }
+
+  .header-actions {
+    flex-wrap: wrap;
+  }
 }
 </style>
 
@@ -190,18 +200,16 @@ body {
     </div>
 
     <div class="header-actions">
-      <a href="{% url 'main:profile' %}" class="header-btn">Profil Saya</a>
+      <a href="{% url 'orders:promotion_list' %}" class="header-btn">Promosi</a>
       <a href="{% url 'main:event_list' %}" class="header-btn">Kelola Acara</a>
-      <button class="header-btn" type="button">Promosi</button>
     </div>
-
   </div>
 
   <div class="stats-grid">
     <div class="stat-card">
       <div>
         <div class="stat-title">Total Pengguna</div>
-        <div class="stat-value">2,543</div>
+        <div class="stat-value">{{ total_users }}</div>
         <div class="stat-desc">Pengguna aktif</div>
       </div>
       <div class="stat-icon icon-blue">👥</div>
@@ -210,7 +218,7 @@ body {
     <div class="stat-card">
       <div>
         <div class="stat-title">Total Acara</div>
-        <div class="stat-value">156</div>
+        <div class="stat-value">{{ total_events }}</div>
         <div class="stat-desc">Bulan ini</div>
       </div>
       <div class="stat-icon icon-green">📅</div>
@@ -241,17 +249,17 @@ body {
 
       <div class="info-row">
         <span>Total Venue Terdaftar</span>
-        <strong>3 Lokasi</strong>
+        <strong>{{ total_venue }} Lokasi</strong>
       </div>
 
       <div class="info-row">
         <span>Reserved Seating</span>
-        <strong>2 Venue</strong>
+        <strong>{{ reserved_count }} Venue</strong>
       </div>
 
       <div class="info-row">
         <span>Kapasitas Terbesar</span>
-        <strong>1,000 Kursi</strong>
+        <strong>{{ largest_capacity }} Kursi</strong>
       </div>
 
       <a href="{% url 'main:venue_list' %}" class="action-link">
@@ -277,7 +285,9 @@ body {
         <strong>57 Kali</strong>
       </div>
 
-      <button class="action-btn" type="button">Kelola Promosi</button>
+      <a href="{% url 'orders:promotion_list' %}" class="action-link">
+        <button class="action-btn" type="button">Kelola Promosi</button>
+      </a>
     </div>
   </div>
 

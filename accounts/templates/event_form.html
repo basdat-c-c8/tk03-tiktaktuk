@@ -10,12 +10,19 @@ body {
 }
 
 .modal {
-  max-width: 760px;
+  width: 620px;
+  max-width: calc(100vw - 40px);
   margin: 40px auto;
   background: white;
   border-radius: 18px;
-  padding: 28px;
+  padding: 32px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back {
@@ -24,22 +31,25 @@ body {
   text-decoration: none;
 }
 
-h1 {
-  margin-top: 20px;
+.close {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 22px;
 }
 
-.form-grid {
+h1 {
+  margin: 20px 0 28px;
+  font-size: 24px;
+}
+
+.form-section {
+  margin-bottom: 18px;
+}
+
+.row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.full {
-  grid-column: span 2;
+  gap: 14px;
 }
 
 label {
@@ -48,36 +58,48 @@ label {
   font-weight: bold;
   color: #64748b;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   border: 1px solid #d1d5db;
-  border-radius: 12px;
+  border-radius: 14px;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 textarea {
+  min-height: 120px;
   resize: vertical;
+}
+
+.ticket-box {
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 14px;
 }
 
 .ticket-item {
   display: grid;
-  grid-template-columns: 1fr 130px 100px 32px;
+  grid-template-columns: 1.5fr 1.2fr 1fr 34px;
   gap: 10px;
-  margin-bottom: 10px;
   align-items: center;
+  margin-bottom: 10px;
+}
+
+.ticket-item input {
+  min-width: 0;
+  font-size: 14px;
+  padding: 12px;
 }
 
 .remove-ticket {
-  width: 28px;
-  height: 28px;
-  margin-top: 0;
-  padding: 0;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #fee2e2;
   color: #ef4444;
@@ -87,62 +109,77 @@ textarea {
 }
 
 .add-ticket {
-  width: auto;
-  margin-top: 4px;
   background: transparent;
+  border: none;
   color: #2563eb;
+  font-weight: bold;
+  cursor: pointer;
   padding: 0;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.submit-btn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 13px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.helptext {
-  display: none;
+  margin-top: 6px;
 }
 
 ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 li label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   text-transform: none;
-  color: #1f2937;
+  color: #475569;
   background: #f8fafc;
-  padding: 8px 10px;
-  border-radius: 12px;
-  margin: 4px;
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  border-radius: 999px;
+  margin: 0;
+  font-size: 12px;
 }
 
 li input {
   width: auto;
 }
 
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.btn {
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cancel {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.submit {
+  background: #2563eb;
+  color: white;
+}
+
+.helptext {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .full {
-    grid-column: span 1;
-  }
-
+  .row,
+  .buttons,
   .ticket-item {
     grid-template-columns: 1fr;
   }
@@ -150,88 +187,80 @@ li input {
 </style>
 
 <div class="modal">
-  <a href="{% url 'main:event_list' %}" class="back">← Kembali</a>
+
+  <div class="top">
+    <a href="{% url 'main:event_list' %}" class="back">← Kembali</a>
+    <a href="{% url 'main:event_list' %}" class="close">×</a>
+  </div>
 
   <h1>{{ title }}</h1>
 
-  <form method="POST">
+  <form method="POST" id="event-form">
     {% csrf_token %}
 
-    <div class="form-grid">
+    <div class="form-section">
+      <label>Judul Acara (Event_Title)</label>
+      {{ form.event_title }}
+    </div>
 
-      <div class="form-group full">
-        <label>Judul Acara</label>
-        {{ form.event_title }}
-      </div>
-
-      <div class="form-group">
+    <div class="row form-section">
+      <div>
         <label>Tanggal & Waktu</label>
         {{ form.event_datetime }}
       </div>
 
-      <div class="form-group">
-        <label>Venue</label>
+      <div>
+        <label>Venue (Venue_ID)</label>
         {{ form.venue }}
       </div>
-
-      <div class="form-group">
-        <label>Organizer</label>
-        {{ form.organizer }}
-      </div>
-
-      <div class="form-group">
-        <label>Artis</label>
-        {{ form.artists }}
-      </div>
-
-      <div class="form-group">
-        <label>Kategori Tiket</label>
-
-        <div id="ticket-container">
-          <div class="ticket-item">
-            <input type="text" name="category_name[]" placeholder="Regular">
-
-            <div>
-              <input type="text" class="price-input" placeholder="Harga">
-              <input type="hidden" name="price[]">
-            </div>
-
-            <input type="number" name="quota[]" placeholder="Kuota">
-            <button type="button" class="remove-ticket" onclick="removeTicket(this)">×</button>
-          </div>
-        </div>
-
-        <button type="button" class="add-ticket" onclick="addTicket()">+ Tambah Kategori</button>
-      </div>
-
-      <div class="form-group full">
-        <label>Deskripsi</label>
-        {{ form.description }}
-      </div>
-
     </div>
 
-    <button type="submit" class="submit-btn">{{ button_text }}</button>
+    <div class="form-section">
+      <label>Organizer</label>
+      {{ form.organizer }}
+    </div>
+
+    <div class="form-section">
+      <label>Artis (Event_Artist)</label>
+      {{ form.artists }}
+    </div>
+
+    <div class="form-section">
+      <label>Kategori Tiket (Ticket_Category)</label>
+
+      <div class="ticket-box" id="ticket-container">
+        <div class="ticket-item">
+          <input type="text" name="category_name[]" placeholder="Regular">
+          <input type="text" class="price-input" name="price[]" placeholder="Harga">
+          <input type="number" name="quota[]" placeholder="Kuota">
+          <button type="button" class="remove-ticket" onclick="removeTicket(this)">×</button>
+        </div>
+      </div>
+
+      <button type="button" class="add-ticket" onclick="addTicket()">+ Tambah Kategori</button>
+    </div>
+
+    <div class="form-section">
+      <label>Deskripsi</label>
+      {{ form.description }}
+    </div>
+
+    <div class="buttons">
+      <a href="{% url 'main:event_list' %}" class="btn cancel">Batal</a>
+      <button type="submit" class="btn submit">{{ button_text }}</button>
+    </div>
   </form>
 </div>
 
 <script>
 function formatNumber(value) {
-  return value
-    .replace(/\D/g, "")
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function setupPriceFormatting() {
-  const inputs = document.querySelectorAll(".price-input");
-
-  inputs.forEach(function(input) {
+  document.querySelectorAll(".price-input").forEach(function(input) {
     input.oninput = function() {
-      const raw = this.value.replace(/\D/g, "");
-      this.value = formatNumber(raw);
-
-      const hiddenInput = this.parentElement.querySelector('input[type="hidden"]');
-      hiddenInput.value = raw;
+      this.value = formatNumber(this.value);
     };
   });
 }
@@ -242,12 +271,7 @@ function addTicket() {
   const html = `
     <div class="ticket-item">
       <input type="text" name="category_name[]" placeholder="Nama kategori">
-
-      <div>
-        <input type="text" class="price-input" placeholder="Harga">
-        <input type="hidden" name="price[]">
-      </div>
-
+      <input type="text" class="price-input" name="price[]" placeholder="Harga">
       <input type="number" name="quota[]" placeholder="Kuota">
       <button type="button" class="remove-ticket" onclick="removeTicket(this)">×</button>
     </div>
@@ -269,6 +293,12 @@ function removeTicket(button) {
 
 document.addEventListener("DOMContentLoaded", function() {
   setupPriceFormatting();
+
+  document.getElementById("event-form").addEventListener("submit", function() {
+    document.querySelectorAll(".price-input").forEach(function(input) {
+      input.value = input.value.replace(/\D/g, "");
+    });
+  });
 });
 </script>
 

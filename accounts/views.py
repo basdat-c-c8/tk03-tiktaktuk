@@ -3,15 +3,13 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import datetime
 
-
-from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm
-from accounts.models import Role, AccountRole, Customer, Organizer, Venue, Event, Artist, TicketCategory
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
-from accounts.models import TicketCategory
+from accounts.models import Role, AccountRole, Customer, Organizer, Venue, Event, Artist, TicketCategory
 
 
 def get_user_role(user):
@@ -30,18 +28,57 @@ def get_user_role(user):
 def show_main(request):
     role = get_user_role(request.user)
 
+    if role == "admin":
+        return redirect("main:admin_dashboard")
+    elif role == "penyelenggara":
+        return redirect("main:organizer_dashboard")
+    else:
+        return redirect("main:customer_dashboard")
+
+
+@login_required(login_url='/login')
+def admin_dashboard(request):
+    venues = Venue.objects.all()
+
+    largest_capacity = 0
+    if venues.exists():
+        largest_capacity = venues.order_by("-capacity").first().capacity
+
     context = {
         "name": request.user.username,
-        "role": role,
+        "role": "admin",
+        "last_login": request.COOKIES.get("last_login", "Never"),
+
+        "total_users": User.objects.count(),
+        "total_events": Event.objects.count(),
+        "total_venue": venues.count(),
+        "reserved_count": venues.filter(has_reserved_seating=True).count(),
+        "largest_capacity": largest_capacity,
+    }
+
+    return render(request, "dashboard_admin.html", context)
+
+
+@login_required(login_url='/login')
+def organizer_dashboard(request):
+    context = {
+        "name": request.user.username,
+        "role": "penyelenggara",
         "last_login": request.COOKIES.get("last_login", "Never"),
     }
 
-    if role == "admin":
-        return render(request, "dashboard_admin.html", context)
-    elif role == "penyelenggara":
-        return render(request, "dashboard_organizer.html", context)
-    else:
-        return render(request, "dashboard_customer.html", context)
+    return render(request, "dashboard_organizer.html", context)
+
+
+@login_required(login_url='/login')
+def customer_dashboard(request):
+    context = {
+        "name": request.user.username,
+        "role": "pelanggan",
+        "last_login": request.COOKIES.get("last_login", "Never"),
+    }
+
+    return render(request, "dashboard_customer.html", context)
 
 
 def register(request):
@@ -86,7 +123,7 @@ def register(request):
                     contact_email=form.cleaned_data["email"]
                 )
 
-            messages.success(request, "Your account has been successfully created!")
+            messages.success(request, "Akun berhasil dibuat!")
             return redirect("main:login")
 
     context = {
@@ -118,11 +155,7 @@ def login_user(request):
             response.set_cookie("last_login", str(datetime.datetime.now()))
             return response
 
-    context = {
-        "form": form
-    }
-
-    return render(request, "login.html", context)
+    return render(request, "login.html", {"form": form})
 
 
 def logout_user(request):
@@ -269,6 +302,7 @@ def profile_view(request):
                     customer.save()
 
                     request.user.first_name = profile_form.cleaned_data["full_name"]
+                    request.user.email = profile_form.cleaned_data["email"]
                     request.user.save()
 
                 elif role == "penyelenggara":
@@ -312,6 +346,7 @@ def profile_view(request):
     }
 
     return render(request, "profile.html", context)
+
 
 @login_required(login_url='/login')
 def event_list(request):
@@ -360,6 +395,7 @@ def create_event(request):
         "button_text": "Buat Acara",
     })
 
+
 @login_required(login_url='/login')
 def update_event(request, id):
     event = get_object_or_404(Event, pk=id)
@@ -379,6 +415,7 @@ def update_event(request, id):
         "title": "Edit Acara",
         "button_text": "Simpan",
     })
+
 
 @login_required(login_url='/login')
 def browse_events(request):
@@ -408,5 +445,6 @@ def browse_events(request):
 
     return render(request, "browse_event.html", context)
 
+
 def create_pengguna(request):
-    return render(request, 'cpengguna.html')
+    return render(request, "cpengguna.html")
