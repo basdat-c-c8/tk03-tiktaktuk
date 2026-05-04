@@ -4,10 +4,29 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {% block meta %} {% endblock meta %}
+    {% block meta %}{% endblock meta %}
 </head>
 
 <body>
-    {% block content %} {% endblock content %}
+
+    {% if messages %}
+      <div style="max-width:1000px; margin:20px auto;">
+        {% for message in messages %}
+          <div style="
+            background:#fee2e2;
+            color:#991b1b;
+            padding:12px 16px;
+            border-radius:10px;
+            margin-bottom:10px;
+            font-weight:500;
+          ">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock content %}
+
 </body>
 </html>

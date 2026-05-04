@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import datetime
+from django.utils import timezone
+from django.contrib import messages
 
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
 from accounts.models import Role, AccountRole, Customer, Organizer, Venue, Event, Artist, TicketCategory
@@ -259,6 +261,17 @@ def delete_venue(request, id):
         return redirect("main:show_main")
 
     venue = get_object_or_404(Venue, venue_id=id)
+    active_event_exists = Event.objects.filter(
+        venue=venue,
+        event_datetime__gte=timezone.now()
+    ).exists()
+
+    if active_event_exists:
+        messages.error(
+            request,
+            f'ERROR: Venue "{venue.venue_name}" masih memiliki event aktif sehingga tidak dapat dihapus.'
+        )
+        return redirect("main:venue_list")
 
     if request.method == "POST":
         venue.delete()
