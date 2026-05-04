@@ -29,6 +29,6 @@ urlpatterns = [
     path('browse-events/', browse_events, name='browse_events'),
     path('cpengguna/', create_pengguna, name='create_pengguna'),
     path('dashboard/admin/', admin_dashboard, name='admin_dashboard'),
-path('dashboard/organizer/', organizer_dashboard, name='organizer_dashboard'),
-path('dashboard/customer/', customer_dashboard, name='customer_dashboard'),
+    path('dashboard/organizer/', organizer_dashboard, name='organizer_dashboard'),
+    path('dashboard/customer/', customer_dashboard, name='customer_dashboard'),
 ]
