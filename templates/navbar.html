@@ -2,6 +2,7 @@
 
 {% if user.is_authenticated %}
 
+{% if request.resolver_match.url_name != 'choose_role' and request.resolver_match.url_name != 'register' and request.resolver_match.url_name != 'login' %}
 <div class="topbar">
 
   <div class="top-left">
@@ -155,4 +156,5 @@
 
 </style>
 
+{% endif %}
 {% endif %}

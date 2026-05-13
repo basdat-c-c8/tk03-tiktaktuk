@@ -10,6 +10,7 @@ import datetime
 from django.utils import timezone
 from django.contrib import messages
 from accounts.models import Event
+import re
 
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
 from accounts.models import (
@@ -118,15 +119,56 @@ def register(request):
     form = RegisterForm()
 
     if request.method == "POST":
+
         form = RegisterForm(request.POST)
 
+        username = request.POST.get("username", "").strip()
+
+        # VALIDASI KARAKTER
+        if not re.match(r'^[A-Za-z0-9]+$', username):
+
+            messages.error(
+                request,
+                f'ERROR: Username "{username}" hanya boleh mengandung huruf dan angka tanpa simbol atau spasi.'
+            )
+
+            context = {
+                "form": form,
+                "role": role,
+                "role_title": role_title,
+            }
+
+            return render(request, "register.html", context)
+
+        # VALIDASI DUPLIKAT CASE-INSENSITIVE
+        if User.objects.filter(username__iexact=username).exists():
+
+            messages.error(
+                request,
+                f'ERROR: Username "{username}" sudah terdaftar, gunakan username lain.'
+            )
+
+            context = {
+                "form": form,
+                "role": role,
+                "role_title": role_title,
+            }
+
+            return render(request, "register.html", context)
+
         if form.is_valid():
+
             user = form.save(commit=False)
+
+            user.username = username
             user.email = form.cleaned_data["email"]
             user.first_name = form.cleaned_data["full_name"]
+
             user.save()
 
-            role_obj, created = Role.objects.get_or_create(role_name=role)
+            role_obj, created = Role.objects.get_or_create(
+                role_name=role
+            )
 
             AccountRole.objects.create(
                 user=user,
@@ -134,6 +176,7 @@ def register(request):
             )
 
             if role == "pelanggan":
+
                 Customer.objects.create(
                     user=user,
                     full_name=form.cleaned_data["full_name"],
@@ -141,13 +184,18 @@ def register(request):
                 )
 
             elif role == "penyelenggara":
+
                 Organizer.objects.create(
                     user=user,
                     organizer_name=form.cleaned_data["full_name"],
                     contact_email=form.cleaned_data["email"]
                 )
 
-            messages.success(request, "Akun berhasil dibuat!")
+            messages.success(
+                request,
+                "Akun berhasil dibuat!"
+            )
+
             return redirect("main:login")
 
     context = {
@@ -156,7 +204,11 @@ def register(request):
         "role_title": role_title,
     }
 
-    return render(request, "register.html", context)
+    return render(
+        request,
+        "register.html",
+        context
+    )
 
 
 def login_user(request):
