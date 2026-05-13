@@ -8,7 +8,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* 🔥 BACK BUTTON */
+/* BACK BUTTON */
 .back-btn {
   display: inline-block;
   margin-bottom: 20px;
@@ -22,6 +22,7 @@ body {
   text-decoration: underline;
 }
 
+/* MODAL */
 .modal {
   max-width: 520px;
   margin: 60px auto;
@@ -33,8 +34,10 @@ body {
 
 h2 {
   margin-top: 0;
+  margin-bottom: 18px;
 }
 
+/* FORM */
 label {
   font-size: 12px;
   font-weight: bold;
@@ -44,37 +47,57 @@ label {
   margin-top: 16px;
 }
 
-input, textarea {
+input,
+textarea,
+select {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
   border-radius: 12px;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
+  font-size: 14px;
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* GRID */
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
+/* CHECKBOX */
 .checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .checkbox input {
   width: auto;
+  margin: 0;
 }
 
+/* BUTTONS */
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .btn {
@@ -85,6 +108,7 @@ input, textarea {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .cancel {
@@ -93,39 +117,124 @@ input, textarea {
   color: #111827;
 }
 
+.cancel:hover {
+  background: #f3f4f6;
+}
+
 .submit {
   background: #2563eb;
   color: white;
+}
+
+.submit:hover {
+  background: #1d4ed8;
+}
+
+/* MESSAGE */
+.message {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+
+.message.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.message.success {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+/* FIELD ERRORS */
+.field-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .modal {
+    margin: 20px;
+    padding: 22px;
+  }
+
+  .row,
+  .buttons {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 
 <div class="modal">
 
-  <!-- 🔥 TAMBAHAN INI -->
-  <a href="{% url 'main:show_main' %}" class="back-btn">← Kembali ke Dashboard</a>
+  <a href="{% url 'main:venue_list' %}" class="back-btn">
+    ← Kembali ke Manajemen Venue
+  </a>
 
   <h2>{{ title }}</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="message {{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 
   <form method="POST">
     {% csrf_token %}
 
-    <label>Nama Venue (Venue_Name)</label>
+    <label>Nama Venue</label>
     {{ form.venue_name }}
 
+    {% if form.venue_name.errors %}
+      <div class="field-error">
+        {{ form.venue_name.errors }}
+      </div>
+    {% endif %}
+
     <div class="row">
+
       <div>
-        <label>Kapasitas (Capacity)</label>
+        <label>Kapasitas</label>
         {{ form.capacity }}
+
+        {% if form.capacity.errors %}
+          <div class="field-error">
+            {{ form.capacity.errors }}
+          </div>
+        {% endif %}
       </div>
 
       <div>
-        <label>Kota (City)</label>
+        <label>Kota</label>
         {{ form.city }}
+
+        {% if form.city.errors %}
+          <div class="field-error">
+            {{ form.city.errors }}
+          </div>
+        {% endif %}
       </div>
+
     </div>
 
-    <label>Alamat (Address)</label>
+    <label>Alamat</label>
     {{ form.address }}
+
+    {% if form.address.errors %}
+      <div class="field-error">
+        {{ form.address.errors }}
+      </div>
+    {% endif %}
 
     <div class="checkbox">
       {{ form.has_reserved_seating }}
@@ -133,9 +242,17 @@ input, textarea {
     </div>
 
     <div class="buttons">
-      <a href="{% url 'main:venue_list' %}" class="btn cancel">Batal</a>
-      <button type="submit" class="btn submit">{{ button_text }}</button>
+
+      <a href="{% url 'main:venue_list' %}" class="btn cancel">
+        Batal
+      </a>
+
+      <button type="submit" class="btn submit">
+        {{ button_text }}
+      </button>
+
     </div>
+
   </form>
 
 </div>

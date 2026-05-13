@@ -9,6 +9,7 @@ from django.urls import reverse
 import datetime
 from django.utils import timezone
 from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import Event
 import re
 
@@ -282,6 +283,8 @@ def venue_list(request):
     return render(request, "venue_list.html", context)
 
 
+
+@login_required(login_url='/login')
 @login_required(login_url='/login')
 def create_venue(request):
     role = get_user_role(request.user)
@@ -291,9 +294,33 @@ def create_venue(request):
 
     form = VenueForm(request.POST or None)
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect("main:venue_list")
+    if request.method == "POST":
+
+        venue_name = request.POST.get("venue_name", "").strip()
+        city = request.POST.get("city", "").strip()
+
+        existing_venue = Venue.objects.filter(
+            venue_name__iexact=venue_name,
+            city__iexact=city
+        ).first()
+
+        if existing_venue:
+
+            messages.error(
+                request,
+                    f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar.'
+            )
+
+        elif form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Venue berhasil ditambahkan."
+            )
+
+            return redirect("main:venue_list")
 
     context = {
         "form": form,
@@ -312,11 +339,31 @@ def update_venue(request, id):
         return redirect("main:show_main")
 
     venue = get_object_or_404(Venue, venue_id=id)
+
     form = VenueForm(request.POST or None, instance=venue)
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect("main:venue_list")
+    if request.method == "POST":
+
+        if form.is_valid():
+
+            venue_name = form.cleaned_data["venue_name"].strip()
+            city = form.cleaned_data["city"].strip()
+
+            existing_venue = Venue.objects.filter(
+                venue_name__iexact=venue_name,
+                city__iexact=city
+            ).exclude(venue_id=venue.venue_id).first()
+
+            if existing_venue:
+                messages.error(
+                    request,
+                    f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar dengan ID {existing_venue.venue_id}.'
+                )
+
+            else:
+                form.save()
+                messages.success(request, "Venue berhasil diperbarui.")
+                return redirect("main:venue_list")
 
     context = {
         "form": form,
@@ -325,7 +372,6 @@ def update_venue(request, id):
     }
 
     return render(request, "venue_form.html", context)
-
 
 @login_required(login_url='/login')
 def delete_venue(request, id):
