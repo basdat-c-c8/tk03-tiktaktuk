@@ -96,8 +96,22 @@ button {
 
   <div class="card">
     <h3>Masuk ke Akun Anda</h3>
-    <p class="subtitle">Gunakan kredensial Anda untuk mengakses platform</p>
+<p class="subtitle">
+  Gunakan kredensial Anda untuk mengakses platform
+</p>
 
+{% if form.non_field_errors %}
+  <div style="
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:16px;
+    font-size:14px;
+  ">
+    Username atau password salah.
+  </div>
+{% endif %}
     <form method="POST">
       {% csrf_token %}
 

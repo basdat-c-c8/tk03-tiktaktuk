@@ -9,10 +9,20 @@ from django.urls import reverse
 import datetime
 from django.utils import timezone
 from django.contrib import messages
+from accounts.models import Event
 
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
-from accounts.models import Role, AccountRole, Customer, Organizer, Venue, Event, Artist, TicketCategory
+from accounts.models import (
+    Role,
+    AccountRole,
+    Customer,
+    Organizer,
+    Venue,
+    Event,
+    TicketCategory
+)
 
+from events.models import Artist
 
 def get_user_role(user):
     if user.is_superuser:
@@ -63,13 +73,25 @@ def admin_dashboard(request):
 
 @login_required(login_url='/login')
 def organizer_dashboard(request):
+
+    events = Event.objects.all().order_by("-event_datetime")
+    venues = Venue.objects.all()
+
     context = {
         "name": request.user.username,
         "role": "penyelenggara",
         "last_login": request.COOKIES.get("last_login", "Never"),
+
+        "events": events,
+        "total_events": events.count(),
+        "total_venues": venues.count(),
     }
 
-    return render(request, "dashboard_organizer.html", context)
+    return render(
+        request,
+        "dashboard_organizer.html",
+        context
+    )
 
 
 @login_required(login_url='/login')
@@ -255,31 +277,41 @@ def update_venue(request, id):
 
 @login_required(login_url='/login')
 def delete_venue(request, id):
-    role = get_user_role(request.user)
+        role = get_user_role(request.user)
+        if role not in ["admin", "penyelenggara"]:
+            return redirect("main:show_main")
 
-    if role not in ["admin", "penyelenggara"]:
-        return redirect("main:show_main")
+        venue = get_object_or_404(Venue, venue_id=id)
 
-    venue = get_object_or_404(Venue, venue_id=id)
-    active_event_exists = Event.objects.filter(
-        venue=venue,
-        event_datetime__gte=timezone.now()
-    ).exists()
+        # cek apakah masih ada event aktif / upcoming
+        active_event_exists = Event.objects.filter(
+            venue=venue,
+            event_datetime__gte=timezone.now()
+        ).exists()
 
-    if active_event_exists:
-        messages.error(
-            request,
-            f'ERROR: Venue "{venue.venue_name}" masih memiliki event aktif sehingga tidak dapat dihapus.'
-        )
-        return redirect("main:venue_list")
+        # jika masih ada event aktif → tidak boleh dihapus
+        if active_event_exists:
+            messages.error(
+                request,
+                f'ERROR: Venue "{venue.venue_name}" masih memiliki event aktif sehingga tidak dapat dihapus.'
+            )
 
-    if request.method == "POST":
-        venue.delete()
-        return redirect("main:venue_list")
+            return redirect("main:venue_list")
 
-    return render(request, "venue_confirm_delete.html", {
-        "venue": venue
-    })
+        # proses hapus
+        if request.method == "POST":
+            venue.delete()
+
+            messages.success(
+                request,
+                f'Venue "{venue.venue_name}" berhasil dihapus.'
+            )
+
+            return redirect("main:venue_list")
+
+        return render(request, "venue_confirm_delete.html", {
+            "venue": venue
+        })
 
 
 @login_required(login_url='/login')

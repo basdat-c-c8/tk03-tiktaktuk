@@ -4,7 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from accounts.models import Venue
 from django.contrib.auth.forms import PasswordChangeForm
-from accounts.models import Event, Artist, TicketCategory
+from accounts.models import Event, TicketCategory
+from events.models import Artist
 
 class VenueForm(forms.ModelForm):
     class Meta:
@@ -72,17 +73,19 @@ class RegisterForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get("username")
 
-        # CEK KARAKTER (hanya huruf & angka)
+        # CEK KARAKTER
         if not re.match(r"^[a-zA-Z0-9]+$", username):
             raise forms.ValidationError(
                 f'ERROR: Username "{username}" hanya boleh mengandung huruf dan angka tanpa simbol atau spasi.'
             )
 
-        # CEK DUPLIKAT (CASE INSENSITIVE)
+        # CEK DUPLIKAT
         if User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(
                 f'ERROR: Username "{username}" sudah terdaftar, gunakan username lain.'
             )
+
+        return username
         
 class ProfileUpdateForm(forms.Form):
     full_name = forms.CharField(
@@ -101,14 +104,44 @@ class ProfileUpdateForm(forms.Form):
     )
 
 class EventForm(forms.ModelForm):
+
+    artists = forms.ModelMultipleChoiceField(
+        queryset=Artist.objects.all().order_by("name"),
+        required=False,
+        widget=forms.CheckboxSelectMultiple()
+    )
+
     class Meta:
         model = Event
-        fields = ["event_title", "event_datetime", "venue", "organizer", "artists", "description"]
+
+        fields = [
+            "event_title",
+            "event_datetime",
+            "venue",
+            "organizer",
+            "artists",
+            "description"
+        ]
+
         widgets = {
-            "event_title": forms.TextInput(attrs={"placeholder": "cth. Konser Melodi Senja"}),
-            "event_datetime": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "description": forms.Textarea(attrs={"placeholder": "Deskripsi acara...", "rows": 4}),
-            "artists": forms.CheckboxSelectMultiple(),
+            "event_title": forms.TextInput(
+                attrs={
+                    "placeholder": "cth. Konser Melodi Senja"
+                }
+            ),
+
+            "event_datetime": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local"
+                }
+            ),
+
+            "description": forms.Textarea(
+                attrs={
+                    "placeholder": "Deskripsi acara...",
+                    "rows": 4
+                }
+            ),
         }
 
 

@@ -2,41 +2,30 @@
 
 {% if user.is_authenticated %}
 
-<!-- ================= TOPBAR ================= -->
 <div class="topbar">
 
   <div class="top-left">
-    {% if role != "pelanggan" %}
-      <div class="menu-btn" onclick="toggleSidebar()">☰</div>
-    {% endif %}
+
+    <div class="menu-btn" onclick="toggleSidebar()">
+      ☰
+    </div>
 
     <a href="/">
       <img src="{% static 'images/logo.png' %}" class="logo">
     </a>
+
   </div>
 
   <div class="top-right">
 
-    {% if role == "pelanggan" %}
-      <a href="{% url 'main:show_main' %}">Dashboard</a>
-      <a href="#">Tiket Saya</a>
-      <a href="#">Pesanan</a>
-      <a href="{% url 'main:browse_events' %}">Cari Event</a>
-      <a href="#">Promosi</a>
-      <a href="#">Venue</a>
-      <a href="#">Artis</a>
-      <a href="{% url 'main:logout' %}" class="btn btn-light">Logout</a>
-    {% else %}
-      <div class="profile">
-        <img src="https://i.pravatar.cc/30" style="border-radius:50%">
-        <span>{{ user.username }}</span>
-      </div>
-    {% endif %}
+    <div class="profile">
+      <img src="https://i.pravatar.cc/30" style="border-radius:50%">
+      <span>{{ user.username }}</span>
+    </div>
 
   </div>
-</div>
 
-{% if role != "pelanggan" %}
+</div>
 
 <div class="layout">
 
@@ -44,28 +33,126 @@
 
     <h4>MENU</h4>
 
-    <a href="{% url 'main:show_main' %}">Dashboard</a>
+    <a href="{% url 'main:show_main' %}" class="sidebar-link">
+      Dashboard
+    </a>
 
-    {% if role == "penyelenggara" %}
-      <a href="{% url 'main:event_list' %}">Event Saya</a>
+    {% if role == "pelanggan" %}
+
+      <a href="#" class="sidebar-link">
+        Tiket Saya
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Pesanan
+      </a>
+
+      <a href="{% url 'main:browse_events' %}" class="sidebar-link">
+        Cari Event
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Promosi
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Venue
+      </a>
+
+      <a href="{% url 'events:artist_read' %}" class="sidebar-link">
+        Artis
+      </a>
+
+    {% else %}
+
+      {% if role == "penyelenggara" %}
+        <a href="{% url 'main:event_list' %}" class="sidebar-link">
+          Event Saya
+        </a>
+      {% endif %}
+
+      <a href="{% url 'main:venue_list' %}" class="sidebar-link">
+        Manajemen Venue
+      </a>
+
+      <a href="{% url 'events:artist_list' %}" class="sidebar-link">
+        Manajemen Artis
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Manajemen Kursi
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Kategori Tiket
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Manajemen Tiket
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Semua Order
+      </a>
+
+      <h4>ASET</h4>
+
+      <a href="#" class="sidebar-link">
+        Tiket
+      </a>
+
+      <a href="#" class="sidebar-link">
+        Order
+      </a>
+
     {% endif %}
 
-    <a href="{% url 'main:venue_list' %}">Manajemen Venue</a>
-    <a href="#">Manajemen Kursi</a>
-    <a href="#">Kategori Tiket</a>
-    <a href="#">Manajemen Tiket</a>
-    <a href="#">Semua Order</a>
-
-    <h4>ASET</h4>
-    <a href="#">Tiket</a>
-    <a href="#">Order</a>
-
     <h4>AKUN</h4>
-    <a href="{% url 'main:profile' %}">Profile</a>
-    <a href="{% url 'main:logout' %}">Logout</a>
+
+    <a href="{% url 'main:profile' %}" class="sidebar-link">
+      Profile
+    </a>
+
+    <a href="{% url 'main:logout' %}" class="sidebar-link logout-link">
+      Logout
+    </a>
 
   </div>
 
-{% endif %}
+<style>
+
+.nav-link {
+  text-decoration: none;
+  color: #475569;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #2563eb;
+}
+
+.sidebar-link {
+  display: block;
+  text-decoration: none;
+  color: #334155;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.logout-link:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+</style>
 
 {% endif %}

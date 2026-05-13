@@ -118,31 +118,46 @@ textarea {
   margin-top: 6px;
 }
 
-ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
+.artist-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-li label {
+.artist-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  text-transform: none;
-  color: #475569;
+  gap: 8px;
+
   background: #f8fafc;
-  border: 1px solid #e5e7eb;
-  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+
+  padding: 10px 14px;
   border-radius: 999px;
-  margin: 0;
-  font-size: 12px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
 }
 
-li input {
-  width: auto;
+.artist-item:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.artist-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
+.empty-artist {
+  color: #94a3b8;
+  font-size: 14px;
 }
 
 .buttons {
@@ -221,8 +236,33 @@ li input {
     </div>
 
     <div class="form-section">
+
       <label>Artis (Event_Artist)</label>
-      {{ form.artists }}
+
+      <div class="artist-list">
+
+        {% for checkbox in form.artists %}
+
+          <label class="artist-item">
+
+            {{ checkbox.tag }}
+
+            <span>
+              {{ checkbox.choice_label }}
+            </span>
+
+          </label>
+
+        {% empty %}
+
+          <div class="empty-artist">
+            Belum ada artis tersedia.
+          </div>
+
+        {% endfor %}
+
+      </div>
+
     </div>
 
     <div class="form-section">
@@ -237,7 +277,9 @@ li input {
         </div>
       </div>
 
-      <button type="button" class="add-ticket" onclick="addTicket()">+ Tambah Kategori</button>
+      <button type="button" class="add-ticket" onclick="addTicket()">
+        + Tambah Kategori
+      </button>
     </div>
 
     <div class="form-section">
@@ -246,9 +288,15 @@ li input {
     </div>
 
     <div class="buttons">
-      <a href="{% url 'main:event_list' %}" class="btn cancel">Batal</a>
-      <button type="submit" class="btn submit">{{ button_text }}</button>
+      <a href="{% url 'main:event_list' %}" class="btn cancel">
+        Batal
+      </a>
+
+      <button type="submit" class="btn submit">
+        {{ button_text }}
+      </button>
     </div>
+
   </form>
 </div>
 
@@ -278,6 +326,7 @@ function addTicket() {
   `;
 
   container.insertAdjacentHTML("beforeend", html);
+
   setupPriceFormatting();
 }
 
@@ -292,13 +341,17 @@ function removeTicket(button) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+
   setupPriceFormatting();
 
   document.getElementById("event-form").addEventListener("submit", function() {
+
     document.querySelectorAll(".price-input").forEach(function(input) {
       input.value = input.value.replace(/\D/g, "");
     });
+
   });
+
 });
 </script>
 
