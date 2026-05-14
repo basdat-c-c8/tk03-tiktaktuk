@@ -390,42 +390,40 @@
 </style>
 
 <div class="page">
-  <div class="role-bar">
-    <div class="role-switcher">
-      <label for="roleSelect">Role</label>
-      <select id="roleSelect">
-        <option>Guest</option>
-        <option>Customer</option>
-        <option>Organizer</option>
-        <option>Admin</option>
-      </select>
-    </div>
-  </div>
-
   <div class="page-header">
     <div class="page-header-left">
       <h1 class="page-title">Manajemen Promosi</h1>
       <p class="page-subtitle">Kelola kode promo dan kampanye diskon</p>
     </div>
     <div class="page-header-right">
-      <div class="admin-create-wrap" data-admin-only hidden>
+      <div class="admin-create-wrap" data-admin-only {% if role != 'admin' %}hidden{% endif %}>
         <button type="button" class="btn btn-primary" id="openCreateBtn">+ Buat Promo</button>
       </div>
     </div>
   </div>
 
+  {% if messages %}
+  <div style="margin-bottom: 14px; display: grid; gap: 8px;">
+    {% for message in messages %}
+    <div style="padding: 10px 12px; border-radius: 10px; border: 1px solid {% if message.tags == 'error' %}#fecaca{% else %}#bbf7d0{% endif %}; background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if message.tags == 'error' %}#b91c1c{% else %}#166534{% endif %}; font-size: 13px; font-weight: 700;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <section class="stats">
     <div class="stat-card">
       <p class="stat-title">Total Promo</p>
-      <p class="stat-value">3</p>
+      <p class="stat-value">{{ promo_total|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Total Penggunaan</p>
-      <p class="stat-value">140</p>
+      <p class="stat-value">{{ promo_usage|default:0 }}</p>
     </div>
     <div class="stat-card">
-      <p class="stat-title">Tipe Persentase</p>
-      <p class="stat-value">2</p>
+      <p class="stat-title">Promo Aktif</p>
+      <p class="stat-value">{{ promo_active|default:0 }}</p>
     </div>
   </section>
 
@@ -452,48 +450,24 @@
         </tr>
       </thead>
       <tbody>
+        {% for promo in promos %}
         <tr>
-          <td>TIKTAK20</td>
-          <td><span class="badge badge-percent">Persentase</span></td>
-          <td>20%</td>
-          <td>2026-04-01</td>
-          <td>2026-06-30</td>
-          <td>45 / 100</td>
-          <td class="admin-action-cell" hidden>
+          <td>{{ promo.promo_code }}</td>
+          <td><span class="badge badge-nominal">Diskon</span></td>
+          <td>Rp {{ promo.discount_amount }}</td>
+          <td>-</td>
+          <td>-</td>
+          <td>{{ promo.quota }}</td>
+          <td class="admin-action-cell" {% if role != 'admin' %}hidden{% endif %}>
             <div class="actions admin-action-group">
-              <button type="button" class="btn btn-edit editPromoBtn" data-code="TIKTAK20" data-type="Persentase" data-value="20" data-start="2026-04-01" data-end="2026-06-30" data-limit="100" title="Edit promo" aria-label="Edit promo">✎</button>
-              <button type="button" class="btn btn-delete deletePromoBtn" data-code="TIKTAK20" title="Hapus promo" aria-label="Hapus promo">🗑</button>
+              <button type="button" class="btn btn-edit editPromoBtn" data-id="{{ promo.promotion_id }}" data-code="{{ promo.promo_code }}" data-value="{{ promo.discount_amount }}" data-limit="{{ promo.quota }}" data-active="{% if promo.is_active %}1{% else %}0{% endif %}" title="Edit promo" aria-label="Edit promo">✎</button>
+              <button type="button" class="btn btn-delete deletePromoBtn" data-id="{{ promo.promotion_id }}" data-code="{{ promo.promo_code }}" title="Hapus promo" aria-label="Hapus promo">🗑</button>
             </div>
           </td>
         </tr>
-        <tr>
-          <td>HEMAT50K</td>
-          <td><span class="badge badge-nominal">Nominal</span></td>
-          <td>Rp 50.000</td>
-          <td>2026-04-10</td>
-          <td>2026-07-15</td>
-          <td>32 / 80</td>
-          <td class="admin-action-cell" hidden>
-            <div class="actions admin-action-group">
-              <button type="button" class="btn btn-edit editPromoBtn" data-code="HEMAT50K" data-type="Nominal" data-value="50000" data-start="2026-04-10" data-end="2026-07-15" data-limit="80" title="Edit promo" aria-label="Edit promo">✎</button>
-              <button type="button" class="btn btn-delete deletePromoBtn" data-code="HEMAT50K" title="Hapus promo" aria-label="Hapus promo">🗑</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>NEWUSER30</td>
-          <td><span class="badge badge-percent">Persentase</span></td>
-          <td>30%</td>
-          <td>2026-05-01</td>
-          <td>2026-06-01</td>
-          <td>63 / 150</td>
-          <td class="admin-action-cell" hidden>
-            <div class="actions admin-action-group">
-              <button type="button" class="btn btn-edit editPromoBtn" data-code="NEWUSER30" data-type="Persentase" data-value="30" data-start="2026-05-01" data-end="2026-06-01" data-limit="150" title="Edit promo" aria-label="Edit promo">✎</button>
-              <button type="button" class="btn btn-delete deletePromoBtn" data-code="NEWUSER30" title="Hapus promo" aria-label="Hapus promo">🗑</button>
-            </div>
-          </td>
-        </tr>
+        {% empty %}
+        <tr><td colspan="7">Belum ada promo.</td></tr>
+        {% endfor %}
       </tbody>
     </table>
   </section>
@@ -501,6 +475,9 @@
 
 <div class="modal" id="createPromoModal" aria-hidden="true">
   <div class="modal-card">
+    <form method="post" action="{% url 'orders:promotion_list' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="create">
     <div class="modal-header">
       <h3 class="modal-title">Buat Promo Baru</h3>
       <button type="button" class="modal-close" data-close="createPromoModal" aria-label="Tutup">&times;</button>
@@ -509,7 +486,7 @@
     <div class="form-grid">
       <div class="form-group full">
         <label for="createCode">Kode Promo</label>
-        <input id="createCode" type="text" placeholder="Contoh: HEMAT20">
+        <input id="createCode" name="promo_code" type="text" placeholder="Contoh: HEMAT20">
       </div>
       <div class="form-group full">
         <label for="createType">Tipe Diskon</label>
@@ -520,7 +497,7 @@
       </div>
       <div class="form-group full">
         <label for="createValue">Nilai Diskon</label>
-        <input id="createValue" type="number" placeholder="Contoh: 20">
+        <input id="createValue" name="discount_amount" type="number" placeholder="Contoh: 20">
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -534,19 +511,28 @@
       </div>
       <div class="form-group full">
         <label for="createLimit">Batas Penggunaan</label>
-        <input id="createLimit" type="number" placeholder="Contoh: 100">
+        <input id="createLimit" name="quota" type="number" placeholder="Contoh: 100">
+      </div>
+      <div class="form-group full" style="display:flex; gap:8px; align-items:center; flex-direction:row;">
+        <input id="createActive" name="is_active" type="checkbox" checked>
+        <label for="createActive" style="text-transform:none; letter-spacing:0; margin:0; font-size:13px; font-weight:700;">Promo aktif</label>
       </div>
     </div>
 
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" data-close="createPromoModal">Batal</button>
-      <button type="button" class="btn btn-primary" id="createSubmitBtn">Buat</button>
+      <button type="submit" class="btn btn-primary">Buat</button>
     </div>
+    </form>
   </div>
 </div>
 
 <div class="modal" id="updatePromoModal" aria-hidden="true">
   <div class="modal-card">
+    <form method="post" action="{% url 'orders:promotion_list' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update">
+    <input type="hidden" name="promotion_id" id="updatePromotionId">
     <div class="modal-header">
       <h3 class="modal-title">Edit Promo</h3>
       <button type="button" class="modal-close" data-close="updatePromoModal" aria-label="Tutup">&times;</button>
@@ -555,7 +541,7 @@
     <div class="form-grid">
       <div class="form-group full">
         <label for="updateCode">Kode Promo</label>
-        <input id="updateCode" type="text">
+        <input id="updateCode" name="promo_code" type="text">
       </div>
       <div class="form-group full">
         <label for="updateType">Tipe Diskon</label>
@@ -566,7 +552,7 @@
       </div>
       <div class="form-group full">
         <label for="updateValue">Nilai Diskon</label>
-        <input id="updateValue" type="number">
+        <input id="updateValue" name="discount_amount" type="number">
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -580,19 +566,28 @@
       </div>
       <div class="form-group full">
         <label for="updateLimit">Batas Penggunaan</label>
-        <input id="updateLimit" type="number">
+        <input id="updateLimit" name="quota" type="number">
+      </div>
+      <div class="form-group full" style="display:flex; gap:8px; align-items:center; flex-direction:row;">
+        <input id="updateActive" name="is_active" type="checkbox">
+        <label for="updateActive" style="text-transform:none; letter-spacing:0; margin:0; font-size:13px; font-weight:700;">Promo aktif</label>
       </div>
     </div>
 
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" data-close="updatePromoModal">Batal</button>
-      <button type="button" class="btn btn-primary" id="updateSubmitBtn">Simpan</button>
+      <button type="submit" class="btn btn-primary">Simpan</button>
     </div>
+    </form>
   </div>
 </div>
 
 <div class="modal" id="deletePromoModal" aria-hidden="true">
   <div class="modal-card">
+    <form method="post" action="{% url 'orders:promotion_list' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="promotion_id" id="deletePromotionId">
     <div class="modal-header">
       <h3 class="modal-title modal-title-danger">Hapus Promo</h3>
       <button type="button" class="modal-close" data-close="deletePromoModal" aria-label="Tutup">&times;</button>
@@ -602,14 +597,14 @@
 
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" data-close="deletePromoModal">Batal</button>
-      <button type="button" class="btn btn-danger" id="deleteSubmitBtn">Hapus</button>
+      <button type="submit" class="btn btn-danger">Hapus</button>
     </div>
+    </form>
   </div>
 </div>
 
 <script>
   (function () {
-    const roleSelect = document.getElementById('roleSelect');
     const createModal = document.getElementById('createPromoModal');
     const updateModal = document.getElementById('updatePromoModal');
     const deleteModal = document.getElementById('deletePromoModal');
@@ -627,11 +622,9 @@
     const updateStart = document.getElementById('updateStart');
     const updateEnd = document.getElementById('updateEnd');
     const updateLimit = document.getElementById('updateLimit');
+    const updateActive = document.getElementById('updateActive');
 
     const createSubmitBtn = document.getElementById('createSubmitBtn');
-    const updateSubmitBtn = document.getElementById('updateSubmitBtn');
-    const deleteSubmitBtn = document.getElementById('deleteSubmitBtn');
-
     let deleteCode = '';
 
     function openModal(modal) {
@@ -655,19 +648,15 @@
       });
     }
 
-    roleSelect.addEventListener('change', function () {
-      applyRole(roleSelect.value);
-    });
-
-    applyRole(roleSelect.value);
+    applyRole('{% if role == "admin" %}Admin{% else %}Viewer{% endif %}');
 
     document.getElementById('openCreateBtn').addEventListener('click', function () {
       createCode.value = '';
-      createType.value = 'Persentase';
       createValue.value = '';
       createStart.value = '';
       createEnd.value = '';
       createLimit.value = '';
+      document.getElementById('createActive').checked = true;
       openModal(createModal);
     });
 
@@ -682,11 +671,10 @@
 
     document.querySelectorAll('.editPromoBtn').forEach(function (button) {
       button.addEventListener('click', function () {
+        document.getElementById('updatePromotionId').value = button.getAttribute('data-id');
         updateCode.value = button.getAttribute('data-code');
-        updateType.value = button.getAttribute('data-type');
         updateValue.value = button.getAttribute('data-value');
-        updateStart.value = button.getAttribute('data-start');
-        updateEnd.value = button.getAttribute('data-end');
+        updateActive.checked = button.getAttribute('data-active') === '1';
         updateLimit.value = button.getAttribute('data-limit');
         openModal(updateModal);
       });
@@ -694,24 +682,10 @@
 
     document.querySelectorAll('.deletePromoBtn').forEach(function (button) {
       button.addEventListener('click', function () {
+        document.getElementById('deletePromotionId').value = button.getAttribute('data-id');
         deleteCode = button.getAttribute('data-code');
         openModal(deleteModal);
       });
-    });
-
-    createSubmitBtn.addEventListener('click', function () {
-      closeModal(createModal);
-      alert('Promo berhasil dibuat');
-    });
-
-    updateSubmitBtn.addEventListener('click', function () {
-      closeModal(updateModal);
-      alert('Promo berhasil diperbarui');
-    });
-
-    deleteSubmitBtn.addEventListener('click', function () {
-      closeModal(deleteModal);
-      alert('Promo berhasil dihapus');
     });
 
     [createModal, updateModal, deleteModal].forEach(function (modal) {

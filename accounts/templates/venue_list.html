@@ -185,8 +185,13 @@ body {
   <div class="header">
     <div>
     <a href="{% url 'main:show_main' %}" class="back-btn">← Kembali ke Dashboard</a>
-      <h1>Manajemen Venue</h1>
-      <p>Kelola lokasi pertunjukan dan kapasitas tempat duduk</p>
+      {% if role == "pelanggan" %}
+        <h1>Daftar Venue</h1>
+        <p>Lihat lokasi pertunjukan dan kapasitas tempat duduk</p>
+      {% else %}
+        <h1>Manajemen Venue</h1>
+        <p>Kelola lokasi pertunjukan dan kapasitas tempat duduk</p>
+      {% endif %}
     </div>
 
     {% if role == "admin" or role == "penyelenggara" %}
@@ -245,10 +250,12 @@ body {
           </div>
 
           {% if role == "admin" or role == "penyelenggara" %}
+            {% if role == "admin" or venue.venue_id|stringformat:"s" in manageable_venue_ids %}
             <div class="actions">
               <a href="{% url 'main:update_venue' venue.venue_id %}" class="btn-edit">Edit</a>
               <a href="{% url 'main:delete_venue' venue.venue_id %}" class="btn-delete">Hapus</a>
             </div>
+            {% endif %}
           {% endif %}
         </div>
       </div>

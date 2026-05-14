@@ -1,10 +1,12 @@
 from django.urls import path
 from accounts.views import (
     show_main, register, login_user, logout_user, choose_role,
-    venue_list, create_venue, update_venue, delete_venue, profile_view, event_list, create_event, update_event, browse_events, create_pengguna,
-   admin_dashboard, organizer_dashboard, customer_dashboard
+    venue_list, create_venue, update_venue, delete_venue,
+    profile_view,
+    event_list, create_event, update_event, delete_event,
+    browse_events, create_pengguna,
+    admin_dashboard, organizer_dashboard, customer_dashboard
 )
-
 app_name = 'main'
 
 urlpatterns = [
@@ -26,6 +28,7 @@ urlpatterns = [
     path('events/', event_list, name='event_list'),
     path('events/create/', create_event, name='create_event'),
     path('events/<uuid:id>/edit/', update_event, name='update_event'),
+    path('events/<uuid:id>/delete/', delete_event, name='delete_event'),
     path('browse-events/', browse_events, name='browse_events'),
     path('cpengguna/', create_pengguna, name='create_pengguna'),
     path('dashboard/admin/', admin_dashboard, name='admin_dashboard'),

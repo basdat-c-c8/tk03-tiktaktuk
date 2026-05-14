@@ -35,6 +35,22 @@ def get_user_role(user):
     return "pelanggan"
 
 
+def get_current_organizer(user):
+    return Organizer.objects.filter(user=user).first()
+
+
+def can_organizer_manage_venue(user, venue):
+    organizer = get_current_organizer(user)
+
+    if not organizer:
+        return False
+
+    # Without schema change, we treat a venue as manageable by organizer
+    # only when it is not used by other organizers' events.
+    used_by_other_organizers = Event.objects.filter(venue=venue).exclude(organizer=organizer).exists()
+    return not used_by_other_organizers
+
+
 @login_required(login_url='/login')
 def show_main(request):
     role = get_user_role(request.user)
@@ -49,6 +65,10 @@ def show_main(request):
 
 @login_required(login_url='/login')
 def admin_dashboard(request):
+    # ROLE PROTECTION: Only admin can access
+    if get_user_role(request.user) != "admin":
+        return redirect("main:show_main")
+    
     venues = Venue.objects.all()
 
     largest_capacity = 0
@@ -72,6 +92,10 @@ def admin_dashboard(request):
 
 @login_required(login_url='/login')
 def organizer_dashboard(request):
+    # ROLE PROTECTION: Only organizer can access
+    user_role = get_user_role(request.user)
+    if user_role not in ("penyelenggara", "admin"):
+        return redirect("main:show_main")
 
     events = Event.objects.all().order_by("-event_datetime")
     venues = Venue.objects.all()
@@ -95,6 +119,11 @@ def organizer_dashboard(request):
 
 @login_required(login_url='/login')
 def customer_dashboard(request):
+    # ROLE PROTECTION: Only customer can access
+    user_role = get_user_role(request.user)
+    if user_role != "pelanggan":
+        return redirect("main:show_main")
+    
     context = {
         "name": request.user.username,
         "role": "pelanggan",
@@ -268,9 +297,20 @@ def venue_list(request):
 
     all_venues = Venue.objects.all()
 
+    manageable_venue_ids = []
+    if role == "admin":
+        manageable_venue_ids = [str(v.venue_id) for v in venues]
+    elif role == "penyelenggara":
+        manageable_venue_ids = [
+            str(v.venue_id)
+            for v in venues
+            if can_organizer_manage_venue(request.user, v)
+        ]
+
     context = {
         "venues": venues,
         "role": role,
+        "manageable_venue_ids": manageable_venue_ids,
         "total_venue": all_venues.count(),
         "reserved_count": all_venues.filter(has_reserved_seating=True).count(),
         "total_capacity": sum(v.capacity for v in all_venues),
@@ -337,6 +377,10 @@ def update_venue(request, id):
 
     venue = get_object_or_404(Venue, venue_id=id)
 
+    if role == "penyelenggara" and not can_organizer_manage_venue(request.user, venue):
+        messages.error(request, "Anda tidak memiliki akses untuk mengubah venue ini.")
+        return redirect("main:venue_list")
+
     form = VenueForm(request.POST or None, instance=venue)
 
     if request.method == "POST":
@@ -377,6 +421,10 @@ def delete_venue(request, id):
             return redirect("main:show_main")
 
         venue = get_object_or_404(Venue, venue_id=id)
+
+        if role == "penyelenggara" and not can_organizer_manage_venue(request.user, venue):
+            messages.error(request, "Anda tidak memiliki akses untuk menghapus venue ini.")
+            return redirect("main:venue_list")
 
         # cek apakah masih ada event aktif / upcoming
         active_event_exists = Event.objects.filter(
@@ -492,13 +540,20 @@ def profile_view(request):
 @login_required(login_url='/login')
 @login_required(login_url='/login')
 def event_list(request):
-
+    # ROLE PROTECTION: Only admin and organizer can access
     role = get_user_role(request.user)
+    if role not in ["admin", "penyelenggara"]:
+        return redirect("main:show_main")
+
+    organizer = get_current_organizer(request.user)
 
     events = Event.objects.select_related(
         "venue",
         "organizer"
     ).all()
+
+    if role == "penyelenggara" and organizer:
+        events = events.filter(organizer=organizer)
 
     # SEARCH
     search = request.GET.get("search")
@@ -554,12 +609,27 @@ def create_event(request):
     if role not in ["admin", "penyelenggara"]:
         return redirect("main:show_main")
 
+    organizer = get_current_organizer(request.user)
     form = EventForm(request.POST or None)
 
-    if request.method == "POST" and form.is_valid():
-        event = form.save()
+    if role == "penyelenggara":
+        if not organizer:
+            messages.error(request, "Data organizer tidak ditemukan untuk akun ini.")
+            return redirect("main:show_main")
+        form.fields["organizer"].required = False
+        form.fields["organizer"].initial = organizer
+        form.fields["organizer"].queryset = Organizer.objects.filter(pk=organizer.pk)
 
-        category_names = request.POST.getlist("category_name[]")
+    if request.method == "POST":
+        post_data = request.POST.copy()
+        if role == "penyelenggara" and organizer:
+            post_data['organizer'] = str(organizer.pk)
+        
+        form = EventForm(post_data)
+        if form.is_valid():
+            event = form.save()
+            
+            category_names = request.POST.getlist("category_name[]")
         prices = request.POST.getlist("price[]")
         quotas = request.POST.getlist("quota[]")
 
@@ -578,6 +648,8 @@ def create_event(request):
         "form": form,
         "title": "Buat Acara Baru",
         "button_text": "Buat Acara",
+        "show_organizer_field": role == "admin",
+        "organizer_label": organizer.organizer_name if organizer else "",
     })
 
 
@@ -589,16 +661,62 @@ def update_event(request, id):
     if role not in ["admin", "penyelenggara"]:
         return redirect("main:show_main")
 
+    organizer = get_current_organizer(request.user)
+    if role == "penyelenggara":
+        if not organizer or event.organizer_id != organizer.organizer_id:
+            messages.error(request, "Anda hanya dapat mengubah event milik Anda sendiri.")
+            return redirect("main:event_list")
+
     form = EventForm(request.POST or None, instance=event)
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect("main:event_list")
+    if role == "penyelenggara":
+        form.fields["organizer"].required = False
+        form.fields["organizer"].queryset = Organizer.objects.filter(pk=organizer.pk)
+        form.fields["organizer"].initial = organizer
+
+    if request.method == "POST":
+        post_data = request.POST.copy()
+        if role == "penyelenggara" and organizer:
+            post_data['organizer'] = str(organizer.pk)
+            
+        form = EventForm(post_data, instance=event)
+        if form.is_valid():
+            updated_event = form.save()
+            return redirect("main:event_list")
 
     return render(request, "event_form.html", {
         "form": form,
         "title": "Edit Acara",
         "button_text": "Simpan",
+        "show_organizer_field": role == "admin",
+        "organizer_label": organizer.organizer_name if organizer else event.organizer.organizer_name,
+    })
+
+
+@login_required(login_url='/login')
+def delete_event(request, id):
+    role = get_user_role(request.user)
+    if role not in ["admin", "penyelenggara"]:
+        return redirect("main:show_main")
+
+    event = get_object_or_404(Event, pk=id)
+    organizer = get_current_organizer(request.user)
+
+    if role == "penyelenggara":
+        if not organizer or event.organizer_id != organizer.organizer_id:
+            messages.error(request, "Anda hanya dapat menghapus event milik Anda sendiri.")
+            return redirect("main:event_list")
+
+    if request.method == "POST":
+        event_title = event.event_title
+        event.delete()
+        messages.success(request, f'Event "{event_title}" berhasil dihapus.')
+        return redirect("main:event_list")
+
+    return render(request, "venue_confirm_delete.html", {
+        "title": "Hapus Event",
+        "message": f"Apakah Anda yakin ingin menghapus event '{event.event_title}'?",
+        "cancel_url": reverse("main:event_list")
     })
 
 

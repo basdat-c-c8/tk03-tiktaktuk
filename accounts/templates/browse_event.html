@@ -216,7 +216,13 @@ body {
             <div class="price">Harga belum tersedia</div>
           {% endif %}
 
-          <a href="#" class="buy-btn">Beli Tiket</a>
+          {% if role == "pelanggan" and event.ticket_categories.all %}
+            <a href="{% url 'orders:order_create' %}?event_id={{ event.event_id }}" class="buy-btn">Beli Tiket</a>
+          {% elif role == "pelanggan" %}
+            <a href="{% url 'main:browse_events' %}" class="buy-btn">Kategori tiket belum tersedia</a>
+          {% else %}
+            <a href="{% url 'main:login' %}" class="buy-btn">Login sebagai pelanggan</a>
+          {% endif %}
         </div>
       </div>
     {% empty %}

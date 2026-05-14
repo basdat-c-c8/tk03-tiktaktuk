@@ -307,17 +307,17 @@
   <div class="ticket-stats">
     <div class="ticket-stat-card">
       <div class="ticket-stat-label">Total Tiket</div>
-      <div class="ticket-stat-value">3</div>
+      <div class="ticket-stat-value">{{ ticket_count|default:0 }}</div>
     </div>
 
     <div class="ticket-stat-card">
       <div class="ticket-stat-label">Valid</div>
-      <div class="ticket-stat-value">2</div>
+      <div class="ticket-stat-value">{{ ticket_count|default:0 }}</div>
     </div>
 
     <div class="ticket-stat-card">
       <div class="ticket-stat-label">Terpakai</div>
-      <div class="ticket-stat-value">1</div>
+      <div class="ticket-stat-value">0</div>
     </div>
   </div>
 
@@ -371,11 +371,14 @@
             </div>
           </div>
 
-          <div class="ticket-actions">
+          {% comment %} Customer ticket actions are read-only for TK03; modification buttons removed. {% endcomment %}
+          {% comment %}
+          <div class="ticket-actions" hidden>
             <button class="btn-show-qr">Tampilkan QR</button>
             <button class="ticket-icon-btn">⇩</button>
             <button class="ticket-icon-btn">↗</button>
           </div>
+          {% endcomment %}
         </div>
       </div>
 

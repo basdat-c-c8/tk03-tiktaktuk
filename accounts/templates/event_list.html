@@ -230,7 +230,8 @@ body {
 
           {% if role == "admin" or role == "penyelenggara" %}
             <div class="actions">
-              <a href="{% url 'main:update_event' event.event_id %}" class="edit">Edit Acara</a>
+              <a href="{% url 'main:update_event' event.event_id %}" class="edit">Edit</a>
+              <a href="{% url 'main:delete_event' event.event_id %}" style="background:#ef4444; color:white;">Hapus</a>
             </div>
           {% endif %}
         </div>

@@ -511,7 +511,6 @@
 
 
 <script>
-
   let ARTISTS = [
   {% for artist in artists %}
   {
@@ -521,7 +520,7 @@
   }{% if not forloop.last %},{% endif %}
   {% endfor %}
   ];
-  
+
   const GENRE_COLORS = {
     'indie folk': { bg: '#ecfdf5', color: '#166534' },
     'indie pop': { bg: '#eff6ff', color: '#1e40af' },
@@ -530,12 +529,17 @@
     'singer-songwriter': { bg: '#fdf2f8', color: '#9d174d' },
     'r&b / pop': { bg: '#fef2f2', color: '#991b1b' },
   };
-  
+
   const AVATAR_BG = [
-    '#4f46e5','#7c3aed','#0891b2','#ea580c',
-    '#ca8a04','#16a34a','#db2777','#9333ea',
+    '#4f46e5', '#7c3aed', '#0891b2', '#ea580c',
+    '#ca8a04', '#16a34a', '#db2777', '#9333ea',
   ];
-  
+
+  function csrfToken() {
+    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : '{{ csrf_token }}';
+  }
+
   function avatarColor(name) {
     let h = 0;
     for (let i = 0; i < name.length; i++) {
@@ -543,284 +547,170 @@
     }
     return AVATAR_BG[h % AVATAR_BG.length];
   }
-  
+
   function genreStyle(genre) {
     const key = (genre || '').toLowerCase().trim();
-    return GENRE_COLORS[key] || {
-      bg: '#f1f5f9',
-      color: '#475569'
-    };
+    return GENRE_COLORS[key] || { bg: '#f1f5f9', color: '#475569' };
   }
-  
+
   function esc(s) {
     return (s || '')
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
-  
+
+  function showToast(text, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = text;
+    t.className = isError ? 'show err' : 'show ok';
+    setTimeout(() => t.className = '', 1800);
+  }
+
   function render() {
-  
-    const q = (
-      document.getElementById('searchInput').value || ''
-    ).toLowerCase();
-  
+    const q = (document.getElementById('searchInput').value || '').toLowerCase();
     const filtered = ARTISTS
-      .filter(a =>
-        a.name.toLowerCase().includes(q) ||
-        (a.genre || '').toLowerCase().includes(q)
-      )
+      .filter(a => a.name.toLowerCase().includes(q) || (a.genre || '').toLowerCase().includes(q))
       .sort((a, b) => a.name.localeCompare(b.name));
-  
-    document.getElementById('resultCount').textContent =
-      filtered.length + ' artis ditemukan';
-  
-    document.getElementById('statTotal').textContent =
-      ARTISTS.length;
-  
-    document.getElementById('statGenre').textContent =
-      new Set(
-        ARTISTS.map(a => a.genre).filter(Boolean)
-      ).size;
-  
+
+    document.getElementById('resultCount').textContent = filtered.length + ' artis ditemukan';
+    document.getElementById('statTotal').textContent = ARTISTS.length;
+    document.getElementById('statGenre').textContent = new Set(ARTISTS.map(a => a.genre).filter(Boolean)).size;
+    document.getElementById('statEvent').textContent = ARTISTS.length;
+
     const body = document.getElementById('artistBody');
-  
     if (!filtered.length) {
-  
-      body.innerHTML = `
-        <tr>
-          <td colspan="3">
-            <div class="empty-state">
-              <p>Tidak ada artis ditemukan.</p>
-            </div>
-          </td>
-        </tr>
-      `;
-  
+      body.innerHTML = '<tr><td colspan="3"><div class="empty-state"><p>Tidak ada artis ditemukan.</p></div></td></tr>';
       return;
     }
-  
+
     body.innerHTML = filtered.map(a => {
-  
       const gs = genreStyle(a.genre);
-  
       const badgeHtml = a.genre
-        ? `
-          <span
-            class="genre-badge"
-            style="background:${gs.bg};color:${gs.color}"
-          >
-            ${esc(a.genre).toUpperCase()}
-          </span>
-        `
-        : `<span>—</span>`;
-  
-      return `
-        <tr>
-          <td>
-            <div class="artist-cell">
-  
-              <div
-                class="avatar"
-                style="background:${avatarColor(a.name)}"
-              >
-                ${a.name[0].toUpperCase()}
-              </div>
-  
-              <span class="artist-name">
-                ${esc(a.name)}
-              </span>
-  
-            </div>
-          </td>
-  
-          <td>
-            ${badgeHtml}
-          </td>
-  
-          <td>
-            <div class="actions">
-  
-              <button
-                class="btn-icon"
-                onclick="openEdit('${a.id}')"
-              >
-                ✏️
-              </button>
-  
-              <button
-                class="btn-icon del"
-                onclick="openDelete('${a.id}')"
-              >
-                🗑️
-              </button>
-  
-            </div>
-          </td>
-        </tr>
-      `;
-  
+        ? '<span class="genre-badge" style="background:' + gs.bg + ';color:' + gs.color + '">' + esc(a.genre).toUpperCase() + '</span>'
+        : '<span>—</span>';
+
+      return '<tr>' +
+        '<td><div class="artist-cell"><div class="avatar" style="background:' + avatarColor(a.name) + '">' + esc(a.name[0].toUpperCase()) + '</div><span class="artist-name">' + esc(a.name) + '</span></div></td>' +
+        '<td>' + badgeHtml + '</td>' +
+        '<td><div class="actions">' +
+          '<button class="btn-icon" onclick="openEdit(\'' + a.id + '\')">✏️</button>' +
+          '<button class="btn-icon del" onclick="openDelete(\'' + a.id + '\')">🗑️</button>' +
+        '</div></td>' +
+      '</tr>';
     }).join('');
   }
-  
-  function filterTable() {
-    render();
-  }
-  
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-  }
-  
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-  }
-  
-  function overlayClose(e, id) {
-    if (e.target === document.getElementById(id)) {
-      closeModal(id);
-    }
-  }
-  
+
+  function filterTable() { render(); }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
   function openCreate() {
-  
     document.getElementById('cName').value = '';
     document.getElementById('cGenre').value = '';
-  
+    closeModal('editModal');
     openModal('createModal');
   }
-  
-  function doCreate() {
-  
+
+  async function doCreate() {
     const name = document.getElementById('cName').value.trim();
     const genre = document.getElementById('cGenre').value.trim();
-  
-    if (!name) {
-      alert("Nama artis wajib diisi.");
+    if (!name) { showToast('Nama artis wajib diisi.', true); return; }
+
+    const res = await fetch('/artists/create/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'X-CSRFToken': csrfToken(),
+      },
+      body: new URLSearchParams({ name, genre }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      showToast(data.error || 'Gagal menambah artis.', true);
       return;
     }
-  
-    const form = document.createElement("form");
-  
-    form.method = "POST";
-    form.action = "/artists/create/";
-  
-    const csrfInput = document.createElement("input");
-    csrfInput.type = "hidden";
-    csrfInput.name = "csrfmiddlewaretoken";
-    csrfInput.value = "{{ csrf_token }}";
-  
-    const nameInput = document.createElement("input");
-    nameInput.type = "hidden";
-    nameInput.name = "name";
-    nameInput.value = name;
-  
-    const genreInput = document.createElement("input");
-    genreInput.type = "hidden";
-    genreInput.name = "genre";
-    genreInput.value = genre;
-  
-    form.appendChild(csrfInput);
-    form.appendChild(nameInput);
-    form.appendChild(genreInput);
-  
-    document.body.appendChild(form);
-  
-    form.submit();
-  }
-  
-  function openEdit(id) {
 
-const artist = ARTISTS.find(a => a.id === id);
-
-if (!artist) return;
-
-document.getElementById("cName").value = artist.name;
-document.getElementById("cGenre").value = artist.genre || "";
-
-openModal("createModal");
-
-const submitBtn = document.querySelector(
-  "#createModal .btn-primary"
-);
-
-submitBtn.textContent = "Simpan Perubahan";
-
-submitBtn.onclick = function () {
-
-  const name =
-    document.getElementById("cName").value.trim();
-
-  const genre =
-    document.getElementById("cGenre").value.trim();
-
-  if (!name) {
-    alert("Nama artis wajib diisi.");
-    return;
+    ARTISTS.push({ id: data.id, name: data.name, genre: data.genre || '' });
+    closeModal('createModal');
+    render();
+    showToast('Artis berhasil ditambahkan.');
   }
 
-  const form = document.createElement("form");
+  async function openEdit(id) {
+    const res = await fetch('/artists/update/' + id + '/');
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      showToast(data.error || 'Data artis tidak ditemukan.', true);
+      return;
+    }
 
-  form.method = "POST";
-  form.action = `/artists/update/${id}/`;
+    document.getElementById('editId').value = data.id;
+    document.getElementById('eName').value = data.name || '';
+    document.getElementById('eGenre').value = data.genre || '';
+    openModal('editModal');
+  }
 
-  const csrfInput = document.createElement("input");
-  csrfInput.type = "hidden";
-  csrfInput.name = "csrfmiddlewaretoken";
-  csrfInput.value = "{{ csrf_token }}";
+  async function doEdit() {
+    const id = document.getElementById('editId').value;
+    const name = document.getElementById('eName').value.trim();
+    const genre = document.getElementById('eGenre').value.trim();
+    if (!name) { showToast('Nama artis wajib diisi.', true); return; }
 
-  const nameInput = document.createElement("input");
-  nameInput.type = "hidden";
-  nameInput.name = "name";
-  nameInput.value = name;
+    const res = await fetch('/artists/update/' + id + '/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'X-CSRFToken': csrfToken(),
+      },
+      body: new URLSearchParams({ name, genre }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      showToast(data.error || 'Gagal memperbarui artis.', true);
+      return;
+    }
 
-  const genreInput = document.createElement("input");
-  genreInput.type = "hidden";
-  genreInput.name = "genre";
-  genreInput.value = genre;
+    ARTISTS = ARTISTS.map(a => a.id === id ? { ...a, name, genre } : a);
+    closeModal('editModal');
+    render();
+    showToast('Artis berhasil diperbarui.');
+  }
 
-  form.appendChild(csrfInput);
-  form.appendChild(nameInput);
-  form.appendChild(genreInput);
+  function openDelete(id) {
+    const artist = ARTISTS.find(a => a.id === id);
+    if (!artist) return;
 
-  document.body.appendChild(form);
+    document.getElementById('deleteId').value = id;
+    document.getElementById('dName').textContent = artist.name;
+    document.getElementById('dId').textContent = artist.id;
+    openModal('deleteModal');
+  }
 
-  form.submit();
-};
-}
+  async function doDelete() {
+    const id = document.getElementById('deleteId').value;
+    const res = await fetch('/artists/delete/' + id + '/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrfToken() },
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      showToast(data.error || 'Gagal menghapus artis.', true);
+      return;
+    }
 
-function openDelete(id) {
+    ARTISTS = ARTISTS.filter(a => a.id !== id);
+    closeModal('deleteModal');
+    render();
+    showToast('Artis berhasil dihapus.');
+  }
 
-const artist = ARTISTS.find(a => a.id === id);
-
-if (!artist) return;
-
-const confirmDelete = confirm(
-  `Hapus artis "${artist.name}" ?`
-);
-
-if (!confirmDelete) return;
-
-const form = document.createElement("form");
-
-form.method = "POST";
-form.action = `/artists/delete/${id}/`;
-
-const csrfInput = document.createElement("input");
-csrfInput.type = "hidden";
-csrfInput.name = "csrfmiddlewaretoken";
-csrfInput.value = "{{ csrf_token }}";
-
-form.appendChild(csrfInput);
-
-document.body.appendChild(form);
-
-form.submit();
-}
-  
   render();
-  
+
   </script>
 
 </body>

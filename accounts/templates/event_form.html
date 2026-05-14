@@ -232,7 +232,11 @@ textarea {
 
     <div class="form-section">
       <label>Organizer</label>
-      {{ form.organizer }}
+      {% if show_organizer_field %}
+        {{ form.organizer }}
+      {% else %}
+        <input type="text" value="{{ organizer_label }}" disabled>
+      {% endif %}
     </div>
 
     <div class="form-section">

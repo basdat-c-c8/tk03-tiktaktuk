@@ -49,13 +49,16 @@ h2 {
 </style>
 
 <div class="modal">
-  <h2>Hapus Venue</h2>
-  <p>Apakah Anda yakin ingin menghapus venue <b>{{ venue.venue_name }}</b>? Tindakan ini tidak dapat dibatalkan.</p>
+  <h2>{{ title|default:"Hapus Venue" }}</h2>
+  <p>{{ message|default:"Apakah Anda yakin ingin menghapus venue ini? Tindakan ini tidak dapat dibatalkan." }}</p>
+  {% if venue and not message %}
+    <p><b>{{ venue.venue_name }}</b></p>
+  {% endif %}
 
   <form method="POST">
     {% csrf_token %}
     <div class="buttons">
-      <a href="{% url 'main:venue_list' %}" class="btn cancel">Batal</a>
+      <a href="{{ cancel_url|default:request.META.HTTP_REFERER }}" class="btn cancel">Batal</a>
       <button type="submit" class="btn delete">Hapus</button>
     </div>
   </form>

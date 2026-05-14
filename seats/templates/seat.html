@@ -11,41 +11,6 @@
     color: #0f172a;
   }
 
-  .role-switcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 8px 10px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-  }
-
-  .role-switcher label {
-    font-size: 11px;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
-  }
-
-  .role-switcher select {
-    height: 30px;
-    border: 2px solid #0f172a;
-    border-radius: 8px;
-    padding: 0 28px 0 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #0f172a;
-    background: #ffffff;
-  }
-
-  .role-admin-organizer,
-  .role-admin-only {
-    display: none;
-  }
-
   .seats-header {
     display: flex;
     justify-content: space-between;
@@ -57,7 +22,6 @@
     margin: 0 0 6px;
     font-size: 24px;
     font-weight: 800;
-    color: #0f172a;
   }
 
   .seats-subtitle {
@@ -93,64 +57,6 @@
   .stats-value {
     font-size: 24px;
     font-weight: 800;
-    color: #0f172a;
-  }
-
-  .filter-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 26px;
-  }
-
-  .search-box {
-    position: relative;
-    width: 510px;
-    flex: 0 0 510px;
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 15px;
-    z-index: 1;
-  }
-
-  .filter-input {
-    width: 100%;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 16px 0 46px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 14px;
-    font-weight: 500;
-    outline: none;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-  }
-
-  .filter-input::placeholder {
-    color: #64748b;
-  }
-
-  .filter-select {
-    width: 260px;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 14px;
-    font-weight: 700;
-    outline: none;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
   }
 
   .seats-table-card {
@@ -170,21 +76,20 @@
     background: #f8fafc;
   }
 
-  .seats-table th {
-    padding: 16px 20px;
+  .seats-table th,
+  .seats-table td {
+    padding: 14px 20px;
     text-align: left;
+    border-top: 1px solid #f1f5f9;
+    font-size: 12px;
+  }
+
+  .seats-table th {
+    border-top: 0;
     font-size: 10px;
     font-weight: 800;
     color: #94a3b8;
     text-transform: uppercase;
-  }
-
-  .seats-table td {
-    padding: 14px 20px;
-    border-top: 1px solid #f1f5f9;
-    font-size: 12px;
-    color: #334155;
-    vertical-align: middle;
   }
 
   .section-cell {
@@ -192,42 +97,37 @@
     align-items: center;
     gap: 10px;
     font-weight: 800;
-    color: #0f172a;
+  }
+
+  .seat-icon,
+  .seat-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 800;
   }
 
   .seat-icon {
     width: 26px;
     height: 26px;
-    border-radius: 9px;
-    background: #eff6ff;
-    color: #2563eb;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
   }
 
   .seat-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     min-width: 24px;
     height: 24px;
-    border-radius: 7px;
     background: #f1f5f9;
-    font-weight: 800;
     color: #334155;
   }
 
   .venue-cell {
     color: #64748b;
-    font-size: 12px;
   }
 
   .status-badge {
     display: inline-flex;
-    align-items: center;
-    gap: 5px;
     padding: 4px 8px;
     border-radius: 999px;
     font-size: 10px;
@@ -245,62 +145,114 @@
     color: #16a34a;
   }
 
-  .action-cell {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 14px;
-  }
-
-  .action-btn {
+  .btn-primary,
+  .btn-secondary {
     border: none;
-    background: transparent;
-    color: #cbd5e1;
+    border-radius: 9px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 800;
     cursor: pointer;
-    padding: 0;
-    font-size: 15px;
-    line-height: 1;
-  }
-
-  .action-btn:hover {
-    color: #2563eb;
   }
 
   .btn-primary {
     background: #2563eb;
     color: #ffffff;
-    border: none;
-    border-radius: 11px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
-    cursor: pointer;
   }
 
-  .btn-primary:hover {
-    background: #1d4ed8;
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  .seat-create-panel {
+    margin-bottom: 18px;
+  }
+
+  .seat-create-panel summary,
+  .seat-update-panel summary {
+    list-style: none;
+  }
+
+  .seat-create-panel summary::-webkit-details-marker,
+  .seat-update-panel summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .seat-create-panel[open] summary {
+    margin-bottom: 12px;
+  }
+
+  .seat-form-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .seat-form-grid {
+    display: grid;
+    grid-template-columns: 1.3fr repeat(3, minmax(100px, 1fr)) auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .seat-form-group {
+    display: grid;
+    gap: 6px;
+  }
+
+  .seat-form-group label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .seat-form-group input,
+  .seat-form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 12px;
+  }
+
+  .seat-update-panel[open] {
+    min-width: 520px;
+  }
+
+  .seat-update-form {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, minmax(85px, 1fr)) auto;
+    gap: 8px;
+    align-items: end;
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+  }
+
+  .seat-note {
+    margin: -8px 0 18px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
   }
 
   @media (max-width: 768px) {
     .seats-header {
-      gap: 14px;
       flex-direction: column;
+      gap: 14px;
     }
 
     .stats-grid {
       grid-template-columns: 1fr;
-    }
-
-    .filter-row {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .search-box,
-    .filter-select {
-      width: 100%;
-      flex: none;
     }
 
     .seats-table-card {
@@ -308,58 +260,82 @@
     }
 
     .seats-table {
-      min-width: 760px;
+      min-width: 980px;
+    }
+
+    .seat-form-grid,
+    .seat-update-form {
+      grid-template-columns: 1fr;
     }
   }
 </style>
 
 <div class="container seats-page">
-
-  <div class="role-switcher">
-    <label>Role</label>
-    <select id="roleSelect" onchange="changeRole()">
-      <option value="admin">Admin</option>
-      <option value="organizer" selected>Organizer</option>
-      <option value="customer">Customer</option>
-    </select>
-  </div>
-
   <div class="seats-header">
     <div>
       <h1 class="seats-title">Manajemen Kursi</h1>
-      <p class="seats-subtitle">Kelola kursi dan denah tempat duduk venue</p>
+      <p class="seats-subtitle">Pantau kursi venue dan status ketersediaannya</p>
     </div>
-
-    <button class="btn btn-primary role-admin-organizer" onclick="openSeatModal()">+ Tambah Kursi</button>
   </div>
+
+  {% if messages %}
+  <div style="margin-bottom: 14px; display: grid; gap: 8px;">
+    {% for message in messages %}
+    <div style="padding: 10px 12px; border-radius: 10px; border: 1px solid {% if message.tags == 'error' %}#fecaca{% else %}#bbf7d0{% endif %}; background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if message.tags == 'error' %}#b91c1c{% else %}#166534{% endif %}; font-size: 13px; font-weight: 700;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <details class="seat-create-panel">
+    <summary class="btn-primary">+ Tambah Kursi</summary>
+    <div class="seat-form-box">
+      <form method="post" action="{% url 'seats:seat_list' %}" class="seat-form-grid">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        <div class="seat-form-group">
+          <label for="createVenue">Venue</label>
+          <select id="createVenue" name="venue_id" required>
+            <option value="">Pilih venue</option>
+            {% for venue in venues %}
+              <option value="{{ venue.venue_id }}">{{ venue.venue_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="seat-form-group">
+          <label for="createSection">Section</label>
+          <input id="createSection" name="section" type="text" maxlength="50" required>
+        </div>
+        <div class="seat-form-group">
+          <label for="createRow">Baris</label>
+          <input id="createRow" name="row_number" type="text" maxlength="10" required>
+        </div>
+        <div class="seat-form-group">
+          <label for="createNumber">No. Kursi</label>
+          <input id="createNumber" name="seat_number" type="text" maxlength="10" required>
+        </div>
+        <button type="submit" class="btn-primary">Tambah</button>
+      </form>
+    </div>
+  </details>
+  <p class="seat-note">Status kursi dihitung dari tiket yang sudah memakai kursi. Delete kursi tidak diaktifkan untuk menjaga relasi tiket tetap aman.</p>
 
   <div class="stats-grid">
     <div class="stats-card">
       <div class="stats-label">Total Kursi</div>
-      <div class="stats-value">15</div>
+      <div class="stats-value">{{ total_seats|default:0 }}</div>
     </div>
 
     <div class="stats-card">
       <div class="stats-label">Tersedia</div>
-      <div class="stats-value">12</div>
+      <div class="stats-value">{{ available_count|default:0 }}</div>
     </div>
 
     <div class="stats-card">
       <div class="stats-label">Terisi</div>
-      <div class="stats-value">3</div>
+      <div class="stats-value">{{ filled_count|default:0 }}</div>
     </div>
-  </div>
-
-  <div class="filter-row">
-    <div class="search-box">
-      <span class="search-icon">⌕</span>
-      <input class="filter-input" type="text" placeholder="Cari section, baris, atau nomor...">
-    </div>
-
-    <select class="filter-select">
-      <option>Semua Venue</option>
-      <option>Jakarta Convention Center</option>
-    </select>
   </div>
 
   <div class="seats-table-card">
@@ -371,233 +347,68 @@
           <th>No. Kursi</th>
           <th>Venue</th>
           <th>Status</th>
-          <th></th>
+          <th>Aksi</th>
         </tr>
       </thead>
-
       <tbody>
+        {% for seat in seats %}
         <tr>
           <td>
             <div class="section-cell">
-              <span class="seat-icon">▣</span>
-              VVIP
+              <span class="seat-icon">S</span>
+              {{ seat.section }}
             </div>
           </td>
-          <td>A</td>
-          <td><span class="seat-number">1</span></td>
-          <td class="venue-cell">▥ Jakarta Convention Center</td>
-          <td><span class="status-badge status-filled">⊗ TERISI</span></td>
+          <td>{{ seat.row_number }}</td>
+          <td><span class="seat-number">{{ seat.seat_number }}</span></td>
+          <td class="venue-cell">{{ seat.venue.venue_name }}</td>
           <td>
-            <div class="action-cell">
-              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
-              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
-            </div>
+            {% if seat.seat_id in used_seat_ids %}
+              <span class="status-badge status-filled">Terisi</span>
+            {% else %}
+              <span class="status-badge status-available">Tersedia</span>
+            {% endif %}
+          </td>
+          <td>
+            <details class="seat-update-panel">
+              <summary class="btn-secondary">Edit</summary>
+              <form method="post" action="{% url 'seats:seat_list' %}" class="seat-update-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="seat_id" value="{{ seat.seat_id }}">
+                <div class="seat-form-group">
+                  <label for="venue{{ seat.seat_id }}">Venue</label>
+                  <select id="venue{{ seat.seat_id }}" name="venue_id" required>
+                    {% for venue in venues %}
+                      <option value="{{ venue.venue_id }}" {% if seat.venue_id == venue.venue_id %}selected{% endif %}>{{ venue.venue_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="seat-form-group">
+                  <label for="section{{ seat.seat_id }}">Section</label>
+                  <input id="section{{ seat.seat_id }}" name="section" type="text" maxlength="50" value="{{ seat.section }}" required>
+                </div>
+                <div class="seat-form-group">
+                  <label for="row{{ seat.seat_id }}">Baris</label>
+                  <input id="row{{ seat.seat_id }}" name="row_number" type="text" maxlength="10" value="{{ seat.row_number }}" required>
+                </div>
+                <div class="seat-form-group">
+                  <label for="number{{ seat.seat_id }}">No.</label>
+                  <input id="number{{ seat.seat_id }}" name="seat_number" type="text" maxlength="10" value="{{ seat.seat_number }}" required>
+                </div>
+                <button type="submit" class="btn-secondary">Simpan</button>
+              </form>
+            </details>
           </td>
         </tr>
-
+        {% empty %}
         <tr>
-          <td>
-            <div class="section-cell">
-              <span class="seat-icon">▣</span>
-              VVIP
-            </div>
-          </td>
-          <td>A</td>
-          <td><span class="seat-number">2</span></td>
-          <td class="venue-cell">▥ Jakarta Convention Center</td>
-          <td><span class="status-badge status-available">⊙ TERSEDIA</span></td>
-          <td>
-            <div class="action-cell">
-              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
-              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
-            </div>
-          </td>
+          <td colspan="6">Belum ada kursi.</td>
         </tr>
-
-        <tr>
-          <td>
-            <div class="section-cell">
-              <span class="seat-icon">▣</span>
-              VVIP
-            </div>
-          </td>
-          <td>A</td>
-          <td><span class="seat-number">3</span></td>
-          <td class="venue-cell">▥ Jakarta Convention Center</td>
-          <td><span class="status-badge status-available">⊙ TERSEDIA</span></td>
-          <td>
-            <div class="action-cell">
-              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
-              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
-            </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            <div class="section-cell">
-              <span class="seat-icon">▣</span>
-              VIP
-            </div>
-          </td>
-          <td>B</td>
-          <td><span class="seat-number">2</span></td>
-          <td class="venue-cell">▥ Jakarta Convention Center</td>
-          <td><span class="status-badge status-filled">⊗ TERISI</span></td>
-          <td>
-            <div class="action-cell">
-              <button class="action-btn role-admin-organizer" onclick="openEditSeatModal()">✎</button>
-              <button class="action-btn role-admin-only" onclick="openDeleteSeatModal()">⌫</button>
-            </div>
-          </td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
-
 </div>
-
-<!-- MODAL TAMBAH KURSI -->
-<div id="seatModalOverlay" class="modal-overlay">
-  <div class="seat-modal">
-
-    <div class="modal-header">
-      <h3>Tambah Kursi Baru</h3>
-      <span class="close-btn" onclick="closeSeatModal()">×</span>
-    </div>
-
-    <div class="seat-modal-body">
-      <label>VENUE</label>
-      <select>
-        <option>Jakarta Convention Center</option>
-        <option>Indonesia Arena</option>
-        <option>Balai Sarbini</option>
-      </select>
-
-      <label>SECTION</label>
-      <input type="text" placeholder="cth. VVIP">
-
-      <div class="seat-form-grid">
-        <div>
-          <label>BARIS</label>
-          <input type="text" placeholder="cth. A">
-        </div>
-
-        <div>
-          <label>NO. KURSI</label>
-          <input type="text" placeholder="cth. 1">
-        </div>
-      </div>
-    </div>
-
-    <div class="seat-modal-footer">
-      <button class="btn btn-light" onclick="closeSeatModal()">Batal</button>
-      <button class="btn btn-primary">Tambah</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- MODAL EDIT KURSI -->
-<div id="editSeatModalOverlay" class="modal-overlay">
-  <div class="seat-modal">
-
-    <div class="modal-header">
-      <h3>Edit Kursi</h3>
-      <span class="close-btn" onclick="closeEditSeatModal()">×</span>
-    </div>
-
-    <div class="seat-modal-body">
-      <label>VENUE</label>
-      <select>
-        <option>Jakarta Convention Center</option>
-        <option>Indonesia Arena</option>
-        <option>Balai Sarbini</option>
-      </select>
-
-      <label>SECTION</label>
-      <input type="text" value="VVIP">
-
-      <div class="seat-form-grid">
-        <div>
-          <label>BARIS</label>
-          <input type="text" value="A">
-        </div>
-
-        <div>
-          <label>NO. KURSI</label>
-          <input type="text" value="2">
-        </div>
-      </div>
-    </div>
-
-    <div class="seat-modal-footer">
-      <button class="btn btn-light" onclick="closeEditSeatModal()">Batal</button>
-      <button class="btn btn-primary">Simpan</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- MODAL HAPUS KURSI -->
-<div id="deleteSeatModalOverlay" class="modal-overlay">
-  <div class="delete-seat-modal">
-
-    <div class="delete-modal-header">
-      <div>
-        <h3>Hapus Kursi</h3>
-        <p>Apakah Anda yakin ingin menghapus kursi ini? Tindakan ini tidak dapat dibatalkan.</p>
-      </div>
-
-      <span class="close-btn" onclick="closeDeleteSeatModal()">×</span>
-    </div>
-
-    <div class="delete-modal-footer">
-      <button class="btn btn-light" onclick="closeDeleteSeatModal()">Batal</button>
-      <button class="btn btn-danger">Hapus</button>
-    </div>
-
-  </div>
-</div>
-
-<script>
-function openSeatModal(){
-  document.getElementById('seatModalOverlay').style.display = 'flex';
-}
-
-function closeSeatModal(){
-  document.getElementById('seatModalOverlay').style.display = 'none';
-}
-
-function openEditSeatModal(){
-  document.getElementById('editSeatModalOverlay').style.display = 'flex';
-}
-
-function closeEditSeatModal(){
-  document.getElementById('editSeatModalOverlay').style.display = 'none';
-}
-
-function openDeleteSeatModal(){
-  document.getElementById('deleteSeatModalOverlay').style.display = 'flex';
-}
-
-function closeDeleteSeatModal(){
-  document.getElementById('deleteSeatModalOverlay').style.display = 'none';
-}
-
-function changeRole(){
-  const role = document.getElementById('roleSelect').value;
-
-  document.querySelectorAll('.role-admin-organizer').forEach(function(element){
-    element.style.display = (role === 'admin' || role === 'organizer') ? 'inline-flex' : 'none';
-  });
-
-  document.querySelectorAll('.role-admin-only').forEach(function(element){
-    element.style.display = (role === 'admin') ? 'inline-flex' : 'none';
-  });
-}
-
-document.addEventListener('DOMContentLoaded', changeRole);
-</script>
 
 {% endblock %}

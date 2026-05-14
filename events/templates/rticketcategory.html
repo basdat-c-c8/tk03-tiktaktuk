@@ -275,9 +275,9 @@
     </div>
     <select id="eventFilter" class="select-acara" onchange="render()">
       <option value="">Semua Acara</option>
-      <option>Konser Melodi Senja</option>
-      <option>Festival Seni Budaya</option>
-      <option>Malam Akustik Bandung</option>
+      {% for ev in events %}
+      <option value="{{ ev.event_id }}">{{ ev.event_title }}</option>
+      {% endfor %}
     </select>
   </div>
 
@@ -317,14 +317,16 @@
 <script>
   /* ── DATA DUMMY (sesuai screenshot) ── */
   const DATA = [
-    { id:'cat-001', name:'WVIP',             event:'Konser Melodi Senja',   price:1500000, quota:50  },
-    { id:'cat-002', name:'VIP',              event:'Konser Melodi Senja',   price:750000,  quota:150 },
-    { id:'cat-003', name:'Category 1',       event:'Konser Melodi Senja',   price:450000,  quota:300 },
-    { id:'cat-004', name:'Category 2',       event:'Konser Melodi Senja',   price:250000,  quota:500 },
-    { id:'cat-005', name:'General Admission',event:'Festival Seni Budaya',  price:150000,  quota:500 },
-    { id:'cat-006', name:'VVIP',             event:'Malam Akustik Bandung', price:2000000, quota:30  },
-    { id:'cat-007', name:'VIP',              event:'Malam Akustik Bandung', price:900000,  quota:100 },
-    { id:'cat-008', name:'Regular',          event:'Malam Akustik Bandung', price:350000,  quota:400 },
+    {% for c in categories %}
+    {
+      id: "{{ c.category_id }}",
+      name: "{{ c.category_name|escapejs }}",
+      event_id: "{{ c.event_id }}",
+      event: "{{ c.event.event_title|escapejs }}",
+      price: Number("{{ c.price }}"),
+      quota: Number("{{ c.quota }}")
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
   ];
 
   /* ── HELPERS ── */
@@ -336,7 +338,7 @@
     return DATA
       .filter(c =>
         (!q  || c.name.toLowerCase().includes(q) || c.event.toLowerCase().includes(q)) &&
-        (!ev || c.event === ev)
+        (!ev || c.event_id === ev)
       )
       .sort((a, b) => a.event.localeCompare(b.event) || a.name.localeCompare(b.name));
   }

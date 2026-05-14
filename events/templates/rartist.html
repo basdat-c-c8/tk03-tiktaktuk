@@ -254,15 +254,27 @@
 
   <script>
     const artists = [
-      { id: 'ART-001', name: 'Fourtwnty',   genre: 'Indie Folk',        badgeClass: 'badge-indie-folk' },
-      { id: 'ART-002', name: 'Hindia',       genre: 'Indie Pop',         badgeClass: 'badge-indie-pop'  },
-      { id: 'ART-003', name: 'Tulus',        genre: 'Pop',               badgeClass: 'badge-pop'        },
-      { id: 'ART-004', name: 'Nadin Amizah', genre: 'Folk',              badgeClass: 'badge-folk'       },
-      { id: 'ART-005', name: 'Pamungkas',    genre: 'Singer-Songwriter', badgeClass: 'badge-singer'     },
-      { id: 'ART-006', name: 'Raisa',        genre: 'R&B / Pop',         badgeClass: 'badge-rnb'        },
+      {% for artist in artists %}
+      {
+        id: "{{ artist.artist_id }}",
+        name: "{{ artist.name|escapejs }}",
+        genre: "{{ artist.genre|default:''|escapejs }}"
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
     ];
 
     const avatarColors = ['#4f46e5','#2563eb','#0891b2','#059669','#d97706','#dc2626'];
+
+    function badgeClass(genre) {
+      const key = (genre || '').toLowerCase().trim();
+      if (key === 'indie folk') return 'badge-indie-folk';
+      if (key === 'indie pop') return 'badge-indie-pop';
+      if (key === 'pop') return 'badge-pop';
+      if (key === 'folk') return 'badge-folk';
+      if (key === 'singer-songwriter') return 'badge-singer';
+      if (key === 'r&b / pop') return 'badge-rnb';
+      return 'badge-pop';
+    }
 
     function renderTable(data) {
       const tbody = document.getElementById('tableBody');
@@ -276,7 +288,7 @@
               <span class="artist-name">${a.name}</span>
             </div>
           </td>
-          <td><span class="badge ${a.badgeClass}">${a.genre}</span></td>
+          <td><span class="badge ${badgeClass(a.genre)}">${a.genre || '—'}</span></td>
         </tr>
       `).join('');
       document.getElementById('resultCount').textContent = `${data.length} artis ditemukan`;

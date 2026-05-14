@@ -408,26 +408,36 @@
     <div class="step-text">Pilih &gt; Bayar &gt; Selesai</div>
   </div>
 
+  {% if messages %}
+  <div style="margin-bottom: 14px; display: grid; gap: 8px;">
+    {% for message in messages %}
+    <div style="padding: 10px 12px; border-radius: 10px; border: 1px solid {% if message.tags == 'error' %}#fecaca{% else %}#bbf7d0{% endif %}; background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if message.tags == 'error' %}#b91c1c{% else %}#166534{% endif %}; font-size: 13px; font-weight: 700;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <div class="layout">
     <div class="stack">
       <section class="card">
         <div class="card-header">
           <div class="event-meta">
-            <span class="tag tag-blue">Festival / Musik</span>
-            <span class="tag tag-slate">Konser Melodi Senja</span>
+            <span class="tag tag-blue">{{ selected_event.venue.city|default:'Event' }}</span>
+            <span class="tag tag-slate">{{ selected_event.event_title|default:'Pilih event' }}</span>
           </div>
-          <h2 class="event-title">Konser Melodi Senja</h2>
+          <h2 class="event-title">{{ selected_event.event_title|default:'Pilih event terlebih dahulu' }}</h2>
         </div>
 
         <div class="card-body">
           <div class="event-info">
             <div class="info-box">
               <span class="info-label">Tanggal</span>
-              <p class="info-value">2024-05-15, 19:00</p>
+              <p class="info-value">{{ selected_event.event_datetime|default:'-' }}</p>
             </div>
             <div class="info-box">
               <span class="info-label">Lokasi</span>
-              <p class="info-value">Jakarta Convention Center</p>
+              <p class="info-value">{{ selected_event.venue.venue_name|default:'-' }}</p>
             </div>
           </div>
         </div>
@@ -439,41 +449,18 @@
         </div>
         <div class="card-body">
           <div class="ticket-list">
-            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="VVIP" data-ticket-price="1500000" data-ticket-category="VVIP" data-ticket-quota="50">
+            {% for category in categories %}
+            <div class="ticket-item {% if selected_category and selected_category.pk == category.pk %}active{% elif not selected_category and forloop.first %}active{% endif %}" role="button" tabindex="0" data-ticket-name="{{ category.category_name }}" data-ticket-price="{{ category.price }}" data-ticket-category="{{ category.pk }}" data-ticket-quota="{{ category.quota }}">
               <div class="ticket-dot"></div>
               <div>
-                <p class="ticket-name">VVIP</p>
-                <p class="ticket-sub">Kuota 50 tiket</p>
+                <p class="ticket-name">{{ category.category_name }}</p>
+                <p class="ticket-sub">Kuota {{ category.quota }} tiket</p>
               </div>
-              <div class="ticket-price">Rp 1.500.000</div>
+              <div class="ticket-price">Rp {{ category.price }}</div>
             </div>
-
-            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="VIP" data-ticket-price="750000" data-ticket-category="VIP" data-ticket-quota="150">
-              <div class="ticket-dot"></div>
-              <div>
-                <p class="ticket-name">VIP</p>
-                <p class="ticket-sub">Kuota 150 tiket</p>
-              </div>
-              <div class="ticket-price">Rp 750.000</div>
-            </div>
-
-            <div class="ticket-item" role="button" tabindex="0" data-ticket-name="Category 1" data-ticket-price="450000" data-ticket-category="Category 1" data-ticket-quota="300">
-              <div class="ticket-dot"></div>
-              <div>
-                <p class="ticket-name">Category 1</p>
-                <p class="ticket-sub">Kuota 300 tiket</p>
-              </div>
-              <div class="ticket-price">Rp 450.000</div>
-            </div>
-
-            <div class="ticket-item active" role="button" tabindex="0" data-ticket-name="Category 2" data-ticket-price="250000" data-ticket-category="Category 2" data-ticket-quota="500">
-              <div class="ticket-dot"></div>
-              <div>
-                <p class="ticket-name">Category 2</p>
-                <p class="ticket-sub">Kuota 500 tiket</p>
-              </div>
-              <div class="ticket-price">Rp 250.000</div>
-            </div>
+            {% empty %}
+            <p class="helper-text">Tidak ada kategori yang tersedia untuk event ini.</p>
+            {% endfor %}
           </div>
         </div>
       </section>
@@ -486,7 +473,7 @@
           <div class="form-row">
             <div class="quantity-box">
               <button type="button" class="qty-btn" id="qtyMinus">−</button>
-              <div class="qty-value" id="qtyValue">2</div>
+              <div class="qty-value" id="qtyValue">{{ selected_quantity|default:1 }}</div>
               <button type="button" class="qty-btn" id="qtyPlus">+</button>
             </div>
             <p class="helper-text">Max 10 tiket per transaksi</p>
@@ -499,20 +486,19 @@
           <h3 class="section-title">Pilih Kursi</h3>
         </div>
         <div class="card-body">
+          <div id="selectedSeatInputs"></div>
+          {% if selected_event and selected_event.venue.has_reserved_seating %}
           <div class="seat-grid">
-            <button type="button" class="seat" data-seat="A1">A1</button>
-            <button type="button" class="seat" data-seat="A2">A2</button>
-            <button type="button" class="seat" data-seat="A3">A3</button>
-            <button type="button" class="seat" data-seat="A4">A4</button>
-            <button type="button" class="seat" data-seat="A5">A5</button>
-            <button type="button" class="seat" data-seat="B1">B1</button>
-            <button type="button" class="seat" data-seat="B2">B2</button>
-            <button type="button" class="seat" data-seat="B3">B3</button>
-            <button type="button" class="seat" data-seat="B4">B4</button>
-            <button type="button" class="seat" data-seat="B5">B5</button>
-            <button type="button" class="seat" data-seat="C1">C1</button>
-            <button type="button" class="seat" data-seat="C2">C2</button>
+            {% for seat in available_seats %}
+              <button type="button" class="seat {% if seat.seat_id|stringformat:'s' in selected_seat_ids %}selected{% endif %}" data-seat-id="{{ seat.seat_id }}" data-seat-label="{{ seat.section }}-{{ seat.row_number }}{{ seat.seat_number }}">{{ seat.section }} {{ seat.row_number }}{{ seat.seat_number }}</button>
+            {% empty %}
+              <p class="helper-text">Belum ada kursi tersedia untuk event ini.</p>
+            {% endfor %}
           </div>
+          <p class="helper-text">Pilih kursi sesuai jumlah tiket.</p>
+          {% else %}
+          <p class="helper-text">Event ini menggunakan free seating, kursi tidak perlu dipilih.</p>
+          {% endif %}
         </div>
       </section>
 
@@ -522,10 +508,15 @@
         </div>
         <div class="card-body">
           <div class="promo-row">
-            <input id="promoInput" name="promo_code" type="text" placeholder="CONTOH: TIKTAK20">
+            <input id="promoInput" name="promo_code" type="text" placeholder="CONTOH: TIKTAK20" value="{{ promo_code|default:'' }}" list="promoSuggestions">
             <button type="button" class="btn btn-blue" id="applyPromoBtn">Terapkan</button>
           </div>
-          <p class="promo-note" id="promoNote">Kode promo tidak valid.</p>
+          <datalist id="promoSuggestions">
+            {% for promo in active_promos %}
+            <option value="{{ promo.promo_code }}"></option>
+            {% endfor %}
+          </datalist>
+          <p class="promo-note {% if promo_code %}success{% endif %}" id="promoNote">{% if promo_code %}Promo akan divalidasi saat checkout.{% else %}Masukkan kode promo jika ada.{% endif %}</p>
         </div>
       </section>
     </div>
@@ -540,20 +531,20 @@
             <label for="eventSelect" class="info-label">Pilih Event</label>
             <select id="eventSelect" name="event" style="width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1;margin-bottom:8px">
               {% for ev in events %}
-              <option value="{{ ev.pk }}">{{ ev.event_title }}</option>
+              <option value="{{ ev.pk }}" {% if selected_event_id == ev.pk|stringformat:"s" %}selected{% endif %}>{{ ev.event_title }}</option>
               {% endfor %}
             </select>
             <label for="categorySelect" class="info-label">Pilih Kategori</label>
             <select id="categorySelect" name="category" style="width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1">
               {% for cat in categories %}
-              <option value="{{ cat.pk }}">{{ cat.category_name }} — Rp {{ cat.price }}</option>
+              <option value="{{ cat.pk }}" {% if selected_category_id == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.category_name }} - Rp {{ cat.price }}</option>
               {% endfor %}
             </select>
           </div>
         <div class="summary-list">
           <div class="summary-row">
-            <span id="summaryTicketLine">Category 2 x 2</span>
-            <span class="summary-amount" id="summaryTicketAmount">Rp 500.000</span>
+            <span id="summaryTicketLine">{{ selected_category.category_name|default:'Kategori' }} x {{ selected_quantity|default:1 }}</span>
+            <span class="summary-amount" id="summaryTicketAmount">Rp {{ selected_category.price|default:0 }}</span>
           </div>
           <div class="summary-row">
             <span>Biaya Layanan</span>
@@ -565,7 +556,7 @@
           </div>
         </div>
 
-        <input type="hidden" name="quantity" id="quantityInput" value="2">
+        <input type="hidden" name="quantity" id="quantityInput" value="{{ selected_quantity|default:1 }}">
         <button type="submit" class="pay-btn" id="payBtn">Bayar Sekarang</button>
         <p class="summary-note">Konfirmasi tiket akan dikirim ke email Anda</p>
       </div>
@@ -585,6 +576,9 @@
     const applyPromoBtn = document.getElementById('applyPromoBtn');
     const promoNote = document.getElementById('promoNote');
     const payBtn = document.getElementById('payBtn');
+    const eventSelect = document.getElementById('eventSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const selectedSeatInputs = document.getElementById('selectedSeatInputs');
     const summaryTicketLine = document.getElementById('summaryTicketLine');
     const summaryTicketAmount = document.getElementById('summaryTicketAmount');
     const summaryTotal = document.getElementById('summaryTotal');
@@ -593,25 +587,32 @@
       return item.classList.contains('active');
     }) || ticketItems[0];
 
-    let quantity = 2;
-    let selectedSeats = [];
+    let quantity = Number(document.getElementById('quantityInput').value || 1);
+    let selectedSeats = seatItems.filter(function (seat) {
+      return seat.classList.contains('selected');
+    }).map(function (seat) {
+      return seat.getAttribute('data-seat-id');
+    });
 
     function formatRupiah(number) {
       return 'Rp ' + number.toLocaleString('id-ID');
     }
 
     function getSelectedPrice() {
-      return Number(selectedTicket.getAttribute('data-ticket-price'));
+      return selectedTicket ? Number(selectedTicket.getAttribute('data-ticket-price')) : 0;
     }
 
     function getSelectedTicketName() {
-      return selectedTicket.getAttribute('data-ticket-name');
+      return selectedTicket ? selectedTicket.getAttribute('data-ticket-name') : 'Kategori';
     }
 
     function updateSelectedTicketState() {
       ticketItems.forEach(function (item) {
         item.classList.toggle('active', item === selectedTicket);
       });
+      if (selectedTicket && categorySelect) {
+        categorySelect.value = selectedTicket.getAttribute('data-ticket-category');
+      }
     }
 
     function updateSummary() {
@@ -623,11 +624,21 @@
 
     function syncSeatState() {
       seatItems.forEach(function (seat) {
-        const seatName = seat.getAttribute('data-seat');
-        const isSelected = selectedSeats.includes(seatName);
+        const seatId = seat.getAttribute('data-seat-id');
+        const isSelected = selectedSeats.includes(seatId);
         seat.classList.toggle('selected', isSelected);
         seat.classList.toggle('disabled', !isSelected && selectedSeats.length >= quantity);
       });
+      if (selectedSeatInputs) {
+        selectedSeatInputs.innerHTML = '';
+        selectedSeats.forEach(function (seatId) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'seat_ids';
+          input.value = seatId;
+          selectedSeatInputs.appendChild(input);
+        });
+      }
     }
 
     ticketItems.forEach(function (item) {
@@ -644,6 +655,27 @@
         }
       });
     });
+
+    if (eventSelect) {
+      eventSelect.addEventListener('change', function () {
+        if (eventSelect.value) {
+          window.location.href = '{% url "orders:order_create" %}?event_id=' + encodeURIComponent(eventSelect.value);
+        }
+      });
+    }
+
+    if (categorySelect) {
+      categorySelect.addEventListener('change', function () {
+        const nextTicket = ticketItems.find(function (item) {
+          return item.getAttribute('data-ticket-category') === categorySelect.value;
+        });
+        if (nextTicket) {
+          selectedTicket = nextTicket;
+          updateSelectedTicketState();
+          updateSummary();
+        }
+      });
+    }
 
     qtyMinus.addEventListener('click', function () {
       if (quantity > 1) {
@@ -670,18 +702,18 @@
 
     seatItems.forEach(function (seat) {
       seat.addEventListener('click', function () {
-        const seatName = seat.getAttribute('data-seat');
+        const seatId = seat.getAttribute('data-seat-id');
 
         if (seat.classList.contains('selected')) {
           selectedSeats = selectedSeats.filter(function (value) {
-            return value !== seatName;
+            return value !== seatId;
           });
           seat.classList.remove('selected');
         } else {
           if (selectedSeats.length >= quantity) {
             return;
           }
-          selectedSeats.push(seatName);
+          selectedSeats.push(seatId);
           seat.classList.add('selected');
         }
 
@@ -690,19 +722,9 @@
     });
 
     applyPromoBtn.addEventListener('click', function () {
-      if (promoInput.value.trim().toUpperCase() === 'TIKTAK20') {
-        promoNote.textContent = 'Kode promo berhasil diterapkan.';
-        promoNote.classList.remove('error');
-        promoNote.classList.add('success');
-      } else {
-        promoNote.textContent = 'Kode promo tidak valid.';
-        promoNote.classList.remove('success');
-        promoNote.classList.add('error');
-      }
-    });
-
-    payBtn.addEventListener('click', function () {
-      alert('Order berhasil dibuat dengan status Pending');
+      promoNote.textContent = 'Promo akan divalidasi saat checkout.';
+      promoNote.classList.remove('error');
+      promoNote.classList.add('success');
     });
 
     updateSelectedTicketState();

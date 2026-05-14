@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from .models import Artist, TicketCategory
 from .forms import ArtistForm, TicketCategoryForm
-from accounts.models import Event
+from accounts.models import Event, Organizer
 from accounts.views import get_user_role
 
 
@@ -25,12 +25,32 @@ def is_admin_or_organizer(request):
     return role in ('admin', 'penyelenggara')
 
 
+def get_current_organizer(user):
+    return Organizer.objects.filter(user=user).first()
+
+
+def can_manage_ticket_category(request, category):
+    role = get_user_role(request.user)
+    if role == 'admin':
+        return True
+
+    if role != 'penyelenggara':
+        return False
+
+    organizer = get_current_organizer(request.user)
+    return bool(organizer and category.event.organizer_id == organizer.organizer_id)
+
+
 # ══════════════════════════════════════════════
 #  ARTIST – CUD  (hanya Admin)
 # ══════════════════════════════════════════════
 
-@login_required
+@login_required(login_url='/login')
 def artist_list(request):
+    # ROLE PROTECTION: Only admin can manage artists
+    if not is_admin(request):
+        return redirect('events:artist_read')
+    
     artists = Artist.objects.all().order_by('name')
     context = {
         'artists':       artists,
@@ -42,7 +62,7 @@ def artist_list(request):
     return render(request, 'cudartist.html', context)
 
 
-@login_required
+@login_required(login_url='/login')
 @require_POST
 def artist_create(request):
     if not is_admin(request):
@@ -60,7 +80,7 @@ def artist_create(request):
     return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
 
-@login_required
+@login_required(login_url='/login')
 def artist_update(request, id):
     if not is_admin(request):
         return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
@@ -82,7 +102,7 @@ def artist_update(request, id):
     return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
 
-@login_required
+@login_required(login_url='/login')
 @require_POST
 def artist_delete(request, id):
     if not is_admin(request):
@@ -100,11 +120,12 @@ def artist_delete(request, id):
 
 def artist_read(request):
     artists = Artist.objects.all().order_by('name')
+    role = get_user_role(request.user) if request.user.is_authenticated else 'guest'
     context = {
         'artists':       artists,
         'total_artists': artists.count(),
         'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
-           'role':          get_user_role(request.user),
+           'role':          role,
     }
     return render(request, 'rartist.html', context)
 
@@ -113,25 +134,37 @@ def artist_read(request):
 #  TICKET CATEGORY – CUD  (Admin & Organizer)
 # ══════════════════════════════════════════════
 
-@login_required
+@login_required(login_url='/login')
 def ticket_category_manage(request):
     if not is_admin_or_organizer(request):
         messages.error(request, 'Akses ditolak.')
         return redirect('main:show_main')
 
-    categories = TicketCategory.objects.select_related('event').all()
-    events      = Event.objects.all().order_by('event_title')
+    role = get_user_role(request.user)
+    organizer = get_current_organizer(request.user)
+
+    categories = TicketCategory.objects.select_related('event', 'event__organizer').all()
+    events = Event.objects.all().order_by('event_title')
+
+    if role == 'penyelenggara':
+        if organizer:
+            categories = categories.filter(event__organizer=organizer)
+            events = events.filter(organizer=organizer)
+        else:
+            categories = categories.none()
+            events = events.none()
+
     form        = TicketCategoryForm()
     context = {
         'categories': categories,
         'events':     events,
         'form':       form,
-           'role':       get_user_role(request.user),
+           'role':       role,
     }
     return render(request, 'cudticketcategory.html', context)
 
 
-@login_required
+@login_required(login_url='/login')
 @require_POST
 def ticket_category_create(request):
     if not is_admin_or_organizer(request):
@@ -139,6 +172,15 @@ def ticket_category_create(request):
 
     form = TicketCategoryForm(request.POST)
     if form.is_valid():
+        role = get_user_role(request.user)
+        organizer = get_current_organizer(request.user)
+
+        if role == 'penyelenggara':
+            if not organizer:
+                return JsonResponse({'ok': False, 'error': 'Organizer tidak ditemukan.'}, status=403)
+            if form.cleaned_data['event'].organizer_id != organizer.organizer_id:
+                return JsonResponse({'ok': False, 'error': 'Anda hanya dapat membuat kategori untuk event milik Anda.'}, status=403)
+
         cat = form.save()
         return JsonResponse({
             'ok':    True,
@@ -151,12 +193,15 @@ def ticket_category_create(request):
     return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
 
-@login_required
+@login_required(login_url='/login')
 def ticket_category_update(request, id):
     if not is_admin_or_organizer(request):
         return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
     cat = get_object_or_404(TicketCategory, pk=id)
+
+    if not can_manage_ticket_category(request, cat):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
     if request.method == 'GET':
         return JsonResponse({
@@ -170,18 +215,31 @@ def ticket_category_update(request, id):
 
     form = TicketCategoryForm(request.POST, instance=cat)
     if form.is_valid():
+        role = get_user_role(request.user)
+        organizer = get_current_organizer(request.user)
+
+        if role == 'penyelenggara':
+            if not organizer:
+                return JsonResponse({'ok': False, 'error': 'Organizer tidak ditemukan.'}, status=403)
+            if form.cleaned_data['event'].organizer_id != organizer.organizer_id:
+                return JsonResponse({'ok': False, 'error': 'Anda hanya dapat memindahkan kategori ke event milik Anda.'}, status=403)
+
         form.save()
         return JsonResponse({'ok': True})
     return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
 
-@login_required
+@login_required(login_url='/login')
 @require_POST
 def ticket_category_delete(request, id):
     if not is_admin_or_organizer(request):
         return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
     cat  = get_object_or_404(TicketCategory, pk=id)
+
+    if not can_manage_ticket_category(request, cat):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
+
     name = cat.category_name
     cat.delete()
     return JsonResponse({'ok': True, 'name': name})
@@ -193,9 +251,10 @@ def ticket_category_delete(request, id):
 
 def ticket_category_read(request):
     categories = TicketCategory.objects.select_related('event').all()
+    role = get_user_role(request.user) if request.user.is_authenticated else 'guest'
     context = {
         'categories': categories,
         'events':     Event.objects.all().order_by('event_title'),
-           'role':       get_user_role(request.user),
+           'role':       role,
     }
     return render(request, 'rticketcategory.html', context)

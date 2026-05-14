@@ -248,6 +248,98 @@
     background: #1d4ed8;
   }
 
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .ticket-create-panel {
+    margin-bottom: 22px;
+  }
+
+  .ticket-create-panel summary,
+  .ticket-update-panel summary {
+    list-style: none;
+  }
+
+  .ticket-create-panel summary::-webkit-details-marker,
+  .ticket-update-panel summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ticket-create-panel[open] summary {
+    margin-bottom: 12px;
+  }
+
+  .ticket-form-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .ticket-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .ticket-form-group {
+    display: grid;
+    gap: 6px;
+  }
+
+  .ticket-form-group label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .ticket-form-group select {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 12px;
+    padding: 9px 10px;
+  }
+
+  .ticket-update-panel {
+    display: inline-block;
+  }
+
+  .ticket-update-panel[open] {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .ticket-update-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    gap: 10px;
+    align-items: end;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+  }
+
+  .ticket-delete-form {
+    display: inline;
+  }
+
   @media (max-width: 768px) {
     .ticket-header {
       flex-direction: column;
@@ -271,6 +363,11 @@
     .admin-ticket-meta {
       grid-template-columns: 1fr;
     }
+
+    .ticket-form-grid,
+    .ticket-update-form {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
@@ -283,24 +380,71 @@
       <p class="ticket-subtitle">Kelola tiket: tambah, ubah status, dan hapus tiket</p>
     </div>
 
-    <button class="btn-primary" onclick="openModal()">+ Tambah Tiket</button>
   </div>
+
+  {% if messages %}
+  <div style="margin-bottom: 14px; display: grid; gap: 8px;">
+    {% for message in messages %}
+    <div style="padding: 10px 12px; border-radius: 10px; border: 1px solid {% if message.tags == 'error' %}#fecaca{% else %}#bbf7d0{% endif %}; background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if message.tags == 'error' %}#b91c1c{% else %}#166534{% endif %}; font-size: 13px; font-weight: 700;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <details class="ticket-create-panel">
+    <summary class="btn-primary">+ Buat Tiket</summary>
+    <div class="ticket-form-box">
+      <form method="post" action="{% url 'tickets:ticket_admin_organizer' %}" class="ticket-form-grid">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        <div class="ticket-form-group">
+          <label for="createOrder">Order</label>
+          <select id="createOrder" name="order_id" required>
+            <option value="">Pilih order</option>
+            {% for order in orders %}
+              <option value="{{ order.order_id }}">{{ order.order_id }} - {{ order.customer.full_name }} - {{ order.event.event_title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ticket-form-group">
+          <label for="createCategory">Kategori</label>
+          <select id="createCategory" name="category_id" required>
+            <option value="">Pilih kategori</option>
+            {% for category in categories %}
+              <option value="{{ category.category_id }}">{{ category.event.event_title }} - {{ category.category_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ticket-form-group">
+          <label for="createSeat">Kursi</label>
+          <select id="createSeat" name="seat_id">
+            <option value="">Free seating</option>
+            {% for seat in seats %}
+              <option value="{{ seat.seat_id }}">{{ seat.venue.venue_name }} - {{ seat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn-primary">Buat</button>
+      </form>
+    </div>
+  </details>
 
   <!-- STATS -->
   <div class="ticket-stats">
     <div class="ticket-stat-card">
       <div class="ticket-stat-label">Total Tiket</div>
-      <div class="ticket-stat-value">4</div>
+      <div class="ticket-stat-value">{{ ticket_count|default:0 }}</div>
     </div>
 
     <div class="ticket-stat-card">
       <div class="ticket-stat-label">Valid</div>
-      <div class="ticket-stat-value">2</div>
+      <div class="ticket-stat-value">{{ ticket_count|default:0 }}</div>
     </div>
 
     <div class="ticket-stat-card">
-      <div class="ticket-stat-label">Terpakai</div>
-      <div class="ticket-stat-value">1</div>
+      <div class="ticket-stat-label">Berkursi</div>
+      <div class="ticket-stat-value">{{ assigned_count|default:0 }}</div>
     </div>
   </div>
 
@@ -367,9 +511,41 @@
           </div>
 
           <div class="ticket-actions">
-            <button class="ticket-action-btn" onclick="openUpdateModal()">Update</button>
-            <button class="ticket-action-btn ticket-action-danger" onclick="openDeleteTicketModal()">Hapus</button>
+            <details class="ticket-update-panel">
+              <summary class="ticket-action-btn">Update</summary>
+              <form method="post" action="{% url 'tickets:ticket_admin_organizer' %}" class="ticket-update-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="ticket_id" value="{{ t.ticket_id }}">
+                <div class="ticket-form-group">
+                  <label for="category{{ t.ticket_id }}">Kategori</label>
+                  <select id="category{{ t.ticket_id }}" name="category_id">
+                    {% for category in categories %}
+                      <option value="{{ category.category_id }}" {% if t.ticket_category_id == category.category_id %}selected{% endif %}>{{ category.event.event_title }} - {{ category.category_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="ticket-form-group">
+                  <label for="seat{{ t.ticket_id }}">Kursi</label>
+                  <select id="seat{{ t.ticket_id }}" name="seat_id">
+                    <option value="">Free seating</option>
+                    {% for seat in seats %}
+                      <option value="{{ seat.seat_id }}" {% if t.seat_id == seat.seat_id %}selected{% endif %}>{{ seat.venue.venue_name }} - {{ seat }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="submit" class="btn-secondary">Simpan</button>
+              </form>
+            </details>
+
+            <form method="post" action="{% url 'tickets:ticket_admin_organizer' %}" class="ticket-delete-form" onsubmit="return confirm('Hapus tiket {{ t.ticket_code }}?');">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="ticket_id" value="{{ t.ticket_id }}">
+              <button type="submit" class="ticket-action-btn ticket-action-danger">Hapus</button>
+            </form>
           </div>
+
         </div>
       </div>
     </div>
@@ -380,6 +556,8 @@
 
 </div>
 
+{% comment %} Legacy mock modals are disabled; real CRUD forms live in the page above. {% endcomment %}
+{% comment %}
 <!-- MODAL TAMBAH TIKET -->
 <div id="modalOverlay" class="modal-overlay">
   <div class="modal">
@@ -500,4 +678,5 @@ function closeDeleteTicketModal(){
 }
 </script>
 
+{% endcomment %}
 {% endblock %}

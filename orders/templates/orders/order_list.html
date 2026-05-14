@@ -386,18 +386,27 @@
 </style>
 
 <div class="container">
-  <!-- Dummy role selector for frontend-only -->
-  <div class="role-box">
-    <label for="roleSelector">Role Dummy</label>
-    <select id="roleSelector" onchange="switchRole(this.value)">
-      <option value="customer">Customer</option>
-      <option value="organizer">Organizer</option>
-      <option value="admin">Admin</option>
-    </select>
-  </div>
-
   <h1 class="page-title">Daftar Order</h1>
-  <p class="subtitle" id="roleSubtitle">Riwayat pembelian tiket Anda</p>
+  {% if role == 'admin' %}
+    <p class="subtitle" id="roleSubtitle">Kelola seluruh order pada sistem</p>
+    <p class="filter-note" id="roleFilterNote">Menampilkan semua order</p>
+  {% elif role == 'penyelenggara' %}
+    <p class="subtitle" id="roleSubtitle">Order dari event yang Anda selenggarakan</p>
+    <p class="filter-note" id="roleFilterNote">Menampilkan order dari event milik organizer</p>
+  {% else %}
+    <p class="subtitle" id="roleSubtitle">Riwayat pembelian tiket Anda</p>
+    <p class="filter-note" id="roleFilterNote">Menampilkan order milik Anda</p>
+  {% endif %}
+
+  {% if messages %}
+  <div style="margin-bottom: 14px; display: grid; gap: 8px;">
+    {% for message in messages %}
+    <div style="padding: 10px 12px; border-radius: 10px; border: 1px solid {% if message.tags == 'error' %}#fecaca{% else %}#bbf7d0{% endif %}; background: {% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %}; color: {% if message.tags == 'error' %}#b91c1c{% else %}#166534{% endif %}; font-size: 13px; font-weight: 700;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <section class="toolbar">
     <div class="search-wrap">
@@ -413,64 +422,65 @@
     </select>
   </section>
 
-  <section class="stats stats-3 role-section" data-role="customer">
+  <section class="stats stats-3 role-section {% if role == 'pelanggan' %}active{% endif %}" data-role="customer">
     <div class="stat-card">
       <p class="stat-title">Total Order</p>
-      <p class="stat-value">2</p>
+      <p class="stat-value">{{ order_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Lunas</p>
-      <p class="stat-value">1</p>
+      <p class="stat-value">{{ paid_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
+      <p class="stat-value">{{ pending_count|default:0 }}</p>
     </div>
   </section>
 
-  <section class="stats stats-4 role-section" data-role="organizer">
+  <section class="stats stats-4 role-section {% if role == 'penyelenggara' %}active{% endif %}" data-role="organizer">
     <div class="stat-card">
       <p class="stat-title">Total Order</p>
-      <p class="stat-value">4</p>
+      <p class="stat-value">{{ order_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Lunas</p>
-      <p class="stat-value">2</p>
+      <p class="stat-value">{{ paid_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
+      <p class="stat-value">{{ pending_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Total Revenue</p>
-      <p class="stat-value">Rp 2.190.000</p>
+      <p class="stat-value">Rp {{ total_revenue|default:0 }}</p>
     </div>
   </section>
 
-  <section class="stats stats-4 role-section" data-role="admin">
+  <section class="stats stats-4 role-section {% if role == 'admin' %}active{% endif %}" data-role="admin">
     <div class="stat-card">
       <p class="stat-title">Total Order</p>
-      <p class="stat-value">4</p>
+      <p class="stat-value">{{ order_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Lunas</p>
-      <p class="stat-value">2</p>
+      <p class="stat-value">{{ paid_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
+      <p class="stat-value">{{ pending_count|default:0 }}</p>
     </div>
     <div class="stat-card">
       <p class="stat-title">Total Revenue</p>
-      <p class="stat-value">Rp 2.190.000</p>
+      <p class="stat-value">Rp {{ total_revenue|default:0 }}</p>
     </div>
   </section>
 
-  <section class="table-wrapper role-section" data-role="customer">
+  <section class="table-wrapper role-section {% if role == 'pelanggan' %}active{% endif %}" data-role="customer">
     <table>
       <thead>
         <tr>
           <th>Order ID</th>
+          <th>Event</th>
           <th>Tanggal</th>
           <th>Status</th>
           <th class="money">Total</th>
@@ -480,6 +490,7 @@
         {% for order in orders %}
         <tr>
           <td>{{ order.order_id }}</td>
+          <td>{{ order.event.event_title }}</td>
           <td>{{ order.order_datetime }}</td>
           <td>
             {% if order.payment_status == 'pending' %}
@@ -493,13 +504,13 @@
           <td class="money">Rp {{ order.total_price }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="4">Belum ada order.</td></tr>
+        <tr><td colspan="5">Belum ada order.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </section>
 
-  <section class="table-wrapper role-section" data-role="organizer">
+  <section class="table-wrapper role-section {% if role == 'penyelenggara' %}active{% endif %}" data-role="organizer">
     <table>
       <thead>
         <tr>
@@ -511,39 +522,30 @@
         </tr>
       </thead>
       <tbody>
+        {% for order in orders %}
         <tr>
-          <td>ORD-O104</td>
-          <td>Bagus Pratama</td>
-          <td>2026-04-27 13:05</td>
-          <td><span class="status status-cancelled">Dibatalkan</span></td>
-          <td class="money">Rp 0</td>
+          <td>{{ order.order_id }}</td>
+          <td>{{ order.customer.full_name }}</td>
+          <td>{{ order.order_datetime }}</td>
+          <td>
+            {% if order.payment_status == 'pending' %}
+              <span class="status status-pending">Pending</span>
+            {% elif order.payment_status == 'lunas' or order.payment_status == 'paid' %}
+              <span class="status status-paid">Lunas</span>
+            {% else %}
+              <span class="status status-cancelled">{{ order.payment_status }}</span>
+            {% endif %}
+          </td>
+          <td class="money">Rp {{ order.total_price }}</td>
         </tr>
-        <tr>
-          <td>ORD-O103</td>
-          <td>Gita Ayu</td>
-          <td>2026-04-26 16:20</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 1.120.000</td>
-        </tr>
-        <tr>
-          <td>ORD-O102</td>
-          <td>Dika Saputra</td>
-          <td>2026-04-25 10:12</td>
-          <td><span class="status status-pending">Pending</span></td>
-          <td class="money">Rp 420.000</td>
-        </tr>
-        <tr>
-          <td>ORD-O101</td>
-          <td>Rani Putri</td>
-          <td>2026-04-24 19:40</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 650.000</td>
-        </tr>
+        {% empty %}
+        <tr><td colspan="5">Belum ada order.</td></tr>
+        {% endfor %}
       </tbody>
     </table>
   </section>
 
-  <section class="table-wrapper role-section" data-role="admin">
+  <section class="table-wrapper role-section {% if role == 'admin' %}active{% endif %}" data-role="admin">
     <table>
       <thead>
         <tr>
@@ -556,58 +558,31 @@
         </tr>
       </thead>
       <tbody>
+        {% for order in orders %}
         <tr>
-          <td>ORD-A204</td>
-          <td>Shafa Azka</td>
-          <td>2026-04-27 13:05</td>
-          <td><span class="status status-cancelled">Dibatalkan</span></td>
-          <td class="money">Rp 0</td>
+          <td>{{ order.order_id }}</td>
+          <td>{{ order.customer.full_name }}</td>
+          <td>{{ order.order_datetime }}</td>
+          <td>
+            {% if order.payment_status == 'pending' %}
+              <span class="status status-pending">Pending</span>
+            {% elif order.payment_status == 'lunas' or order.payment_status == 'paid' %}
+              <span class="status status-paid">Lunas</span>
+            {% else %}
+              <span class="status status-cancelled">{{ order.payment_status }}</span>
+            {% endif %}
+          </td>
+          <td class="money">Rp {{ order.total_price }}</td>
           <td>
             <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A204" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A204" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+              <button type="button" class="mini-btn edit" data-order-id="{{ order.order_id }}" data-order-status="{{ order.payment_status }}" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
+              <button type="button" class="mini-btn delete" data-order-id="{{ order.order_id }}" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
             </div>
           </td>
         </tr>
-        <tr>
-          <td>ORD-A203</td>
-          <td>Rindu Zahra</td>
-          <td>2026-04-26 16:20</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 1.120.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A203" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A203" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>ORD-A202</td>
-          <td>Nita Pasaribu</td>
-          <td>2026-04-25 10:12</td>
-          <td><span class="status status-pending">Pending</span></td>
-          <td class="money">Rp 420.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A202" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A202" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>ORD-A201</td>
-          <td>Flora Cahaya</td>
-          <td>2026-04-24 19:40</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 650.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A201" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A201" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
-            </div>
-          </td>
-        </tr>
+        {% empty %}
+        <tr><td colspan="6">Belum ada order.</td></tr>
+        {% endfor %}
       </tbody>
     </table>
   </section>
@@ -615,6 +590,9 @@
 
 <div class="modal" id="updateModal" aria-hidden="true">
   <div class="modal-card">
+    <form method="post" action="{% url 'orders:order_list' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update">
     <div class="modal-header">
       <h3 class="modal-title">Update Status Order</h3>
       <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('updateModal')">&times;</button>
@@ -622,9 +600,10 @@
 
     <label class="modal-label" for="updateOrderIdInput">Order ID</label>
     <input id="updateOrderIdInput" class="readonly-field" type="text" readonly value="-">
+    <input type="hidden" name="order_id" id="updateOrderIdHidden">
 
     <label class="modal-label" for="paymentStatus">PAYMENT STATUS</label>
-    <select id="paymentStatus">
+    <select id="paymentStatus" name="payment_status">
       <option>Lunas</option>
       <option>Pending</option>
       <option>Dibatalkan</option>
@@ -632,24 +611,30 @@
 
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Batal</button>
-      <button type="button" class="btn btn-primary" onclick="submitUpdateOrder()">Update</button>
+      <button type="submit" class="btn btn-primary">Update</button>
     </div>
+    </form>
   </div>
 </div>
 
 <div class="modal" id="deleteModal" aria-hidden="true">
   <div class="modal-card">
+    <form method="post" action="{% url 'orders:order_list' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete">
     <div class="modal-header">
       <h3 class="modal-title modal-title-danger">Hapus Order</h3>
       <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('deleteModal')">&times;</button>
     </div>
     <p class="modal-meta" id="deleteText">Apakah Anda yakin ingin menghapus catatan order ini?</p>
     <p class="modal-meta-small">Tindakan ini tidak dapat dibatalkan.</p>
+    <input type="hidden" name="order_id" id="deleteOrderIdHidden">
 
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Batal</button>
-      <button type="button" class="btn btn-danger" onclick="confirmDeleteOrder()">Hapus</button>
+      <button type="submit" class="btn btn-danger">Hapus</button>
     </div>
+    </form>
   </div>
 </div>
 
@@ -664,56 +649,19 @@
 
   function openUpdateModal(button) {
     const orderId = button.getAttribute('data-order-id');
+    const statusValue = button.getAttribute('data-order-status') || 'pending';
     document.getElementById('updateOrderIdInput').value = orderId;
+    document.getElementById('updateOrderIdHidden').value = orderId;
+    document.getElementById('paymentStatus').value = statusValue === 'cancelled' ? 'Dibatalkan' : statusValue;
     openModal('updateModal');
   }
 
   function openDeleteModal(button) {
     const orderId = button.getAttribute('data-order-id');
+    document.getElementById('deleteOrderIdHidden').value = orderId;
     document.getElementById('deleteText').textContent =
       'Apakah Anda yakin ingin menghapus catatan order ini? (Order ID: ' + orderId + ')';
     openModal('deleteModal');
-  }
-
-  function submitUpdateOrder() {
-    closeModal('updateModal');
-    alert('Status order berhasil diperbarui');
-  }
-
-  function confirmDeleteOrder() {
-    closeModal('deleteModal');
-    alert('Order berhasil dihapus');
-  }
-
-  function switchRole(role) {
-    const subtitleMap = {
-      customer: 'Riwayat pembelian tiket Anda',
-      organizer: 'Order dari event yang Anda selenggarakan',
-      admin: 'Kelola seluruh order pada sistem'
-    };
-
-    const noteMap = {
-      customer: 'Menampilkan order milik Anda (filtered by customer_id)',
-      organizer: 'Menampilkan order dari event yang Anda selenggarakan (filtered by organizer_id)',
-      admin: 'Menampilkan semua order'
-    };
-
-    const placeholderMap = {
-      customer: 'Cari order ID...',
-      organizer: 'Cari ID atau pelanggan...',
-      admin: 'Cari ID atau pelanggan...'
-    };
-
-    document.querySelectorAll('.role-section').forEach(function(section) {
-      section.classList.remove('active');
-      if (section.getAttribute('data-role') === role) {
-        section.classList.add('active');
-      }
-    });
-
-    document.getElementById('roleSubtitle').textContent = subtitleMap[role];
-    document.getElementById('roleFilterNote').textContent = noteMap[role];
-    document.getElementById('searchInput').placeholder = placeholderMap[role];
   }
 
   document.getElementById('updateModal').addEventListener('click', function(event) {
@@ -728,7 +676,6 @@
     }
   });
 
-  switchRole('customer');
 </script>
 
 {% endblock %}
