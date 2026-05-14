@@ -3,6 +3,41 @@
 {% if user.is_authenticated %}
 
 {% if request.resolver_match.url_name != 'choose_role' and request.resolver_match.url_name != 'register' and request.resolver_match.url_name != 'login' %}
+
+<style>
+
+.sidebar-link {
+  display: block;
+  text-decoration: none;
+  color: #334155;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background: #eff6ff;
+  color: #2563eb;
+  transform: translateX(4px);
+}
+
+.logout-link:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.sidebar h4 {
+  color: #9ca3af;
+  font-size: 13px;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+</style>
+
 <div class="topbar">
 
   <div class="top-left">
@@ -67,9 +102,11 @@
     {% else %}
 
       {% if role == "penyelenggara" %}
+
         <a href="{% url 'main:event_list' %}" class="sidebar-link">
           Event Saya
         </a>
+
       {% endif %}
 
       <a href="{% url 'main:venue_list' %}" class="sidebar-link">
@@ -119,42 +156,6 @@
     </a>
 
   </div>
-
-<style>
-
-.nav-link {
-  text-decoration: none;
-  color: #475569;
-  font-weight: 500;
-  transition: 0.2s ease;
-}
-
-.nav-link:hover {
-  color: #2563eb;
-}
-
-.sidebar-link {
-  display: block;
-  text-decoration: none;
-  color: #334155;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-bottom: 4px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.sidebar-link:hover {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.logout-link:hover {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-</style>
 
 {% endif %}
 {% endif %}

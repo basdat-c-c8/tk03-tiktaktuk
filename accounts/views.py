@@ -606,6 +606,9 @@ def update_event(request, id):
 
 @login_required(login_url='/login')
 def browse_events(request):
+
+    role = get_user_role(request.user)
+
     q = request.GET.get("q", "")
     venue_id = request.GET.get("venue", "")
     artist_id = request.GET.get("artist", "")
@@ -613,13 +616,19 @@ def browse_events(request):
     events = Event.objects.all().order_by("-event_datetime")
 
     if q:
-        events = events.filter(event_title__icontains=q)
+        events = events.filter(
+            event_title__icontains=q
+        )
 
     if venue_id:
-        events = events.filter(venue__venue_id=venue_id)
+        events = events.filter(
+            venue__venue_id=venue_id
+        )
 
     if artist_id:
-        events = events.filter(artists__artist_id=artist_id)
+        events = events.filter(
+            artists__artist_id=artist_id
+        )
 
     context = {
         "events": events,
@@ -628,9 +637,14 @@ def browse_events(request):
         "q": q,
         "selected_venue": venue_id,
         "selected_artist": artist_id,
+        "role": role,
     }
 
-    return render(request, "browse_event.html", context)
+    return render(
+        request,
+        "browse_event.html",
+        context
+    )
 
 
 def create_pengguna(request):
