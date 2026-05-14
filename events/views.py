@@ -1,142 +1,201 @@
-# views.py (events app)
-
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib import messages
 
-from .models import Artist
+from .models import Artist, TicketCategory
+from .forms import ArtistForm, TicketCategoryForm
+from accounts.models import Event
 
 
+# ══════════════════════════════════════════════
+#  HELPER – role checker
+# ══════════════════════════════════════════════
+
+def get_role(request):
+    return request.session.get('role', '')
+
+
+def is_admin(request):
+    return get_role(request) == 'admin'
+
+
+def is_admin_or_organizer(request):
+    return get_role(request) in ('admin', 'penyelenggara')
+
+
+# ══════════════════════════════════════════════
+#  ARTIST – CUD  (hanya Admin)
+# ══════════════════════════════════════════════
+
+@login_required
 def artist_list(request):
-    artists = Artist.objects.all().order_by("name")
-
+    artists = Artist.objects.all().order_by('name')
     context = {
-        "artists": artists,
-
-        "total_artists": artists.count(),
-
-        "total_genres": artists.exclude(
-            genre__isnull=True
-        ).exclude(
-            genre=""
-        ).values("genre").distinct().count(),
-
-        "total_event": artists.count(),
+        'artists':       artists,
+        'total_artists': artists.count(),
+        'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
+        'total_event':   artists.count(),
+        'role':          get_role(request),
     }
+    return render(request, 'cudartist.html', context)
 
-    return render(
-        request,
-        "cudartist.html",
-        context
-    )
 
-def create_artist(request):
+@login_required
+@require_POST
+def artist_create(request):
+    if not is_admin(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
-    if request.method == "POST":
+    form = ArtistForm(request.POST)
+    if form.is_valid():
+        artist = form.save()
+        return JsonResponse({
+            'ok':    True,
+            'id':    str(artist.artist_id),
+            'name':  artist.name,
+            'genre': artist.genre,
+        })
+    return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
-        name = request.POST.get("name")
-        genre = request.POST.get("genre")
 
-        if not name:
+@login_required
+def artist_update(request, id):
+    if not is_admin(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
-            messages.error(
-                request,
-                "Nama artis wajib diisi."
-            )
+    artist = get_object_or_404(Artist, pk=id)
 
-            return redirect("events:artist_list")
+    if request.method == 'GET':
+        return JsonResponse({
+            'ok':    True,
+            'id':    str(artist.artist_id),
+            'name':  artist.name,
+            'genre': artist.genre,
+        })
 
-        Artist.objects.create(
-            name=name,
-            genre=genre
-        )
+    form = ArtistForm(request.POST, instance=artist)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'ok': True, 'name': artist.name, 'genre': artist.genre})
+    return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
 
-        messages.success(
-            request,
-            f'Artis "{name}" berhasil ditambahkan.'
-        )
 
-        return redirect("events:artist_list")
+@login_required
+@require_POST
+def artist_delete(request, id):
+    if not is_admin(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
 
-    return redirect("events:artist_list")
+    artist = get_object_or_404(Artist, pk=id)
+    name   = artist.name
+    artist.delete()
+    return JsonResponse({'ok': True, 'name': name})
 
-def update_artist(request, id):
-    artist = get_object_or_404(
-        Artist,
-        artist_id=id
-    )
 
-    if request.method == "POST":
-
-        name = request.POST.get("name")
-        genre = request.POST.get("genre")
-
-        if not name:
-
-            messages.error(
-                request,
-                "Nama artis wajib diisi."
-            )
-
-            return redirect("events:artist_list")
-
-        artist.name = name
-        artist.genre = genre
-        artist.save()
-
-        messages.success(
-            request,
-            f'Artis "{name}" berhasil diperbarui.'
-        )
-
-        return redirect("events:artist_list")
-
-def delete_artist(request, id):
-
-    artist = get_object_or_404(
-        Artist,
-        artist_id=id
-    )
-
-    if request.method == "POST":
-
-        artist_name = artist.name
-
-        artist.delete()
-
-        messages.success(
-            request,
-            f'Artis "{artist_name}" berhasil dihapus.'
-        )
-
-        return redirect("events:artist_list")
-
-    return redirect("events:artist_list")
+# ══════════════════════════════════════════════
+#  ARTIST – READ  (semua pengguna)
+# ══════════════════════════════════════════════
 
 def artist_read(request):
-    artists = Artist.objects.all().order_by("name")
-
+    artists = Artist.objects.all().order_by('name')
     context = {
-        "artists": artists,
-
-        "total_artists": artists.count(),
-
-        "total_genres": artists.exclude(
-            genre__isnull=True
-        ).exclude(
-            genre=""
-        ).values("genre").distinct().count(),
-
-        "total_event": artists.count(),
+        'artists':       artists,
+        'total_artists': artists.count(),
+        'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
+        'role':          get_role(request),
     }
+    return render(request, 'rartist.html', context)
 
-    return render(
-        request,
-        "rartist.html",
-        context
-    )
- 
+
+# ══════════════════════════════════════════════
+#  TICKET CATEGORY – CUD  (Admin & Organizer)
+# ══════════════════════════════════════════════
+
+@login_required
 def ticket_category_manage(request):
-    return render(request, 'cudticketcategory.html')
- 
+    if not is_admin_or_organizer(request):
+        messages.error(request, 'Akses ditolak.')
+        return redirect('main:show_main')
+
+    categories = TicketCategory.objects.select_related('event').all()
+    events      = Event.objects.all().order_by('event_title')
+    form        = TicketCategoryForm()
+    context = {
+        'categories': categories,
+        'events':     events,
+        'form':       form,
+        'role':       get_role(request),
+    }
+    return render(request, 'cudticketcategory.html', context)
+
+
+@login_required
+@require_POST
+def ticket_category_create(request):
+    if not is_admin_or_organizer(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
+
+    form = TicketCategoryForm(request.POST)
+    if form.is_valid():
+        cat = form.save()
+        return JsonResponse({
+            'ok':    True,
+            'id':    str(cat.category_id),
+            'name':  cat.category_name,
+            'price': str(cat.price),
+            'quota': cat.quota,
+            'event': cat.event.event_title,
+        })
+    return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
+
+
+@login_required
+def ticket_category_update(request, id):
+    if not is_admin_or_organizer(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
+
+    cat = get_object_or_404(TicketCategory, pk=id)
+
+    if request.method == 'GET':
+        return JsonResponse({
+            'ok':       True,
+            'id':       str(cat.category_id),
+            'name':     cat.category_name,
+            'price':    str(cat.price),
+            'quota':    cat.quota,
+            'event_id': str(cat.event_id),
+        })
+
+    form = TicketCategoryForm(request.POST, instance=cat)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': False, 'errors': form.errors}, status=400)
+
+
+@login_required
+@require_POST
+def ticket_category_delete(request, id):
+    if not is_admin_or_organizer(request):
+        return JsonResponse({'ok': False, 'error': 'Akses ditolak.'}, status=403)
+
+    cat  = get_object_or_404(TicketCategory, pk=id)
+    name = cat.category_name
+    cat.delete()
+    return JsonResponse({'ok': True, 'name': name})
+
+
+# ══════════════════════════════════════════════
+#  TICKET CATEGORY – READ  (semua pengguna)
+# ══════════════════════════════════════════════
+
 def ticket_category_read(request):
-    return render(request, 'rticketcategory.html')
+    categories = TicketCategory.objects.select_related('event').all()
+    context = {
+        'categories': categories,
+        'events':     Event.objects.all().order_by('event_title'),
+        'role':       get_role(request),
+    }
+    return render(request, 'rticketcategory.html', context)
