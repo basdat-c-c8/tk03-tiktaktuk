@@ -26,8 +26,6 @@ from accounts.models import (
 from events.models import Artist, TicketCategory
 
 def get_user_role(user):
-    if user.is_superuser:
-        return "admin"
 
     account_role = AccountRole.objects.filter(user=user).first()
 

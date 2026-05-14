@@ -73,7 +73,7 @@
       Dashboard
     </a>
 
-    {% if role == "pelanggan" %}
+    {% if request.user.accountrole.role.role_name == "pelanggan" %}
 
       <a href="#" class="sidebar-link">
         Tiket Saya
@@ -101,7 +101,7 @@
 
     {% else %}
 
-      {% if role == "penyelenggara" %}
+      {% if request.user.accountrole.role.role_name == "penyelenggara" %}
 
         <a href="{% url 'main:event_list' %}" class="sidebar-link">
           Event Saya

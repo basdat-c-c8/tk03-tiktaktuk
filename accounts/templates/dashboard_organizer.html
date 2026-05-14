@@ -1,298 +1,337 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
 <style>
-body {
-  background: #f8fafc;
-  font-family: sans-serif;
+
+body{
+  background:#f1f5f9;
+  font-family:Arial,sans-serif;
+  color:#111827;
 }
 
-.container {
-  max-width: 1000px;
-  margin: 40px auto;
+/* CONTAINER */
+.container{
+  max-width:1300px;
+  margin:40px auto;
+  padding:0 24px;
 }
 
-/* HEADER */
-.header {
-  background: linear-gradient(to right, #2563eb, #3b82f6);
-  color: white;
-  padding: 25px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* HERO */
+.hero{
+  background:linear-gradient(to right,#0f172a,#020617);
+  border-radius:20px;
+  padding:34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:white;
+  margin-bottom:24px;
 }
 
-.header small {
-  color: #dbeafe;
+.hero small{
+  color:#94a3b8;
+  font-size:14px;
 }
 
-.header h2 {
-  margin: 5px 0;
+.hero h1{
+  margin:8px 0;
+  font-size:42px;
 }
 
-.header p {
-  margin: 0;
+.hero p{
+  margin:0;
+  color:#cbd5e1;
 }
 
-.header-actions {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
+.hero-actions{
+  display:flex;
+  gap:12px;
 }
 
-.header-btn {
-  border: none;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: white;
-  color: #111827;
-  text-decoration: none;
-  font-weight: 600;
-  cursor: pointer;
+.hero-btn{
+  background:white;
+  color:#111827;
+  padding:12px 18px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:600;
+  transition:.2s;
 }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-top: 20px;
+.hero-btn:hover{
+  transform:translateY(-2px);
 }
 
-.card {
-  background: white;
-  padding: 24px 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-  position: relative;
-  min-height: 120px;
+.hero-btn.secondary{
+  background:#374151;
+  color:white;
 }
 
-.card h4 {
-  color: #94a3b8;
-  font-size: 12px;
-  text-transform: uppercase;
-  margin: 0;
+/* STATS */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:24px;
 }
 
-.card h2 {
-  margin: 8px 0;
-  font-size: 26px;
+.stat-card{
+  background:white;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  position:relative;
 }
 
-.card small {
-  color: #64748b;
+.stat-label{
+  color:#9ca3af;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:14px;
+  letter-spacing:.5px;
 }
 
-.card-icon {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
+.stat-number{
+  font-size:38px;
+  font-weight:bold;
+  margin-bottom:8px;
 }
 
-.icon-blue {
-  background: #e0ecff;
-  color: #2563eb;
+.stat-desc{
+  color:#6b7280;
+  font-size:14px;
 }
 
-.icon-green {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.icon-purple {
-  background: #f3e8ff;
-  color: #9333ea;
-}
-
-.icon-orange {
-  background: #fff7ed;
-  color: #ea580c;
+.stat-icon{
+  position:absolute;
+  top:24px;
+  right:24px;
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:#eff6ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
 }
 
 /* SECTION */
-.section {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  margin-top: 20px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+.section{
+  background:white;
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 22px;
+.section-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:24px;
 }
 
-.section-header h3 {
-  margin: 0 0 6px;
+.section-title{
+  font-size:30px;
+  font-weight:bold;
+  margin-bottom:4px;
 }
 
-.section-subtitle {
-  margin: 0;
-  color: #64748b;
-  font-size: 13px;
+.section-subtitle{
+  color:#6b7280;
 }
 
-.section-header a {
-  font-size: 14px;
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 600;
+.view-all{
+  color:#2563eb;
+  text-decoration:none;
+  font-weight:600;
 }
 
-/* EVENT ITEM */
-.event-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0;
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
+/* EVENT */
+.event-item{
+  padding:22px 0;
+  border-top:1px solid #e5e7eb;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.event-left {
-  display: flex;
-  flex-direction: column;
+.event-item:first-child{
+  border-top:none;
+  padding-top:0;
 }
 
-.event-title {
-  font-weight: bold;
-  margin-bottom: 6px;
+.event-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
-.event-sub {
-  font-size: 13px;
-  color: #64748b;
+.event-title{
+  font-size:22px;
+  font-weight:bold;
 }
 
-.badge {
-  background: #dbeafe;
-  color: #2563eb;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 8px;
-  margin-left: 8px;
+.event-info{
+  color:#6b7280;
+  font-size:14px;
 }
 
-.arrow {
-  color: #9ca3af;
-  font-size: 20px;
+.badge{
+  display:inline-block;
+  background:#dcfce7;
+  color:#16a34a;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:bold;
+  margin-left:8px;
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
+.arrow{
+  color:#9ca3af;
+  font-size:28px;
+}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  .hero{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:20px;
   }
 
-  .header-actions {
-    margin-left: 0;
-    flex-wrap: wrap;
-  }
 }
+
+@media(max-width:700px){
+
+  .stats-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:32px;
+  }
+
+}
+
 </style>
 
 <div class="container">
 
-  <div class="header">
+  <!-- HERO -->
+  <div class="hero">
+
     <div>
-      <small>Selamat datang kembali</small>
-      <h2>{{ request.user.username }}</h2>
-      <p style="color:#dbeafe;">
-        Berbagai acara menarik menunggu Anda
-      </p>
+      <small>Dashboard Penyelenggara</small>
+      <h1>{{ user.username }}</h1>
+      <p>Kelola 3 acara aktif Anda</p>
     </div>
 
-    <div class="header-actions">
-      <a href="{% url 'main:profile' %}" class="header-btn">
-        Profil Saya
+    <div class="hero-actions">
+
+      <a href="{% url 'main:event_list' %}" class="hero-btn">
+        Kelola Acara
       </a>
 
-      <a href="{% url 'main:browse_events' %}" class="header-btn">
-        Jelajahi Acara
+      <a href="{% url 'main:venue_list' %}" class="hero-btn">
+        Venue
       </a>
 
-      <a href="{% url 'main:browse_events' %}" class="header-btn">
-        Cari Tiket
-      </a>
-    </div>
-  </div>
-
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-icon icon-blue">🎟️</div>
-      <h4>Tiket Aktif</h4>
-      <h2>2</h2>
-      <small>Siap digunakan</small>
-    </div>
-
-    <div class="card">
-      <div class="card-icon icon-green">📅</div>
-      <h4>Acara Diikuti</h4>
-      <h2>12</h2>
-      <small>Total pengalaman</small>
-    </div>
-
-    <div class="card">
-      <div class="card-icon icon-purple">🏷️</div>
-      <h4>Kode Promo</h4>
-      <h2>3</h2>
-      <small>Tersedia untuk Anda</small>
-    </div>
-
-    <div class="card">
-      <div class="card-icon icon-orange">💳</div>
-      <h4>Total Belanja</h4>
-      <h2>Rp 1.6M</h2>
-      <small>Bulan ini</small>
     </div>
 
   </div>
 
+  <!-- STATS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-label">ACARA AKTIF</div>
+
+      <div class="stat-number">3</div>
+
+      <div class="stat-desc">Dalam koordinasi</div>
+
+      <div class="stat-icon">📅</div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <div class="stat-label">TIKET TERJUAL</div>
+
+      <div class="stat-number">1,243</div>
+
+      <div class="stat-desc">Total terjual</div>
+
+      <div class="stat-icon">🎟️</div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <div class="stat-label">REVENUE</div>
+
+      <div class="stat-number">Rp 4.8M</div>
+
+      <div class="stat-desc">Bulan ini</div>
+
+      <div class="stat-icon">📈</div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <div class="stat-label">VENUE MITRA</div>
+
+      <div class="stat-number">3</div>
+
+      <div class="stat-desc">Lokasi aktif</div>
+
+      <div class="stat-icon">📍</div>
+
+    </div>
+
+  </div>
+
+  <!-- SECTION -->
   <div class="section">
 
-    <div class="section-header">
+    <div class="section-top">
+
       <div>
-        <h3>Tiket Mendatang</h3>
-        <p class="section-subtitle">
-          Tiket pertunjukan yang akan datang
-        </p>
+        <div class="section-title">Performa Acara</div>
+        <div class="section-subtitle">
+          Status acara yang Anda kelola
+        </div>
       </div>
 
-      <a href="{% url 'main:browse_events' %}">
+      <a href="#" class="view-all">
         Lihat Semua
       </a>
+
     </div>
 
+    <!-- EVENT -->
     <div class="event-item">
 
       <div class="event-left">
 
         <div class="event-title">
           Konser Melodi Senja
-          <span class="badge">VVIP</span>
+          <span class="badge">LIVE</span>
         </div>
 
-        <div class="event-sub">
-          📅 15 Mei 2026
+        <div class="event-info">
+          ↗ 85% terjual
           &nbsp;&nbsp;
           📍 Jakarta Convention Center
         </div>
@@ -303,19 +342,42 @@ body {
 
     </div>
 
-    <div class="event-item" style="border-bottom:none;">
+    <!-- EVENT -->
+    <div class="event-item">
 
       <div class="event-left">
 
         <div class="event-title">
           Festival Seni Budaya
-          <span class="badge">GENERAL</span>
+          <span class="badge">LIVE</span>
         </div>
 
-        <div class="event-sub">
-          📅 22 Mei 2026
+        <div class="event-info">
+          ↗ 85% terjual
           &nbsp;&nbsp;
           📍 Taman Impian Jayakarta
+        </div>
+
+      </div>
+
+      <div class="arrow">›</div>
+
+    </div>
+
+    <!-- EVENT -->
+    <div class="event-item">
+
+      <div class="event-left">
+
+        <div class="event-title">
+          Malam Akustik Bandung
+          <span class="badge">LIVE</span>
+        </div>
+
+        <div class="event-info">
+          ↗ 85% terjual
+          &nbsp;&nbsp;
+          📍 Bandung Hall Center
         </div>
 
       </div>

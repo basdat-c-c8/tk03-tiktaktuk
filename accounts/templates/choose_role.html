@@ -4,98 +4,191 @@
 {% block content %}
 
 <style>
+
 body {
   background: #eef2ff;
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .container {
-  max-width: 420px;
-  margin: 60px auto;
+  max-width: 430px;
+  margin: 70px auto;
   text-align: center;
+  padding: 0 16px;
 }
 
 .logo {
-  width: 150px;
+  width: 90px;
+  height: auto;
   display: block;
-  margin: 0 auto 8px auto;
+  margin: 0 auto 18px auto;
+  object-fit: contain;
+}
+
+.title {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  font-size: 16px;
 }
 
 .card {
   background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
   text-align: left;
 }
 
-/* 🔥 FIX LINK */
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.card-desc {
+  color: #6b7280;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* ROLE BOX */
 .role-box {
-  display: block; /* biar full klik */
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 10px;
+  display: block;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  border-radius: 14px;
+  margin-top: 12px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .role-box:hover {
   border-color: #4f46e5;
   background: #f5f7ff;
-  transform: translateY(-2px); /* 🔥 efek naik dikit */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(79,70,229,0.12);
 }
 
 .role-title {
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 6px;
+  color: #111827;
 }
 
 .role-desc {
-  font-size: 13px;
-  color: gray;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
 }
+
+.login-text {
+  margin-top: 22px;
+  color: #374151;
+}
+
+.login-link {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
 </style>
 
 <div class="container">
+
   <img src="{% static 'images/logo.png' %}" class="logo">
 
-  <h2>TikTakTuk</h2>
-  <p style="color:gray;">Daftar untuk Memulai</p>
+  <h1 class="title">TikTakTuk</h1>
+  <p class="subtitle">Daftar untuk Memulai</p>
 
   <div class="card">
+
     <h3>Jenis Pengguna</h3>
-    <p style="color:gray;">Pilih jenis akun yang sesuai dengan kebutuhan Anda</p>
 
-    <!-- 🔥 PELANGGAN -->
-    <a href="{% url 'main:register' %}?role=pelanggan" class="role-box">
-      <div class="role-title">👤 Pelanggan</div>
-      <div class="role-desc">Beli dan kelola tiket untuk acara favorit Anda</div>
-    </a>
+    <p class="card-desc">
+      Pilih jenis akun yang sesuai dengan kebutuhan Anda
+    </p>
 
-    <!-- 🔥 PENYELENGGARA -->
-    <a href="{% url 'main:register' %}?role=penyelenggara" class="role-box">
-      <div class="role-title">🎪 Penyelenggara</div>
-      <div class="role-desc">Buat dan kelola acara serta venue Anda</div>
-    </a>
+    <!-- PELANGGAN -->
+    <a href="{% url 'main:register' %}?role=pelanggan">
 
-    <a href="{% url 'main:register' %}?role=admin" class="role-link">
-        <div class="role-box">
-          <div class="role-title">🛡️ Admin</div>
-          <div class="role-desc">Kelola sistem dan pantau aktivitas platform</div>
+      <div class="role-box">
+
+        <div class="role-title">
+          👤 Pelanggan
         </div>
-      </a>
+
+        <div class="role-desc">
+          Beli dan kelola tiket untuk acara favorit Anda
+        </div>
+
+      </div>
+
+    </a>
+
+    <!-- PENYELENGGARA -->
+    <a href="{% url 'main:register' %}?role=penyelenggara">
+
+      <div class="role-box">
+
+        <div class="role-title">
+          🎪 Penyelenggara
+        </div>
+
+        <div class="role-desc">
+          Buat dan kelola acara serta venue Anda
+        </div>
+
+      </div>
+
+    </a>
+
+    <!-- ADMIN -->
+    <a href="{% url 'main:register' %}?role=admin">
+
+      <div class="role-box">
+
+        <div class="role-title">
+          🛡️ Admin
+        </div>
+
+        <div class="role-desc">
+          Kelola sistem dan pantau aktivitas platform
+        </div>
+
+      </div>
+
+    </a>
+
   </div>
 
-  <p style="margin-top:15px;">
-    Sudah punya akun? 
-    <a href="{% url 'main:login' %}" style="color:#4f46e5;">Login di sini</a>
+  <p class="login-text">
+
+    Sudah punya akun?
+
+    <a href="{% url 'main:login' %}" class="login-link">
+      Login di sini
+    </a>
+
   </p>
+
 </div>
 
 {% endblock %}
