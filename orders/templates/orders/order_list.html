@@ -477,18 +477,24 @@
         </tr>
       </thead>
       <tbody>
+        {% for order in orders %}
         <tr>
-          <td>ORD-C002</td>
-          <td>2026-04-27 09:15</td>
-          <td><span class="status status-pending">Pending</span></td>
-          <td class="money">Rp 480.000</td>
+          <td>{{ order.order_id }}</td>
+          <td>{{ order.order_datetime }}</td>
+          <td>
+            {% if order.payment_status == 'pending' %}
+              <span class="status status-pending">Pending</span>
+            {% elif order.payment_status == 'lunas' or order.payment_status == 'paid' %}
+              <span class="status status-paid">Lunas</span>
+            {% else %}
+              <span class="status status-cancelled">{{ order.payment_status }}</span>
+            {% endif %}
+          </td>
+          <td class="money">Rp {{ order.total_price }}</td>
         </tr>
-        <tr>
-          <td>ORD-C001</td>
-          <td>2026-04-25 14:32</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 150.000</td>
-        </tr>
+        {% empty %}
+        <tr><td colspan="4">Belum ada order.</td></tr>
+        {% endfor %}
       </tbody>
     </table>
   </section>

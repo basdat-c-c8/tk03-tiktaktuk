@@ -5,7 +5,7 @@ from django.db import models
 class Artist(models.Model):
     artist_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name      = models.CharField(max_length=100)
-    genre     = models.CharField(max_length=100, blank=True)
+    genre     = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -21,6 +21,7 @@ class EventArtist(models.Model):
 
     class Meta:
         unique_together = ("event", "artist")
+        db_table = 'accounts_eventartist'
 
     def __str__(self):
         return f"{self.event} – {self.artist}"
@@ -38,6 +39,7 @@ class TicketCategory(models.Model):
     )
 
     class Meta:
+        db_table = 'accounts_ticketcategory'
         ordering = ['event__event_title', 'category_name']
 
     def __str__(self):

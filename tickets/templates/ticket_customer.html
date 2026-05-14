@@ -335,7 +335,7 @@
   </div>
 
   <div class="customer-ticket-list">
-
+    {% for t in tickets %}
     <div class="customer-ticket-card">
       <div class="customer-ticket-main">
         <div class="customer-ticket-icon">🎫</div>
@@ -343,31 +343,31 @@
         <div class="customer-ticket-content">
           <div class="customer-ticket-badges">
             <span class="ticket-badge ticket-badge-valid">Valid</span>
-            <span class="ticket-badge ticket-badge-type">VIP</span>
+            <span class="ticket-badge ticket-badge-type">{{ t.ticket_category.category_name }}</span>
           </div>
 
-          <h3>Konser Melodi Senja</h3>
-          <small class="ticket-code">TIK-EVT001-VIP-001</small>
+          <h3>{{ t.ticket_category.event.event_title }}</h3>
+          <small class="ticket-code">{{ t.ticket_code }}</small>
 
           <div class="customer-ticket-meta">
             <div>
               <div class="meta-label">Jadwal</div>
-              <div class="meta-value">2024-05-15 19:00</div>
+              <div class="meta-value">{{ t.ticket_category.event.event_datetime }}</div>
             </div>
 
             <div>
               <div class="meta-label">Lokasi</div>
-              <div class="meta-value">Jakarta Convention Center</div>
+              <div class="meta-value">{{ t.ticket_category.event.venue }}</div>
             </div>
 
             <div>
               <div class="meta-label">Kursi</div>
-              <div class="meta-value">VIP B-1</div>
+              <div class="meta-value">{% if t.seat %}{{ t.seat }}{% else %}Free Seating{% endif %}</div>
             </div>
 
             <div>
               <div class="meta-label">Harga</div>
-              <div class="meta-value">Rp 750.000</div>
+              <div class="meta-value">Rp {{ t.ticket_category.price }}</div>
             </div>
           </div>
 
@@ -384,6 +384,9 @@
         <div class="qr-label">SCAN ENTRY</div>
       </div>
     </div>
+    {% empty %}
+    <p>Belum ada tiket.</p>
+    {% endfor %}
 
   </div>
 

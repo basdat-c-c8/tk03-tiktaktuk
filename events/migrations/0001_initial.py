@@ -24,17 +24,4 @@ class Migration(migrations.Migration):
                 'ordering': ['name'],
             },
         ),
-        migrations.CreateModel(
-            name='TicketCategory',
-            fields=[
-                ('category_id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('category_name', models.CharField(max_length=50)),
-                ('quota', models.IntegerField()),
-                ('price', models.DecimalField(decimal_places=2, max_digits=12)),
-            ],
-            options={
-                'db_table': 'TICKET_CATEGORY',
-                'ordering': ['category_name'],
-            },
-        ),
     ]

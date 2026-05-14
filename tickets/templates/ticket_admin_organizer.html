@@ -320,7 +320,7 @@
 
   <!-- LIST -->
   <div class="admin-ticket-list">
-
+    {% for t in tickets %}
     <div class="admin-ticket-card">
       <div class="admin-ticket-main">
         <div class="admin-ticket-icon">🎫</div>
@@ -328,41 +328,41 @@
         <div class="admin-ticket-content">
           <div class="admin-ticket-badges">
             <span class="ticket-badge ticket-badge-valid">Valid</span>
-            <span class="ticket-badge ticket-badge-type">VIP</span>
+            <span class="ticket-badge ticket-badge-type">{{ t.ticket_category.category_name }}</span>
           </div>
 
-          <h3>Konser Melodi Senja</h3>
-          <small class="ticket-code">TIK-EVT001-VIP-001</small>
+          <h3>{{ t.ticket_category.event.event_title }}</h3>
+          <small class="ticket-code">{{ t.ticket_code }}</small>
 
           <div class="admin-ticket-meta">
             <div>
               <div class="meta-label">Jadwal</div>
-              <div class="meta-value">2024-05-15 19:00</div>
+              <div class="meta-value">{{ t.ticket_category.event.event_datetime }}</div>
             </div>
 
             <div>
               <div class="meta-label">Lokasi</div>
-              <div class="meta-value">Jakarta Convention Center</div>
+              <div class="meta-value">{{ t.ticket_category.event.venue }}</div>
             </div>
 
             <div>
               <div class="meta-label">Kursi</div>
-              <div class="meta-value">VIP B-1</div>
+              <div class="meta-value">{% if t.seat %}{{ t.seat }}{% else %}Free Seating{% endif %}</div>
             </div>
 
             <div>
               <div class="meta-label">Harga</div>
-              <div class="meta-value">Rp 750.000</div>
+              <div class="meta-value">Rp {{ t.ticket_category.price }}</div>
             </div>
 
             <div>
               <div class="meta-label">Order</div>
-              <div class="meta-value">ord_001</div>
+              <div class="meta-value">{{ t.order.order_id }}</div>
             </div>
 
             <div>
               <div class="meta-label">Pelanggan</div>
-              <div class="meta-value">Budi Santoso</div>
+              <div class="meta-value">{{ t.order.customer.full_name }}</div>
             </div>
           </div>
 
@@ -373,60 +373,9 @@
         </div>
       </div>
     </div>
-
-    <div class="admin-ticket-card">
-      <div class="admin-ticket-main">
-        <div class="admin-ticket-icon">🎫</div>
-
-        <div class="admin-ticket-content">
-          <div class="admin-ticket-badges">
-            <span class="ticket-badge ticket-badge-valid">Valid</span>
-            <span class="ticket-badge ticket-badge-type">VIP</span>
-          </div>
-
-          <h3>Konser Melodi Senja</h3>
-          <small class="ticket-code">TIK-EVT001-VIP-002</small>
-
-          <div class="admin-ticket-meta">
-            <div>
-              <div class="meta-label">Jadwal</div>
-              <div class="meta-value">2024-05-15 19:00</div>
-            </div>
-
-            <div>
-              <div class="meta-label">Lokasi</div>
-              <div class="meta-value">Jakarta Convention Center</div>
-            </div>
-
-            <div>
-              <div class="meta-label">Kursi</div>
-              <div class="meta-value">VIP B-2</div>
-            </div>
-
-            <div>
-              <div class="meta-label">Harga</div>
-              <div class="meta-value">Rp 750.000</div>
-            </div>
-
-            <div>
-              <div class="meta-label">Order</div>
-              <div class="meta-value">ord_002</div>
-            </div>
-
-            <div>
-              <div class="meta-label">Pelanggan</div>
-              <div class="meta-value">Siti Aminah</div>
-            </div>
-          </div>
-
-          <div class="ticket-actions">
-            <button class="ticket-action-btn" onclick="openUpdateModal()">Update</button>
-            <button class="ticket-action-btn ticket-action-danger" onclick="openDeleteTicketModal()">Hapus</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    {% empty %}
+    <p>Tidak ada tiket.</p>
+    {% endfor %}
   </div>
 
 </div>

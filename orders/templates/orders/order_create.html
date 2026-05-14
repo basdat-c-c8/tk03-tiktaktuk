@@ -400,7 +400,9 @@
   }
 </style>
 
-<div class="page">
+<form method="post" action="{% url 'orders:order_create' %}">
+  {% csrf_token %}
+  <div class="page">
   <div class="page-header">
     <h1>Checkout Tiket</h1>
     <div class="step-text">Pilih &gt; Bayar &gt; Selesai</div>
@@ -520,7 +522,7 @@
         </div>
         <div class="card-body">
           <div class="promo-row">
-            <input id="promoInput" type="text" placeholder="CONTOH: TIKTAK20">
+            <input id="promoInput" name="promo_code" type="text" placeholder="CONTOH: TIKTAK20">
             <button type="button" class="btn btn-blue" id="applyPromoBtn">Terapkan</button>
           </div>
           <p class="promo-note" id="promoNote">Kode promo tidak valid.</p>
@@ -528,11 +530,26 @@
       </section>
     </div>
 
+    <!-- form selects for event & category (minimal, connects to backend) -->
     <aside class="card summary-card">
       <div class="card-header">
         <h3 class="section-title">Ringkasan Pesanan</h3>
       </div>
-      <div class="card-body">
+        <div class="card-body">
+          <div style="margin-bottom:12px">
+            <label for="eventSelect" class="info-label">Pilih Event</label>
+            <select id="eventSelect" name="event" style="width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1;margin-bottom:8px">
+              {% for ev in events %}
+              <option value="{{ ev.pk }}">{{ ev.event_title }}</option>
+              {% endfor %}
+            </select>
+            <label for="categorySelect" class="info-label">Pilih Kategori</label>
+            <select id="categorySelect" name="category" style="width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1">
+              {% for cat in categories %}
+              <option value="{{ cat.pk }}">{{ cat.category_name }} — Rp {{ cat.price }}</option>
+              {% endfor %}
+            </select>
+          </div>
         <div class="summary-list">
           <div class="summary-row">
             <span id="summaryTicketLine">Category 2 x 2</span>
@@ -548,12 +565,14 @@
           </div>
         </div>
 
-        <button type="button" class="pay-btn" id="payBtn">Bayar Sekarang</button>
+        <input type="hidden" name="quantity" id="quantityInput" value="2">
+        <button type="submit" class="pay-btn" id="payBtn">Bayar Sekarang</button>
         <p class="summary-note">Konfirmasi tiket akan dikirim ke email Anda</p>
       </div>
     </aside>
   </div>
-</div>
+  </div>
+</form>
 
 <script>
   (function () {
@@ -630,6 +649,7 @@
       if (quantity > 1) {
         quantity -= 1;
         qtyValue.textContent = quantity;
+        document.getElementById('quantityInput').value = quantity;
         if (selectedSeats.length > quantity) {
           selectedSeats = selectedSeats.slice(0, quantity);
         }
@@ -642,6 +662,7 @@
       if (quantity < 10) {
         quantity += 1;
         qtyValue.textContent = quantity;
+        document.getElementById('quantityInput').value = quantity;
         updateSummary();
         syncSeatState();
       }

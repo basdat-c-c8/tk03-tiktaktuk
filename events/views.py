@@ -7,22 +7,22 @@ from django.contrib import messages
 from .models import Artist, TicketCategory
 from .forms import ArtistForm, TicketCategoryForm
 from accounts.models import Event
+from accounts.views import get_user_role
 
 
 # ══════════════════════════════════════════════
-#  HELPER – role checker
+#  HELPER – role checker (fixed to use DB lookup)
 # ══════════════════════════════════════════════
-
-def get_role(request):
-    return request.session.get('role', '')
-
 
 def is_admin(request):
-    return get_role(request) == 'admin'
+    """Check if current user is admin"""
+    return get_user_role(request.user) == 'admin'
 
 
 def is_admin_or_organizer(request):
-    return get_role(request) in ('admin', 'penyelenggara')
+    """Check if current user is admin or organizer"""
+    role = get_user_role(request.user)
+    return role in ('admin', 'penyelenggara')
 
 
 # ══════════════════════════════════════════════
@@ -37,7 +37,7 @@ def artist_list(request):
         'total_artists': artists.count(),
         'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
         'total_event':   artists.count(),
-        'role':          get_role(request),
+           'role':          get_user_role(request.user),
     }
     return render(request, 'cudartist.html', context)
 
@@ -104,7 +104,7 @@ def artist_read(request):
         'artists':       artists,
         'total_artists': artists.count(),
         'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
-        'role':          get_role(request),
+           'role':          get_user_role(request.user),
     }
     return render(request, 'rartist.html', context)
 
@@ -126,7 +126,7 @@ def ticket_category_manage(request):
         'categories': categories,
         'events':     events,
         'form':       form,
-        'role':       get_role(request),
+           'role':       get_user_role(request.user),
     }
     return render(request, 'cudticketcategory.html', context)
 
@@ -196,6 +196,6 @@ def ticket_category_read(request):
     context = {
         'categories': categories,
         'events':     Event.objects.all().order_by('event_title'),
-        'role':       get_role(request),
+           'role':       get_user_role(request.user),
     }
     return render(request, 'rticketcategory.html', context)
