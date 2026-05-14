@@ -10,18 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='ticketcategory',
-            name='event',
-        ),
-        migrations.RemoveField(
-            model_name='event',
-            name='artists',
-        ),
-        migrations.DeleteModel(
-            name='EventArtist',
-        ),
-        migrations.DeleteModel(
-            name='TicketCategory',
-        ),
     ]

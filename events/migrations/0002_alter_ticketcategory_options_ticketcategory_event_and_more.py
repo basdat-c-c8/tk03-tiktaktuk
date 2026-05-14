@@ -4,6 +4,16 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def delete_orphan_ticketcategories(apps, schema_editor):
+    conn = schema_editor.connection
+    tables = conn.introspection.table_names()
+    if 'events_ticketcategory' not in tables:
+        return
+    with conn.cursor() as c:
+        c.execute("DELETE FROM events_ticketcategory WHERE event_id NOT IN (SELECT event_id FROM accounts_event)")
+
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,16 +22,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(delete_orphan_ticketcategories, migrations.RunPython.noop),
         migrations.AlterModelOptions(
             name='ticketcategory',
             options={'ordering': ['event__event_title', 'category_name']},
         ),
-        migrations.AddField(
-            model_name='ticketcategory',
-            name='event',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='ticket_categories', to='accounts.event'),
-            preserve_default=False,
-        ),
+        # AddField for 'event' skipped: column appears present in DB already.
         migrations.AlterField(
             model_name='artist',
             name='genre',
