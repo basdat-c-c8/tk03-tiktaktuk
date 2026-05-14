@@ -43,9 +43,10 @@ body {
 
 .filters {
   display: grid;
-  grid-template-columns: 1fr 180px 160px;
+  grid-template-columns: 1fr 180px 180px;
   gap: 12px;
   margin: 24px 0;
+  align-items: center;
 }
 
 .filters input,
@@ -155,14 +156,62 @@ body {
     {% endif %}
   </div>
 
-  <form class="filters">
-    <input type="text" placeholder="Cari acara atau artis...">
-    <select>
-      <option>Semua Venue</option>
+  <form class="filters" method="GET">
+
+    <input 
+      type="text"
+      name="search"
+      placeholder="Cari acara..."
+      value="{{ request.GET.search }}"
+    >
+  
+    <select 
+      name="city"
+      onchange="this.form.submit()"
+    >
+  
+      <option value="">Semua Kota</option>
+  
+      {% for city in cities %}
+        <option 
+          value="{{ city }}"
+          {% if request.GET.city == city %}
+            selected
+          {% endif %}
+        >
+          {{ city }}
+        </option>
+      {% endfor %}
+  
     </select>
-    <select>
-      <option>Semua Artis</option>
+  
+    <select 
+      name="seating"
+      onchange="this.form.submit()"
+    >
+  
+      <option value="">Semua Seating</option>
+  
+      <option 
+        value="reserved"
+        {% if request.GET.seating == "reserved" %}
+          selected
+        {% endif %}
+      >
+        Reserved Seating
+      </option>
+  
+      <option 
+        value="free"
+        {% if request.GET.seating == "free" %}
+          selected
+        {% endif %}
+      >
+        Free Seating
+      </option>
+  
     </select>
+  
   </form>
 
   <div class="event-grid">
