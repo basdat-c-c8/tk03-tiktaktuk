@@ -21,10 +21,9 @@ from accounts.models import (
     Organizer,
     Venue,
     Event,
-    TicketCategory
 )
 
-from events.models import Artist
+from events.models import Artist, TicketCategory
 
 def get_user_role(user):
     if user.is_superuser:

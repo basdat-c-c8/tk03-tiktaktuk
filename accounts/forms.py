@@ -2,10 +2,9 @@ import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from accounts.models import Venue
 from django.contrib.auth.forms import PasswordChangeForm
-from accounts.models import Event, TicketCategory
-from events.models import Artist
+from accounts.models import Event, Venue
+from events.models import Artist, TicketCategory
 
 class VenueForm(forms.ModelForm):
     class Meta:
