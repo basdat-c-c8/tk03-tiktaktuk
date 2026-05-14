@@ -17,4 +17,12 @@ urlpatterns = [
     path('ticket-categories/create/',             views.ticket_category_create, name='ticket_category_create'),
     path('ticket-categories/update/<uuid:id>/',   views.ticket_category_update, name='ticket_category_update'),
     path('ticket-categories/delete/<uuid:id>/',   views.ticket_category_delete, name='ticket_category_delete'),
+
+    # ── EVENT ARTIST (Trigger 3.1) ───────────────────────────
+    path('events/<uuid:event_id>/artists/',                          views.event_artist_list,   name='event_artist_list'),
+    path('events/<uuid:event_id>/artists/add/',                      views.event_artist_add,    name='event_artist_add'),
+    path('events/<uuid:event_id>/artists/<uuid:artist_id>/remove/',  views.event_artist_remove, name='event_artist_remove'),
+
+    # ── SISA KUOTA TIKET (Stored Procedure 3.2) ─────────────
+    path('events/<uuid:event_id>/ticket-quota/',                     views.ticket_quota_view,   name='ticket_quota_view'),
 ]
