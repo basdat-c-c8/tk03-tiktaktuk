@@ -491,18 +491,63 @@ def profile_view(request):
 
 
 @login_required(login_url='/login')
+@login_required(login_url='/login')
+@login_required(login_url='/login')
 def event_list(request):
+
     role = get_user_role(request.user)
 
-    events = Event.objects.all().order_by("-event_datetime")
+    events = Event.objects.select_related(
+        "venue",
+        "organizer"
+    ).all()
+
+    # SEARCH
+    search = request.GET.get("search")
+
+    if search:
+        events = events.filter(
+            event_title__icontains=search
+        )
+
+    # FILTER KOTA
+    city = request.GET.get("city")
+
+    if city:
+        events = events.filter(
+            venue__city=city
+        )
+
+    # FILTER SEATING
+    seating = request.GET.get("seating")
+
+    if seating == "reserved":
+        events = events.filter(
+            venue__has_reserved_seating=True
+        )
+
+    elif seating == "free":
+        events = events.filter(
+            venue__has_reserved_seating=False
+        )
+
+    # DATA DROPDOWN
+    cities = Venue.objects.values_list(
+        "city",
+        flat=True
+    ).distinct()
 
     context = {
         "events": events,
         "role": role,
+        "cities": cities,
     }
 
-    return render(request, "event_list.html", context)
-
+    return render(
+        request,
+        "event_list.html",
+        context
+    )
 
 @login_required(login_url='/login')
 def create_event(request):
