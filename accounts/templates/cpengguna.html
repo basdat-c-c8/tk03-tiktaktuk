@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -36,7 +37,6 @@
       padding: 24px;
     }
 
-    /* ── Card ── */
     .card {
       background: var(--white);
       border-radius: 20px;
@@ -52,7 +52,6 @@
       to   { opacity:1; transform:translateY(0); }
     }
 
-    /* ── Logo ── */
     .logo-wrap { text-align:center; margin-bottom:28px; }
     .logo-icon {
       display:inline-flex; align-items:center; justify-content:center;
@@ -64,16 +63,11 @@
     .logo-title { font-size:22px; font-weight:700; color:var(--gray-800); }
     .logo-sub   { font-size:13px; color:var(--gray-400); margin-top:2px; }
 
-    /* ── Step: role selector ── */
     .step { display:none; }
     .step.active { display:block; animation:fadeUp .3s ease both; }
 
-    .section-label {
-      font-size:15px; font-weight:600; color:var(--gray-800); margin-bottom:4px;
-    }
-    .section-hint {
-      font-size:12.5px; color:var(--gray-400); margin-bottom:18px;
-    }
+    .section-label { font-size:15px; font-weight:600; color:var(--gray-800); margin-bottom:4px; }
+    .section-hint  { font-size:12.5px; color:var(--gray-400); margin-bottom:18px; }
 
     .role-card {
       border:1.5px solid var(--gray-200);
@@ -93,7 +87,6 @@
     .role-name { font-size:14px; font-weight:600; color:var(--gray-800); }
     .role-desc { font-size:12px; color:var(--gray-400); margin-top:2px; }
 
-    /* ── Back link ── */
     .back-link {
       display:inline-flex; align-items:center; gap:5px;
       font-size:13px; color:var(--blue); font-weight:500;
@@ -103,12 +96,10 @@
     }
     .back-link:hover { text-decoration:underline; }
 
-    /* ── Form heading ── */
     .form-heading { margin-bottom:20px; }
     .form-heading h2 { font-size:17px; font-weight:700; color:var(--gray-800); }
     .form-heading p  { font-size:12.5px; color:var(--gray-400); margin-top:3px; }
 
-    /* ── Fields ── */
     .field { margin-bottom:14px; }
     label {
       display:block; font-size:12.5px; font-weight:600;
@@ -131,11 +122,8 @@
       border-color:var(--red);
       box-shadow:0 0 0 3px rgba(239,68,68,.10);
     }
-    .field-error {
-      font-size:11.5px; color:var(--red); margin-top:4px; display:none;
-    }
+    .field-error { font-size:11.5px; color:var(--red); margin-top:4px; display:none; }
 
-    /* ── Checkbox ── */
     .checkbox-row {
       display:flex; align-items:center; gap:9px;
       margin-bottom:18px; margin-top:4px;
@@ -145,10 +133,8 @@
     }
     .checkbox-row span { font-size:12.5px; color:var(--gray-600); }
     .checkbox-row a { color:var(--blue); text-decoration:none; font-weight:500; }
-    .checkbox-row a:hover { text-decoration:underline; }
     .checkbox-row.error-check span { color:var(--red); }
 
-    /* ── Button ── */
     .btn-primary {
       width:100%; padding:12px;
       background:var(--gray-800); color:var(--white);
@@ -159,58 +145,37 @@
     .btn-primary:hover { background:#0F172A; }
     .btn-primary:active { transform:scale(.98); }
 
-    /* ── Alert ── */
+    /* Django messages */
     .alert {
-      background:var(--red-light); border:1px solid #FECACA;
       border-radius:9px; padding:10px 13px;
-      font-size:12.5px; color:var(--red); margin-bottom:14px;
-      display:none;
+      font-size:12.5px; margin-bottom:14px;
     }
+    .alert-error   { background:var(--red-light); border:1px solid #FECACA; color:var(--red); }
+    .alert-success { background:#ECFDF5; border:1px solid #6EE7B7; color:#065F46; }
 
-    /* ── Footer link ── */
     .footer-link {
       text-align:center; font-size:12.5px; color:var(--gray-400);
       margin-top:22px;
     }
     .footer-link a { color:var(--blue); font-weight:500; text-decoration:none; }
     .footer-link a:hover { text-decoration:underline; }
-
-    /* ── Success state ── */
-    .success-box {
-      text-align:center; padding:8px 0;
-    }
-    .success-icon {
-      width:64px; height:64px; background:#ECFDF5;
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      margin:0 auto 16px; font-size:30px;
-    }
-    .success-box h3 { font-size:17px; font-weight:700; color:var(--gray-800); margin-bottom:6px; }
-    .success-box p  { font-size:13px; color:var(--gray-400); line-height:1.6; }
-    .btn-login-now {
-      display:inline-block; margin-top:20px; padding:11px 28px;
-      background:var(--blue); color:var(--white); border-radius:9px;
-      font-size:13.5px; font-weight:600; text-decoration:none;
-      transition:background .18s;
-    }
-    .btn-login-now:hover { background:var(--blue-dark); }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- Logo -->
   <div class="logo-wrap">
     <div class="logo-icon">TT</div>
     <div class="logo-title">TikTakTuk</div>
     <div class="logo-sub">Daftar untuk Memulai</div>
   </div>
 
-  <!-- ════════ STEP 1 – Pilih Role ════════ -->
-  <div class="step active" id="step-role">
+  <!-- ════ STEP 1 – Pilih Role ════ -->
+  <div class="step {% if not role or role == '' %}active{% endif %}" id="step-role">
     <div class="section-label">Jenis Pengguna</div>
     <div class="section-hint">Pilih jenis akun yang sesuai dengan kebutuhan Anda</div>
 
-    <div class="role-card" onclick="goToForm('customer')">
+    <div class="role-card" onclick="goToForm('pelanggan')">
       <div class="role-icon">👤</div>
       <div>
         <div class="role-name">Pelanggan</div>
@@ -218,7 +183,7 @@
       </div>
     </div>
 
-    <div class="role-card" onclick="goToForm('organizer')">
+    <div class="role-card" onclick="goToForm('penyelenggara')">
       <div class="role-icon">🎪</div>
       <div>
         <div class="role-name">Penyelenggara</div>
@@ -227,284 +192,238 @@
     </div>
 
     <div class="role-card" onclick="goToForm('admin')">
-      <div class="role-icon">🛡️</div>
+      <div class="role-icon">⚙️</div>
       <div>
         <div class="role-name">Administrator</div>
         <div class="role-desc">Kelola sistem dan pantau aktivitas platform</div>
       </div>
     </div>
 
-    <div class="footer-link">Sudah punya akun? <a href="/login">Login di sini</a></div>
+    <div class="footer-link">Sudah punya akun? <a href="{% url 'main:login' %}">Login di sini</a></div>
   </div>
 
-  <!-- ════════ STEP 2a – Form Customer ════════ -->
-  <div class="step" id="step-customer">
-    <button class="back-link" onclick="goBack()">← Kembali</button>
+  <!-- ════ STEP 2 – Form Register ════ -->
+  <!-- Form ini muncul setelah pilih role, POST ke /register/?role=... -->
+  <div class="step {% if role %}active{% endif %}" id="step-form">
+
+    <button class="back-link" type="button" onclick="goBack()">← Kembali</button>
+
     <div class="form-heading">
-      <h2>Daftar sebagai Pelanggan</h2>
+      <h2 id="form-title">Daftar</h2>
       <p>Buat akun baru untuk memulai pengalaman Anda</p>
     </div>
-    <div class="alert" id="alert-customer"></div>
-    <div class="field">
-      <label>Nama Lengkap</label>
-      <input type="text" id="cust-name" placeholder="Masukkan nama lengkap">
-      <div class="field-error" id="err-cust-name">Nama lengkap wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Email</label>
-      <input type="email" id="cust-email" placeholder="Masukkan email">
-      <div class="field-error" id="err-cust-email">Email tidak valid</div>
-    </div>
-    <div class="field">
-      <label>Nomor Telepon</label>
-      <input type="tel" id="cust-phone" placeholder="Masukkan nomor telepon">
-      <div class="field-error" id="err-cust-phone">Nomor telepon wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Username</label>
-      <input type="text" id="cust-username" placeholder="Pilih username">
-      <div class="field-error" id="err-cust-username">Username wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="cust-password" placeholder="Minimal 6 karakter">
-      <div class="field-error" id="err-cust-password">Password minimal 6 karakter</div>
-    </div>
-    <div class="field">
-      <label>Konfirmasi Password</label>
-      <input type="password" id="cust-confirm" placeholder="Konfirmasi password">
-      <div class="field-error" id="err-cust-confirm">Password tidak cocok</div>
-    </div>
-    <div class="checkbox-row" id="wrap-cust-tos">
-      <input type="checkbox" id="cust-tos">
-      <span>Saya setuju dengan <a href="#">Syarat &amp; Ketentuan</a></span>
-    </div>
-    <button class="btn-primary" onclick="submitForm('customer')">Daftar</button>
-    <div class="footer-link">Sudah punya akun? <a href="/login">Login di sini</a></div>
+
+    <!-- Django error messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="" id="registerForm">
+      {% csrf_token %}
+      <!-- role dikirim via hidden input, diisi JS saat pilih role -->
+      <input type="hidden" name="role" id="hiddenRole" value="{{ role|default:'' }}">
+
+      <!-- Nama Lengkap (tidak untuk admin) -->
+      <div class="field" id="field-fullname">
+        <label>Nama Lengkap</label>
+        <input type="text" name="full_name" id="inp-fullname"
+               placeholder="Masukkan nama lengkap"
+               value="{{ request.POST.full_name|default:'' }}">
+        <div class="field-error" id="err-fullname">Nama lengkap wajib diisi</div>
+      </div>
+
+      <!-- Email (tidak untuk admin) -->
+      <div class="field" id="field-email">
+        <label>Email</label>
+        <input type="email" name="email" id="inp-email"
+               placeholder="Masukkan email"
+               value="{{ request.POST.email|default:'' }}">
+        <div class="field-error" id="err-email">Email tidak valid</div>
+      </div>
+
+      <!-- Nomor Telepon (tidak untuk admin) -->
+      <div class="field" id="field-phone">
+        <label>Nomor Telepon</label>
+        <input type="tel" name="phone_number" id="inp-phone"
+               placeholder="Masukkan nomor telepon"
+               value="{{ request.POST.phone_number|default:'' }}">
+        <div class="field-error" id="err-phone">Nomor telepon wajib diisi</div>
+      </div>
+
+      <!-- Username -->
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" id="inp-username"
+               placeholder="Pilih username"
+               value="{{ request.POST.username|default:'' }}">
+        <div class="field-error" id="err-username">Username wajib diisi</div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password1" id="inp-password"
+               placeholder="Minimal 8 karakter">
+        <div class="field-error" id="err-password">Password minimal 8 karakter</div>
+      </div>
+
+      <!-- Konfirmasi Password -->
+      <div class="field">
+        <label>Konfirmasi Password</label>
+        <input type="password" name="password2" id="inp-confirm"
+               placeholder="Konfirmasi password">
+        <div class="field-error" id="err-confirm">Password tidak cocok</div>
+      </div>
+
+      <div class="checkbox-row" id="wrap-tos">
+        <input type="checkbox" id="tos-check">
+        <span>Saya setuju dengan <a href="#">Syarat &amp; Ketentuan</a></span>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="submitRegister()">Daftar</button>
+    </form>
+
+    <div class="footer-link">Sudah punya akun? <a href="{% url 'main:login' %}">Login di sini</a></div>
   </div>
 
-  <!-- ════════ STEP 2b – Form Organizer ════════ -->
-  <div class="step" id="step-organizer">
-    <button class="back-link" onclick="goBack()">← Kembali</button>
-    <div class="form-heading">
-      <h2>Daftar sebagai Penyelenggara</h2>
-      <p>Buat akun baru untuk memulai pengalaman Anda</p>
-    </div>
-    <div class="alert" id="alert-organizer"></div>
-    <div class="field">
-      <label>Nama Lengkap</label>
-      <input type="text" id="org-name" placeholder="Masukkan nama lengkap">
-      <div class="field-error" id="err-org-name">Nama lengkap wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Email</label>
-      <input type="email" id="org-email" placeholder="Masukkan email">
-      <div class="field-error" id="err-org-email">Email tidak valid</div>
-    </div>
-    <div class="field">
-      <label>Nomor Telepon</label>
-      <input type="tel" id="org-phone" placeholder="Masukkan nomor telepon">
-      <div class="field-error" id="err-org-phone">Nomor telepon wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Username</label>
-      <input type="text" id="org-username" placeholder="Pilih username">
-      <div class="field-error" id="err-org-username">Username wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="org-password" placeholder="Minimal 6 karakter">
-      <div class="field-error" id="err-org-password">Password minimal 6 karakter</div>
-    </div>
-    <div class="field">
-      <label>Konfirmasi Password</label>
-      <input type="password" id="org-confirm" placeholder="Konfirmasi password">
-      <div class="field-error" id="err-org-confirm">Password tidak cocok</div>
-    </div>
-    <div class="checkbox-row" id="wrap-org-tos">
-      <input type="checkbox" id="org-tos">
-      <span>Saya setuju dengan <a href="#">Syarat &amp; Ketentuan</a></span>
-    </div>
-    <button class="btn-primary" onclick="submitForm('organizer')">Daftar</button>
-    <div class="footer-link">Sudah punya akun? <a href="/login">Login di sini</a></div>
-  </div>
-
-  <!-- ════════ STEP 2c – Form Admin ════════ -->
-  <div class="step" id="step-admin">
-    <button class="back-link" onclick="goBack()">← Kembali</button>
-    <div class="form-heading">
-      <h2>Daftar sebagai Administrator</h2>
-      <p>Buat akun baru untuk memulai pengalaman Anda</p>
-    </div>
-    <div class="alert" id="alert-admin"></div>
-    <div class="field">
-      <label>Username</label>
-      <input type="text" id="adm-username" placeholder="Pilih username">
-      <div class="field-error" id="err-adm-username">Username wajib diisi</div>
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="adm-password" placeholder="Minimal 6 karakter">
-      <div class="field-error" id="err-adm-password">Password minimal 6 karakter</div>
-    </div>
-    <div class="field">
-      <label>Konfirmasi Password</label>
-      <input type="password" id="adm-confirm" placeholder="Konfirmasi password">
-      <div class="field-error" id="err-adm-confirm">Password tidak cocok</div>
-    </div>
-    <div class="checkbox-row" id="wrap-adm-tos">
-      <input type="checkbox" id="adm-tos">
-      <span>Saya setuju dengan <a href="#">Syarat &amp; Ketentuan</a></span>
-    </div>
-    <button class="btn-primary" onclick="submitForm('admin')">Daftar</button>
-    <div class="footer-link">Sudah punya akun? <a href="/login">Login di sini</a></div>
-  </div>
-
-  <!-- ════════ STEP 3 – Sukses ════════ -->
-  <div class="step" id="step-success">
-    <div class="success-box">
-      <div class="success-icon">✅</div>
-      <h3>Akun Berhasil Dibuat!</h3>
-      <p>Selamat datang di TikTakTuk.<br>Silakan login untuk mulai menggunakan platform.</p>
-      <a class="btn-login-now" href="/login">Login Sekarang</a>
-    </div>
-    <div class="footer-link" style="margin-top:16px">
-      Butuh bantuan? <a href="#">Hubungi kami</a>
-    </div>
-  </div>
-</div>
+</div><!-- /card -->
 
 <script>
-  // ── Helpers ──────────────────────────────────────────────
-  function showStep(id) {
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+  // Cek apakah halaman ini dibuka dengan role (dari redirect setelah error Django)
+  const CURRENT_ROLE = "{{ role|default:'' }}";
+
+  // Judul sesuai role
+  const ROLE_TITLES = {
+    'pelanggan':    'Daftar sebagai Pelanggan',
+    'penyelenggara':'Daftar sebagai Penyelenggara',
+    'admin':        'Daftar sebagai Administrator',
+  };
+
+  // Inisialisasi tampilan saat halaman load
+  window.addEventListener('DOMContentLoaded', () => {
+    if (CURRENT_ROLE) {
+      showFormForRole(CURRENT_ROLE);
+    }
+
+    // Live password match feedback
+    document.getElementById('inp-confirm').addEventListener('input', () => {
+      const pass = document.getElementById('inp-password').value;
+      const conf = document.getElementById('inp-confirm').value;
+      if (conf && conf !== pass) {
+        document.getElementById('inp-confirm').classList.add('error-input');
+      } else {
+        document.getElementById('inp-confirm').classList.remove('error-input');
+      }
+    });
+  });
 
   function goToForm(role) {
-    showStep('step-' + role);
+    showFormForRole(role);
+  }
+
+  function showFormForRole(role) {
+    // Set hidden input & judul
+    document.getElementById('hiddenRole').value = role;
+    document.getElementById('form-title').textContent = ROLE_TITLES[role] || 'Daftar';
+
+    // Set action URL dengan query param role
+    document.getElementById('registerForm').action = `/register/?role=${role}`;
+
+    // Admin tidak perlu nama/email/telepon
+    const isAdmin = role === 'admin';
+    document.getElementById('field-fullname').style.display = isAdmin ? 'none' : 'block';
+    document.getElementById('field-email').style.display    = isAdmin ? 'none' : 'block';
+    document.getElementById('field-phone').style.display    = isAdmin ? 'none' : 'block';
+
+    // Tampilkan form
+    document.getElementById('step-role').classList.remove('active');
+    document.getElementById('step-form').classList.add('active');
   }
 
   function goBack() {
-    showStep('step-role');
-    // reset all alerts + error styles
-    document.querySelectorAll('.alert').forEach(a => { a.style.display='none'; a.textContent=''; });
-    document.querySelectorAll('.field-error').forEach(e => e.style.display='none');
+    document.getElementById('step-form').classList.remove('active');
+    document.getElementById('step-role').classList.add('active');
+    // Reset error styles
+    document.querySelectorAll('.field-error').forEach(e => e.style.display = 'none');
     document.querySelectorAll('.error-input').forEach(i => i.classList.remove('error-input'));
-    document.querySelectorAll('.checkbox-row').forEach(r => r.classList.remove('error-check'));
-  }
-
-  // ── Validation helpers ────────────────────────────────────
-  function setErr(inputId, errId, show) {
-    const inp = document.getElementById(inputId);
-    const err = document.getElementById(errId);
-    if (!inp || !err) return;
-    if (show) {
-      inp.classList.add('error-input');
-      err.style.display = 'block';
-    } else {
-      inp.classList.remove('error-input');
-      err.style.display = 'none';
-    }
-  }
-
-  function clearErrors(prefix, fields) {
-    fields.forEach(f => setErr(prefix + f, 'err-' + prefix + f, false));
-    document.querySelectorAll('.checkbox-row').forEach(r => r.classList.remove('error-check'));
-    const alert = document.getElementById('alert-' + prefix.replace('-',''));
-    if (alert) { alert.style.display='none'; alert.textContent=''; }
+    document.getElementById('wrap-tos').classList.remove('error-check');
   }
 
   function isValidEmail(v) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
   }
 
-  // ── Submit logic ──────────────────────────────────────────
-  function submitForm(role) {
-    let valid = true;
+  function submitRegister() {
+    const role    = document.getElementById('hiddenRole').value;
+    const isAdmin = role === 'admin';
+    let valid     = true;
 
-    if (role === 'customer') {
-      const p = 'cust-';
-      clearErrors(p, ['name','email','phone','username','password','confirm']);
-      const name   = document.getElementById(p+'name').value.trim();
-      const email  = document.getElementById(p+'email').value.trim();
-      const phone  = document.getElementById(p+'phone').value.trim();
-      const uname  = document.getElementById(p+'username').value.trim();
-      const pass   = document.getElementById(p+'password').value;
-      const conf   = document.getElementById(p+'confirm').value;
-      const tos    = document.getElementById(p+'tos').checked;
+    // Reset semua error
+    document.querySelectorAll('.field-error').forEach(e => e.style.display = 'none');
+    document.querySelectorAll('input').forEach(i => i.classList.remove('error-input'));
+    document.getElementById('wrap-tos').classList.remove('error-check');
 
-      if (!name)              { setErr(p+'name',    'err-'+p+'name',    true); valid=false; }
-      if (!isValidEmail(email)){ setErr(p+'email',   'err-'+p+'email',   true); valid=false; }
-      if (!phone)             { setErr(p+'phone',   'err-'+p+'phone',   true); valid=false; }
-      if (!uname)             { setErr(p+'username','err-'+p+'username',true); valid=false; }
-      if (pass.length < 6)   { setErr(p+'password','err-'+p+'password',true); valid=false; }
-      if (pass !== conf)      { setErr(p+'confirm', 'err-'+p+'confirm', true); valid=false; }
-      if (!tos) {
-        document.getElementById('wrap-cust-tos').classList.add('error-check');
-        valid=false;
+    // Validasi nama (bukan admin)
+    if (!isAdmin) {
+      const name = document.getElementById('inp-fullname').value.trim();
+      if (!name) {
+        document.getElementById('inp-fullname').classList.add('error-input');
+        document.getElementById('err-fullname').style.display = 'block';
+        valid = false;
+      }
+
+      const email = document.getElementById('inp-email').value.trim();
+      if (!isValidEmail(email)) {
+        document.getElementById('inp-email').classList.add('error-input');
+        document.getElementById('err-email').style.display = 'block';
+        valid = false;
+      }
+
+      const phone = document.getElementById('inp-phone').value.trim();
+      if (!phone) {
+        document.getElementById('inp-phone').classList.add('error-input');
+        document.getElementById('err-phone').style.display = 'block';
+        valid = false;
       }
     }
 
-    else if (role === 'organizer') {
-      const p = 'org-';
-      clearErrors(p, ['name','email','phone','username','password','confirm']);
-      const name   = document.getElementById(p+'name').value.trim();
-      const email  = document.getElementById(p+'email').value.trim();
-      const phone  = document.getElementById(p+'phone').value.trim();
-      const uname  = document.getElementById(p+'username').value.trim();
-      const pass   = document.getElementById(p+'password').value;
-      const conf   = document.getElementById(p+'confirm').value;
-      const tos    = document.getElementById(p+'tos').checked;
-
-      if (!name)              { setErr(p+'name',    'err-'+p+'name',    true); valid=false; }
-      if (!isValidEmail(email)){ setErr(p+'email',   'err-'+p+'email',   true); valid=false; }
-      if (!phone)             { setErr(p+'phone',   'err-'+p+'phone',   true); valid=false; }
-      if (!uname)             { setErr(p+'username','err-'+p+'username',true); valid=false; }
-      if (pass.length < 6)   { setErr(p+'password','err-'+p+'password',true); valid=false; }
-      if (pass !== conf)      { setErr(p+'confirm', 'err-'+p+'confirm', true); valid=false; }
-      if (!tos) {
-        document.getElementById('wrap-org-tos').classList.add('error-check');
-        valid=false;
-      }
+    const username = document.getElementById('inp-username').value.trim();
+    if (!username) {
+      document.getElementById('inp-username').classList.add('error-input');
+      document.getElementById('err-username').style.display = 'block';
+      valid = false;
     }
 
-    else if (role === 'admin') {
-      const p = 'adm-';
-      clearErrors(p, ['username','password','confirm']);
-      const uname  = document.getElementById(p+'username').value.trim();
-      const pass   = document.getElementById(p+'password').value;
-      const conf   = document.getElementById(p+'confirm').value;
-      const tos    = document.getElementById(p+'tos').checked;
+    const password = document.getElementById('inp-password').value;
+    if (password.length < 8) {
+      document.getElementById('inp-password').classList.add('error-input');
+      document.getElementById('err-password').style.display = 'block';
+      valid = false;
+    }
 
-      if (!uname)             { setErr(p+'username','err-'+p+'username',true); valid=false; }
-      if (pass.length < 6)   { setErr(p+'password','err-'+p+'password',true); valid=false; }
-      if (pass !== conf)      { setErr(p+'confirm', 'err-'+p+'confirm', true); valid=false; }
-      if (!tos) {
-        document.getElementById('wrap-adm-tos').classList.add('error-check');
-        valid=false;
-      }
+    const confirm = document.getElementById('inp-confirm').value;
+    if (confirm !== password) {
+      document.getElementById('inp-confirm').classList.add('error-input');
+      document.getElementById('err-confirm').style.display = 'block';
+      valid = false;
+    }
+
+    const tos = document.getElementById('tos-check').checked;
+    if (!tos) {
+      document.getElementById('wrap-tos').classList.add('error-check');
+      valid = false;
     }
 
     if (!valid) return;
 
-    // ── Simulate success (replace with fetch() to Django endpoint) ──
-    showStep('step-success');
+    // Submit form ke Django
+    document.getElementById('registerForm').submit();
   }
-
-  // Live password match feedback
-  ['cust','org','adm'].forEach(prefix => {
-    const passEl = document.getElementById(prefix+'-password');
-    const confEl = document.getElementById(prefix+'-confirm');
-    if (!passEl || !confEl) return;
-    confEl.addEventListener('input', () => {
-      if (confEl.value && confEl.value !== passEl.value) {
-        confEl.classList.add('error-input');
-      } else {
-        confEl.classList.remove('error-input');
-      }
-    });
-  });
 </script>
+
 </body>
 </html>

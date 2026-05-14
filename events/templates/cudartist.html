@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,401 +8,130 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:           #f4f6fa;
-      --surface:      #ffffff;
-      --border:       #e8eaf0;
-      --text-main:    #1a1d27;
-      --text-sub:     #6b7280;
-      --text-label:   #9ca3af;
-      --accent:       #4f46e5;
-      --accent-soft:  #eef2ff;
-      --accent-hover: #4338ca;
-      --danger:       #dc2626;
-      --danger-soft:  #fef2f2;
-      --success:      #16a34a;
-      --radius:       12px;
-      --radius-sm:    8px;
-      --shadow:       0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
-      --shadow-lg:    0 8px 32px rgba(0,0,0,.13);
+      --bg:#f4f6fa;--surface:#fff;--border:#e8eaf0;--text-main:#1a1d27;
+      --text-sub:#6b7280;--text-label:#9ca3af;--accent:#4f46e5;
+      --accent-soft:#eef2ff;--accent-hover:#4338ca;--danger:#dc2626;
+      --danger-soft:#fef2f2;--success:#16a34a;--radius:12px;--radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+      --shadow-lg:0 8px 32px rgba(0,0,0,.13);
     }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text-main);
-      min-height: 100vh;
-    }
-
-    /* ── LAYOUT ── */
-    .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 36px 24px 64px; }
-
-    .page-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .page-header h1 { font-size: 1.55rem; font-weight: 700; line-height: 1.2; }
-    .page-header p  { color: var(--text-sub); font-size: .875rem; margin-top: 4px; }
-
-    /* ── STAT CARDS ── */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 22px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-    }
-    .stat-card .label {
-      font-size: .7rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--text-label);
-      margin-bottom: 8px;
-    }
-    .stat-card .value { font-size: 1.9rem; font-weight: 700; }
-
-    /* ── TABLE BOX ── */
-    .table-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-    .table-top {
-      padding: 20px 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .table-top h2 { font-size: 1rem; font-weight: 700; }
-
-    .toggle { display: flex; gap: 6px; }
-    .toggle button {
-      padding: 5px 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      font-size: .8rem;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-sub);
-      font-family: inherit;
-      transition: all .15s;
-    }
-    .toggle button.active {
-      background: var(--text-main);
-      color: #fff;
-      border-color: var(--text-main);
-    }
-
-    .table-controls {
-      padding: 0 24px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .search-wrap { position: relative; flex: 1; max-width: 340px; }
-    .search-wrap svg {
-      position: absolute;
-      left: 11px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-label);
-      pointer-events: none;
-    }
-    .search-wrap input {
-      width: 100%;
-      padding: 9px 14px 9px 36px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: .875rem;
-      font-family: inherit;
-      outline: none;
-      transition: border-color .15s;
-      color: var(--text-main);
-      background: var(--bg);
-    }
-    .search-wrap input:focus { border-color: var(--accent); background: var(--surface); }
-    .search-wrap input::placeholder { color: var(--text-label); }
-    .result-count { font-size: .8rem; color: var(--text-sub); white-space: nowrap; }
-
-    /* ── TABLE ── */
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    thead th {
-      padding: 9px 24px;
-      text-align: left;
-      font-size: .7rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--text-label);
-    }
-    thead th:last-child { width: 80px; }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--bg); }
-    td { padding: 13px 24px; font-size: .9rem; vertical-align: middle; }
-
-    .artist-cell { display: flex; align-items: center; gap: 12px; }
-    .avatar {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: grid; place-items: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: .9rem;
-      flex-shrink: 0;
-    }
-    .artist-name { font-weight: 600; }
-
-    .genre-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: .7rem;
-      font-weight: 700;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .btn-icon {
-      width: 32px; height: 32px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: transparent;
-      cursor: pointer;
-      display: grid; place-items: center;
-      color: var(--text-sub);
-      transition: all .15s;
-    }
-    .btn-icon:hover      { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-    .btn-icon.del:hover  { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
-
-    /* ── PRIMARY BUTTON ── */
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 18px;
-      background: var(--accent); color: #fff;
-      border: none; border-radius: var(--radius-sm);
-      font-family: inherit; font-size: .875rem; font-weight: 600;
-      cursor: pointer; transition: background .15s;
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-
-    /* ── EMPTY STATE ── */
-    .empty-state { text-align: center; padding: 56px 24px; color: var(--text-sub); }
-    .empty-state svg { margin-bottom: 12px; color: var(--text-label); }
-    .empty-state p { font-size: .9rem; }
-
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,12,28,.5);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 1000;
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-    .modal {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      width: 100%; max-width: 460px;
-      padding: 28px;
-      transform: translateY(14px) scale(.97);
-      transition: transform .22s cubic-bezier(.34,1.3,.64,1);
-    }
-    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
-
-    .modal-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .modal-head h3 { font-size: 1.05rem; font-weight: 700; }
-    .modal-head h3.danger { color: var(--danger); }
-    .btn-close {
-      border: none; background: transparent; cursor: pointer;
-      color: var(--text-sub); width: 28px; height: 28px;
-      border-radius: 6px; display: grid; place-items: center;
-      font-size: 1.1rem; transition: background .15s;
-    }
-    .btn-close:hover { background: var(--bg); }
-
-    .form-group { margin-bottom: 16px; }
-    .form-group label {
-      display: block; font-size: .7rem; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase;
-      color: var(--text-sub); margin-bottom: 6px;
-    }
-    .req { color: var(--danger); margin-left: 2px; }
-    .form-group input {
-      width: 100%; padding: 10px 14px;
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      font-family: inherit; font-size: .9rem; color: var(--text-main);
-      outline: none; transition: border-color .15s; background: var(--bg);
-    }
-    .form-group input:focus { border-color: var(--accent); background: var(--surface); }
-    .form-group input::placeholder { color: var(--text-label); }
-    .form-group input.error { border-color: var(--danger); }
-    .field-error { color: var(--danger); font-size: .78rem; margin-top: 5px; display: none; }
-    .field-error.show { display: block; }
-
-    .modal-actions {
-      display: flex; gap: 10px; justify-content: flex-end;
-      margin-top: 24px;
-    }
-    .btn-cancel {
-      padding: 10px 18px; border: 1px solid var(--border);
-      border-radius: var(--radius-sm); background: transparent;
-      font-family: inherit; font-size: .875rem; font-weight: 600;
-      cursor: pointer; color: var(--text-main); transition: background .15s;
-    }
-    .btn-cancel:hover { background: var(--bg); }
-    .btn-danger {
-      padding: 10px 18px; background: var(--danger); color: #fff;
-      border: none; border-radius: var(--radius-sm);
-      font-family: inherit; font-size: .875rem; font-weight: 600;
-      cursor: pointer; transition: background .15s;
-    }
-    .btn-danger:hover { background: #b91c1c; }
-
-    /* delete modal specifics */
-    .delete-modal { max-width: 400px; }
-    .delete-modal p { font-size: .875rem; color: var(--text-sub); line-height: 1.65; }
-    .delete-info {
-      margin-top: 14px;
-      background: var(--danger-soft);
-      border: 1px solid #fecaca;
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-    }
-    .delete-info .di-label { font-size: .68rem; color: var(--text-label); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
-    .delete-info .di-name  { font-weight: 700; color: var(--danger); font-size: .95rem; }
-    .delete-info .di-id    { font-size: .75rem; color: var(--text-label); font-family: 'DM Mono', monospace; margin-top: 3px; }
-
-    /* ── TOAST ── */
-    #toast {
-      position: fixed; bottom: 28px; left: 50%;
-      transform: translateX(-50%) translateY(70px);
-      background: var(--text-main); color: #fff;
-      padding: 11px 22px; border-radius: var(--radius-sm);
-      font-size: .875rem; font-weight: 500;
-      z-index: 2000; transition: transform .3s cubic-bezier(.34,1.3,.64,1), opacity .3s;
-      opacity: 0; pointer-events: none; white-space: nowrap;
-    }
-    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    #toast.ok   { background: var(--success); }
-    #toast.err  { background: var(--danger); }
-
-    .back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  text-decoration: none;
-
-  color: #2563eb;
-  font-size: 0.95rem;
-  font-weight: 700;
-
-  margin-bottom: 18px;
-
-  transition: all 0.2s ease;
-}
-
-.back-btn:hover {
-  color: #1d4ed8;
-  transform: translateX(-2px);
-}
-
-.back-btn svg {
-  width: 17px;
-  height: 17px;
-}
-    @media (max-width: 600px) {
-      .stat-row { grid-template-columns: 1fr; }
-      .page-header { flex-direction: column; gap: 12px; }
-    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text-main); }
+    .page-wrapper { max-width:1100px; margin:0 auto; padding:36px 24px 64px; }
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:28px; }
+    .page-header h1 { font-size:1.55rem; font-weight:700; }
+    .page-header p  { color:var(--text-sub); font-size:.875rem; margin-top:4px; }
+    .stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:22px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; }
+    .stat-card .label { font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-label); margin-bottom:8px; }
+    .stat-card .value { font-size:1.9rem; font-weight:700; }
+    .table-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
+    .table-top { padding:20px 24px 0; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .table-top h2 { font-size:1rem; font-weight:700; }
+    .toggle { display:flex; gap:6px; }
+    .toggle button { padding:5px 14px; border:1px solid var(--border); border-radius:6px; background:transparent; font-size:.8rem; font-weight:500; cursor:pointer; color:var(--text-sub); font-family:inherit; transition:all .15s; }
+    .toggle button.active { background:var(--text-main); color:#fff; border-color:var(--text-main); }
+    .table-controls { padding:0 24px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .search-wrap { position:relative; flex:1; max-width:340px; }
+    .search-wrap svg { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--text-label); pointer-events:none; }
+    .search-wrap input { width:100%; padding:9px 14px 9px 36px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:.875rem; font-family:inherit; outline:none; transition:border-color .15s; color:var(--text-main); background:var(--bg); }
+    .search-wrap input:focus { border-color:var(--accent); background:var(--surface); }
+    .search-wrap input::placeholder { color:var(--text-label); }
+    .result-count { font-size:.8rem; color:var(--text-sub); white-space:nowrap; }
+    table { width:100%; border-collapse:collapse; }
+    thead tr { border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    thead th { padding:9px 24px; text-align:left; font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-label); }
+    tbody tr { border-bottom:1px solid var(--border); transition:background .1s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--bg); }
+    td { padding:13px 24px; font-size:.9rem; vertical-align:middle; }
+    .artist-cell { display:flex; align-items:center; gap:12px; }
+    .avatar { width:36px; height:36px; border-radius:10px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:.9rem; flex-shrink:0; }
+    .artist-name { font-weight:600; }
+    .genre-badge { display:inline-block; padding:3px 10px; border-radius:99px; font-size:.7rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+    .actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
+    .btn-icon { width:32px; height:32px; border:1px solid var(--border); border-radius:var(--radius-sm); background:transparent; cursor:pointer; display:grid; place-items:center; color:var(--text-sub); transition:all .15s; }
+    .btn-icon:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+    .btn-icon.del:hover { border-color:var(--danger); color:var(--danger); background:var(--danger-soft); }
+    .btn-primary { display:inline-flex; align-items:center; gap:6px; padding:10px 18px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:.875rem; font-weight:600; cursor:pointer; transition:background .15s; }
+    .btn-primary:hover { background:var(--accent-hover); }
+    .empty-state { text-align:center; padding:56px 24px; color:var(--text-sub); }
+    .empty-state p { font-size:.9rem; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(10,12,28,.5); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal { background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow-lg); width:100%; max-width:460px; padding:28px; transform:translateY(14px) scale(.97); transition:transform .22s cubic-bezier(.34,1.3,.64,1); }
+    .modal-overlay.open .modal { transform:translateY(0) scale(1); }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .modal-head h3 { font-size:1.05rem; font-weight:700; }
+    .modal-head h3.danger { color:var(--danger); }
+    .btn-close { border:none; background:transparent; cursor:pointer; color:var(--text-sub); width:28px; height:28px; border-radius:6px; display:grid; place-items:center; font-size:1.1rem; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-sub); margin-bottom:6px; }
+    .req { color:var(--danger); margin-left:2px; }
+    .form-group input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:.9rem; color:var(--text-main); outline:none; transition:border-color .15s; background:var(--bg); }
+    .form-group input:focus { border-color:var(--accent); background:var(--surface); }
+    .form-group input.error { border-color:var(--danger); }
+    .field-error { color:var(--danger); font-size:.78rem; margin-top:5px; display:none; }
+    .field-error.show { display:block; }
+    .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:24px; }
+    .btn-cancel { padding:10px 18px; border:1px solid var(--border); border-radius:var(--radius-sm); background:transparent; font-family:inherit; font-size:.875rem; font-weight:600; cursor:pointer; color:var(--text-main); }
+    .btn-danger { padding:10px 18px; background:var(--danger); color:#fff; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:.875rem; font-weight:600; cursor:pointer; }
+    .btn-danger:hover { background:#b91c1c; }
+    .delete-modal { max-width:400px; }
+    .delete-modal p { font-size:.875rem; color:var(--text-sub); line-height:1.65; }
+    .delete-info { margin-top:14px; background:var(--danger-soft); border:1px solid #fecaca; border-radius:var(--radius-sm); padding:10px 14px; }
+    .delete-info .di-label { font-size:.68rem; color:var(--text-label); text-transform:uppercase; letter-spacing:.07em; margin-bottom:3px; }
+    .delete-info .di-name { font-weight:700; color:var(--danger); font-size:.95rem; }
+    .delete-info .di-id { font-size:.75rem; color:var(--text-label); font-family:'DM Mono',monospace; margin-top:3px; }
+    #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(70px); background:var(--text-main); color:#fff; padding:11px 22px; border-radius:var(--radius-sm); font-size:.875rem; font-weight:500; z-index:2000; transition:transform .3s cubic-bezier(.34,1.3,.64,1),opacity .3s; opacity:0; pointer-events:none; white-space:nowrap; }
+    #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+    #toast.ok  { background:var(--success); }
+    #toast.err { background:var(--danger); }
+    .back-btn { display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:#2563eb; font-size:.95rem; font-weight:700; margin-bottom:18px; transition:all .2s; }
+    .back-btn:hover { color:#1d4ed8; transform:translateX(-2px); }
+    @media(max-width:600px){ .stat-row{grid-template-columns:1fr;} .page-header{flex-direction:column;gap:12px;} }
   </style>
 </head>
 <body>
-
-<!-- PAGE -->
 <div class="page-wrapper">
 
   <div class="page-header">
-
     <div>
-  
       <a href="{% url 'main:show_main' %}" class="back-btn">
-                <svg xmlns="http://www.w3.org/2000/svg"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor"
-             stroke-width="2">
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 19l-7-7 7-7"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-  
-        <span>Kembali ke Dashboard</span>
-        </a>
-        <h1>Daftar Artis</h1>
+        Kembali ke Dashboard
+      </a>
+      <h1>Daftar Artis</h1>
       <p>Kelola artis yang ada di platform TikTakTuk</p>
-  
     </div>
-  
+    {% if role == 'admin' %}
     <button class="btn-primary" onclick="openCreate()">
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="15"
-           height="15"
-           fill="none"
-           viewBox="0 0 24 24"
-           stroke="currentColor"
-           stroke-width="2.5">
-        <path stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 4v16m8-8H4"/>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
       </svg>
-  
       Tambah Artis
     </button>
-  
+    {% endif %}
   </div>
 
-  <!-- stats -->
+  <!-- Stats dari Django context -->
   <div class="stat-row">
     <div class="stat-card">
       <div class="label">Total Artis</div>
-      <div class="value" id="statTotal">6</div>
+      <div class="value" id="statTotal">{{ total_artists }}</div>
     </div>
     <div class="stat-card">
       <div class="label">Genre</div>
-      <div class="value" id="statGenre">6</div>
+      <div class="value" id="statGenre">{{ total_genres }}</div>
     </div>
     <div class="stat-card">
       <div class="label">Tampil di Event</div>
-      <div class="value" id="statEvent">6</div>
+      <div class="value" id="statEvent">{{ total_artists }}</div>
     </div>
   </div>
 
-  <!-- table -->
   <div class="table-box">
     <div class="table-top">
       <h2>Tabel Artis</h2>
@@ -417,7 +147,7 @@
         </svg>
         <input type="text" id="searchInput" placeholder="Cari nama atau genre..." oninput="filterTable()" />
       </div>
-      <span class="result-count" id="resultCount">6 artis ditemukan</span>
+      <span class="result-count" id="resultCount">{{ total_artists }} artis ditemukan</span>
     </div>
 
     <table>
@@ -425,17 +155,16 @@
         <tr>
           <th>Artis</th>
           <th>Genre</th>
-          <th></th>
+          {% if role == 'admin' %}<th></th>{% endif %}
         </tr>
       </thead>
       <tbody id="artistBody"></tbody>
     </table>
   </div>
 
-</div><!-- /page-wrapper -->
+</div>
 
-
-<!-- MODAL: CREATE -->
+<!-- MODAL CREATE -->
 <div class="modal-overlay" id="createModal" onclick="overlayClose(event,'createModal')">
   <div class="modal">
     <div class="modal-head">
@@ -453,38 +182,12 @@
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('createModal')">Batal</button>
-      <button class="btn-primary" onclick="doCreate()">Tambah Artis</button>
+      <button class="btn-primary" id="createBtn" onclick="doCreate()">Tambah Artis</button>
     </div>
   </div>
 </div>
 
-
-<!-- MODAL: EDIT -->
-<div class="modal-overlay" id="editModal" onclick="overlayClose(event,'editModal')">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Edit Artis</h3>
-      <button class="btn-close" onclick="closeModal('editModal')">✕</button>
-    </div>
-    <input type="hidden" id="editId" />
-    <div class="form-group">
-      <label>Nama Artis <span class="req">*</span></label>
-      <input type="text" id="eName" placeholder="cth. Fourtwnty" autocomplete="off" />
-      <div class="field-error" id="eNameErr">Nama artis wajib diisi.</div>
-    </div>
-    <div class="form-group">
-      <label>Genre</label>
-      <input type="text" id="eGenre" placeholder="cth. Indie Folk" autocomplete="off" />
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('editModal')">Batal</button>
-      <button class="btn-primary" onclick="doEdit()">Simpan Perubahan</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- MODAL: DELETE -->
+<!-- MODAL DELETE -->
 <div class="modal-overlay" id="deleteModal" onclick="overlayClose(event,'deleteModal')">
   <div class="modal delete-modal">
     <div class="modal-head">
@@ -505,323 +208,209 @@
   </div>
 </div>
 
-
-<!-- TOAST -->
 <div id="toast"></div>
 
-
 <script>
+  const IS_ADMIN = "{{ role }}" === "admin";
+  const CSRF     = "{{ csrf_token }}";
 
+  // ── Data dari Django ──
   let ARTISTS = [
-  {% for artist in artists %}
-  {
-    id: "{{ artist.artist_id }}",
-    name: "{{ artist.name|escapejs }}",
-    genre: "{{ artist.genre|default:''|escapejs }}"
-  }{% if not forloop.last %},{% endif %}
-  {% endfor %}
+    {% for a in artists %}
+    {
+      id:    "{{ a.artist_id }}",
+      name:  "{{ a.name|escapejs }}",
+      genre: "{{ a.genre|default:''|escapejs }}",
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
   ];
-  
+
+  // ── Genre colors ──
   const GENRE_COLORS = {
-    'indie folk': { bg: '#ecfdf5', color: '#166534' },
-    'indie pop': { bg: '#eff6ff', color: '#1e40af' },
-    'pop': { bg: '#fdf4ff', color: '#7e22ce' },
-    'folk': { bg: '#fff7ed', color: '#9a3412' },
-    'singer-songwriter': { bg: '#fdf2f8', color: '#9d174d' },
-    'r&b / pop': { bg: '#fef2f2', color: '#991b1b' },
+    'pop':               {bg:'#fdf4ff',color:'#7e22ce'},
+    'rock':              {bg:'#fef2f2',color:'#991b1b'},
+    'jazz':              {bg:'#eff6ff',color:'#1e40af'},
+    'edm':               {bg:'#ecfdf5',color:'#166534'},
+    'hiphop':            {bg:'#fff7ed',color:'#9a3412'},
+    'indie':             {bg:'#eef2ff',color:'#4338ca'},
+    'dangdut':           {bg:'#fdf2f8',color:'#9d174d'},
+    'r&b':               {bg:'#fef2f2',color:'#991b1b'},
+    'indie folk':        {bg:'#ecfdf5',color:'#166534'},
+    'indie pop':         {bg:'#eff6ff',color:'#1e40af'},
+    'folk':              {bg:'#fff7ed',color:'#9a3412'},
+    'singer-songwriter': {bg:'#fdf2f8',color:'#9d174d'},
+    'r&b / pop':         {bg:'#fef2f2',color:'#991b1b'},
   };
-  
-  const AVATAR_BG = [
-    '#4f46e5','#7c3aed','#0891b2','#ea580c',
-    '#ca8a04','#16a34a','#db2777','#9333ea',
-  ];
-  
+  const AVATAR_BG = ['#4f46e5','#7c3aed','#0891b2','#ea580c','#ca8a04','#16a34a','#db2777','#9333ea'];
+
   function avatarColor(name) {
     let h = 0;
-    for (let i = 0; i < name.length; i++) {
-      h = (h * 31 + name.charCodeAt(i)) & 0xffff;
-    }
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffff;
     return AVATAR_BG[h % AVATAR_BG.length];
   }
-  
   function genreStyle(genre) {
-    const key = (genre || '').toLowerCase().trim();
-    return GENRE_COLORS[key] || {
-      bg: '#f1f5f9',
-      color: '#475569'
-    };
+    return GENRE_COLORS[(genre||'').toLowerCase().trim()] || {bg:'#f1f5f9',color:'#475569'};
   }
-  
   function esc(s) {
-    return (s || '')
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;');
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-  
+
+  // ── Render ──
   function render() {
-  
-    const q = (
-      document.getElementById('searchInput').value || ''
-    ).toLowerCase();
-  
+    const q = (document.getElementById('searchInput').value||'').toLowerCase();
     const filtered = ARTISTS
-      .filter(a =>
-        a.name.toLowerCase().includes(q) ||
-        (a.genre || '').toLowerCase().includes(q)
-      )
-      .sort((a, b) => a.name.localeCompare(b.name));
-  
-    document.getElementById('resultCount').textContent =
-      filtered.length + ' artis ditemukan';
-  
-    document.getElementById('statTotal').textContent =
-      ARTISTS.length;
-  
-    document.getElementById('statGenre').textContent =
-      new Set(
-        ARTISTS.map(a => a.genre).filter(Boolean)
-      ).size;
-  
+      .filter(a => a.name.toLowerCase().includes(q) || (a.genre||'').toLowerCase().includes(q))
+      .sort((a,b) => a.name.localeCompare(b.name));
+
+    document.getElementById('resultCount').textContent = filtered.length + ' artis ditemukan';
+    document.getElementById('statTotal').textContent   = ARTISTS.length;
+    document.getElementById('statGenre').textContent   = new Set(ARTISTS.map(a=>a.genre).filter(Boolean)).size;
+
     const body = document.getElementById('artistBody');
-  
     if (!filtered.length) {
-  
-      body.innerHTML = `
-        <tr>
-          <td colspan="3">
-            <div class="empty-state">
-              <p>Tidak ada artis ditemukan.</p>
-            </div>
-          </td>
-        </tr>
-      `;
-  
+      body.innerHTML = `<tr><td colspan="${IS_ADMIN?3:2}"><div class="empty-state"><p>Tidak ada artis ditemukan.</p></div></td></tr>`;
       return;
     }
-  
     body.innerHTML = filtered.map(a => {
-  
       const gs = genreStyle(a.genre);
-  
       const badgeHtml = a.genre
-        ? `
-          <span
-            class="genre-badge"
-            style="background:${gs.bg};color:${gs.color}"
-          >
-            ${esc(a.genre).toUpperCase()}
-          </span>
-        `
-        : `<span>—</span>`;
-  
-      return `
-        <tr>
-          <td>
-            <div class="artist-cell">
-  
-              <div
-                class="avatar"
-                style="background:${avatarColor(a.name)}"
-              >
-                ${a.name[0].toUpperCase()}
-              </div>
-  
-              <span class="artist-name">
-                ${esc(a.name)}
-              </span>
-  
-            </div>
-          </td>
-  
-          <td>
-            ${badgeHtml}
-          </td>
-  
-          <td>
-            <div class="actions">
-  
-              <button
-                class="btn-icon"
-                onclick="openEdit('${a.id}')"
-              >
-                ✏️
-              </button>
-  
-              <button
-                class="btn-icon del"
-                onclick="openDelete('${a.id}')"
-              >
-                🗑️
-              </button>
-  
-            </div>
-          </td>
-        </tr>
-      `;
-  
+        ? `<span class="genre-badge" style="background:${gs.bg};color:${gs.color}">${esc(a.genre).toUpperCase()}</span>`
+        : `<span style="color:var(--text-label)">—</span>`;
+      const actionHtml = IS_ADMIN ? `
+        <td><div class="actions">
+          <button class="btn-icon" title="Edit" onclick="openEdit('${esc(a.id)}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+          </button>
+          <button class="btn-icon del" title="Hapus" onclick="openDelete('${esc(a.id)}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/>
+            </svg>
+          </button>
+        </div></td>` : '';
+      return `<tr>
+        <td><div class="artist-cell">
+          <div class="avatar" style="background:${avatarColor(a.name)}">${a.name[0].toUpperCase()}</div>
+          <span class="artist-name">${esc(a.name)}</span>
+        </div></td>
+        <td>${badgeHtml}</td>
+        ${actionHtml}
+      </tr>`;
     }).join('');
   }
-  
-  function filterTable() {
-    render();
+  function filterTable() { render(); }
+
+  // ── Modal helpers ──
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function overlayClose(e,id) { if (e.target===document.getElementById(id)) closeModal(id); }
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape') ['createModal','deleteModal'].forEach(closeModal);
+  });
+
+  // ── Toast ──
+  let _tt;
+  function showToast(msg, type='ok') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'show '+type;
+    clearTimeout(_tt); _tt = setTimeout(()=>t.className='', 3000);
   }
-  
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-  }
-  
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-  }
-  
-  function overlayClose(e, id) {
-    if (e.target === document.getElementById(id)) {
-      closeModal(id);
-    }
-  }
-  
+
+  // ── CREATE ──
+  let editingId = null;
+
   function openCreate() {
-  
-    document.getElementById('cName').value = '';
+    editingId = null;
+    document.getElementById('cName').value  = '';
     document.getElementById('cGenre').value = '';
-  
+    document.getElementById('cName').classList.remove('error');
+    document.getElementById('cNameErr').classList.remove('show');
+    document.querySelector('#createModal .modal-head h3').textContent = 'Tambah Artis Baru';
+    document.getElementById('createBtn').textContent = 'Tambah Artis';
+    document.getElementById('createBtn').onclick = doCreate;
     openModal('createModal');
+    setTimeout(()=>document.getElementById('cName').focus(), 120);
   }
-  
+
   function doCreate() {
-  
-    const name = document.getElementById('cName').value.trim();
+    const name  = document.getElementById('cName').value.trim();
     const genre = document.getElementById('cGenre').value.trim();
-  
     if (!name) {
-      alert("Nama artis wajib diisi.");
+      document.getElementById('cName').classList.add('error');
+      document.getElementById('cNameErr').classList.add('show');
       return;
     }
-  
-    const form = document.createElement("form");
-  
-    form.method = "POST";
-    form.action = "/artists/create/";
-  
-    const csrfInput = document.createElement("input");
-    csrfInput.type = "hidden";
-    csrfInput.name = "csrfmiddlewaretoken";
-    csrfInput.value = "{{ csrf_token }}";
-  
-    const nameInput = document.createElement("input");
-    nameInput.type = "hidden";
-    nameInput.name = "name";
-    nameInput.value = name;
-  
-    const genreInput = document.createElement("input");
-    genreInput.type = "hidden";
-    genreInput.name = "genre";
-    genreInput.value = genre;
-  
-    form.appendChild(csrfInput);
-    form.appendChild(nameInput);
-    form.appendChild(genreInput);
-  
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{% url 'events:artist_create' %}";
+    form.innerHTML = `
+      <input type="hidden" name="csrfmiddlewaretoken" value="${CSRF}">
+      <input type="hidden" name="name" value="${name}">
+      <input type="hidden" name="genre" value="${genre}">
+    `;
     document.body.appendChild(form);
-  
     form.submit();
   }
-  
+
+  // ── EDIT ──
   function openEdit(id) {
-
-const artist = ARTISTS.find(a => a.id === id);
-
-if (!artist) return;
-
-document.getElementById("cName").value = artist.name;
-document.getElementById("cGenre").value = artist.genre || "";
-
-openModal("createModal");
-
-const submitBtn = document.querySelector(
-  "#createModal .btn-primary"
-);
-
-submitBtn.textContent = "Simpan Perubahan";
-
-submitBtn.onclick = function () {
-
-  const name =
-    document.getElementById("cName").value.trim();
-
-  const genre =
-    document.getElementById("cGenre").value.trim();
-
-  if (!name) {
-    alert("Nama artis wajib diisi.");
-    return;
+    const a = ARTISTS.find(x=>x.id===id);
+    if (!a) return;
+    editingId = id;
+    document.getElementById('cName').value  = a.name;
+    document.getElementById('cGenre').value = a.genre||'';
+    document.getElementById('cName').classList.remove('error');
+    document.getElementById('cNameErr').classList.remove('show');
+    document.querySelector('#createModal .modal-head h3').textContent = 'Edit Artis';
+    document.getElementById('createBtn').textContent = 'Simpan Perubahan';
+    document.getElementById('createBtn').onclick = doEdit;
+    openModal('createModal');
+    setTimeout(()=>document.getElementById('cName').focus(), 120);
   }
 
-  const form = document.createElement("form");
+  function doEdit() {
+    const name  = document.getElementById('cName').value.trim();
+    const genre = document.getElementById('cGenre').value.trim();
+    if (!name) {
+      document.getElementById('cName').classList.add('error');
+      document.getElementById('cNameErr').classList.add('show');
+      return;
+    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/events/artists/update/${editingId}/`;
+    form.innerHTML = `
+      <input type="hidden" name="csrfmiddlewaretoken" value="${CSRF}">
+      <input type="hidden" name="name" value="${name}">
+      <input type="hidden" name="genre" value="${genre}">
+    `;
+    document.body.appendChild(form);
+    form.submit();
+  }
 
-  form.method = "POST";
-  form.action = `/artists/update/${id}/`;
+  // ── DELETE ──
+  function openDelete(id) {
+    const a = ARTISTS.find(x=>x.id===id);
+    if (!a) return;
+    document.getElementById('deleteId').value      = id;
+    document.getElementById('dName').textContent   = a.name;
+    document.getElementById('dId').textContent     = 'ID: '+a.id;
+    openModal('deleteModal');
+  }
 
-  const csrfInput = document.createElement("input");
-  csrfInput.type = "hidden";
-  csrfInput.name = "csrfmiddlewaretoken";
-  csrfInput.value = "{{ csrf_token }}";
+  function doDelete() {
+    const id = document.getElementById('deleteId').value;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/events/artists/delete/${id}/`;
+    form.innerHTML = `<input type="hidden" name="csrfmiddlewaretoken" value="${CSRF}">`;
+    document.body.appendChild(form);
+    form.submit();
+  }
 
-  const nameInput = document.createElement("input");
-  nameInput.type = "hidden";
-  nameInput.name = "name";
-  nameInput.value = name;
-
-  const genreInput = document.createElement("input");
-  genreInput.type = "hidden";
-  genreInput.name = "genre";
-  genreInput.value = genre;
-
-  form.appendChild(csrfInput);
-  form.appendChild(nameInput);
-  form.appendChild(genreInput);
-
-  document.body.appendChild(form);
-
-  form.submit();
-};
-}
-
-function openDelete(id) {
-
-const artist = ARTISTS.find(a => a.id === id);
-
-if (!artist) return;
-
-const confirmDelete = confirm(
-  `Hapus artis "${artist.name}" ?`
-);
-
-if (!confirmDelete) return;
-
-const form = document.createElement("form");
-
-form.method = "POST";
-form.action = `/artists/delete/${id}/`;
-
-const csrfInput = document.createElement("input");
-csrfInput.type = "hidden";
-csrfInput.name = "csrfmiddlewaretoken";
-csrfInput.value = "{{ csrf_token }}";
-
-form.appendChild(csrfInput);
-
-document.body.appendChild(form);
-
-form.submit();
-}
-  
   render();
-  
-  </script>
-
+</script>
 </body>
 </html>
