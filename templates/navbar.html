@@ -67,21 +67,23 @@
 
   <div id="sidebar" class="sidebar">
 
+    {% with current_role=user.accountrole_set.first.role.role_name %}
+
     <h4>MENU</h4>
 
     <a href="{% url 'main:show_main' %}" class="sidebar-link">
       Dashboard
     </a>
 
-    {% if request.user.accountrole.role.role_name == "pelanggan" %}
+    {% if current_role == "pelanggan" %}
 
       <a href="#" class="sidebar-link">
         Tiket Saya
       </a>
 
-      <a href="#" class="sidebar-link">
-        Pesanan
-      </a>
+      <a href="{% url 'orders:order_create' %}" class="sidebar-link">
+        Beli Tiket
+    </a>
 
       <a href="{% url 'main:browse_events' %}" class="sidebar-link">
         Cari Event
@@ -91,7 +93,7 @@
         Promosi
       </a>
 
-      <a href="#" class="sidebar-link">
+      <a href="{% url 'main:venue_read' %}" class="sidebar-link">
         Venue
       </a>
 
@@ -99,15 +101,15 @@
         Artis
       </a>
 
-    {% else %}
+      <a href="{% url 'events:ticket_category_read' %}" class="sidebar-link">
+        Kategori Tiket
+    </a>
 
-      {% if request.user.accountrole.role.role_name == "penyelenggara" %}
+    {% elif current_role == "penyelenggara" %}
 
-        <a href="{% url 'main:event_list' %}" class="sidebar-link">
-          Event Saya
-        </a>
-
-      {% endif %}
+      <a href="{% url 'main:event_list' %}" class="sidebar-link">
+        Event Saya
+      </a>
 
       <a href="{% url 'main:venue_list' %}" class="sidebar-link">
         Manajemen Venue
@@ -121,17 +123,45 @@
         Manajemen Kursi
       </a>
 
-      <a href="#" class="sidebar-link">
+      <a href="{% url 'events:ticket_category_read' %}" class="sidebar-link">
         Kategori Tiket
+    </a>
+
+      
+<a href="{% url 'events:ticket_category_manage' %}" class="sidebar-link">
+  Manajemen Tiket
+</a>
+
+<a href="{% url 'orders:order_list' %}" class="sidebar-link">
+  Semua Order
+</a>
+
+    {% elif current_role == "admin" %}
+
+      <a href="{% url 'main:venue_list' %}" class="sidebar-link">
+        Manajemen Venue
+      </a>
+
+      <a href="{% url 'events:artist_list' %}" class="sidebar-link">
+        Manajemen Artis
       </a>
 
       <a href="#" class="sidebar-link">
+        Manajemen Kursi
+      </a>
+
+    <a href="{% url 'events:ticket_category_read' %}" class="sidebar-link">
+        Kategori Tiket
+    </a>
+
+      
+      <a href="{% url 'events:ticket_category_manage' %}" class="sidebar-link">
         Manajemen Tiket
       </a>
 
-      <a href="#" class="sidebar-link">
+      <a href="{% url 'orders:order_list' %}" class="sidebar-link">
         Semua Order
-      </a>
+    </a>
 
       <h4>ASET</h4>
 
@@ -154,6 +184,8 @@
     <a href="{% url 'main:logout' %}" class="sidebar-link logout-link">
       Logout
     </a>
+
+    {% endwith %}
 
   </div>
 

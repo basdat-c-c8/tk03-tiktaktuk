@@ -4,9 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Daftar Artis – TikTakTuk</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -16,24 +23,36 @@
       padding: 32px 24px;
     }
 
-    /* ── Page Header ── */
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 1.75rem; font-weight: 700; color: #1a1d23; }
-    .page-header p  { font-size: 0.875rem; color: #6b7280; margin-top: 4px; }
+    .page-header {
+      margin-bottom: 28px;
+    }
 
-    /* ── Stat Cards ── */
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1a1d23;
+    }
+
+    .page-header p {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-bottom: 28px;
     }
+
     .stat-card {
       background: #fff;
       border-radius: 14px;
       padding: 20px 24px;
       box-shadow: 0 1px 4px rgba(0,0,0,.06);
     }
+
     .stat-card .label {
       font-size: 0.7rem;
       font-weight: 600;
@@ -42,19 +61,20 @@
       color: #9ca3af;
       margin-bottom: 8px;
     }
+
     .stat-card .value {
       font-size: 2rem;
       font-weight: 700;
       color: #1a1d23;
     }
 
-    /* ── Table Card ── */
     .table-card {
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 1px 4px rgba(0,0,0,.06);
       overflow: hidden;
     }
+
     .table-card-header {
       display: flex;
       align-items: center;
@@ -64,12 +84,18 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     .table-card-header h2 {
       font-size: 1.1rem;
       font-weight: 700;
       color: #1a1d23;
     }
-    .view-toggle { display: flex; gap: 6px; }
+
+    .view-toggle {
+      display: flex;
+      gap: 6px;
+    }
+
     .view-toggle button {
       padding: 6px 14px;
       border-radius: 8px;
@@ -82,13 +108,13 @@
       cursor: pointer;
       transition: all .15s;
     }
+
     .view-toggle button.active {
       background: #1a1d23;
       color: #fff;
       border-color: #1a1d23;
     }
 
-    /* ── Search ── */
     .search-bar {
       display: flex;
       align-items: center;
@@ -96,7 +122,12 @@
       padding: 12px 24px;
       border-bottom: 1px solid #f1f3f7;
     }
-    .search-bar svg { color: #9ca3af; flex-shrink: 0; }
+
+    .search-bar svg {
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+
     .search-bar input {
       border: none;
       outline: none;
@@ -106,7 +137,11 @@
       width: 260px;
       background: transparent;
     }
-    .search-bar input::placeholder { color: #9ca3af; }
+
+    .search-bar input::placeholder {
+      color: #9ca3af;
+    }
+
     .result-count {
       margin-left: auto;
       font-size: 0.8rem;
@@ -114,9 +149,15 @@
       white-space: nowrap;
     }
 
-    /* ── Table ── */
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { border-bottom: 1px solid #f1f3f7; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      border-bottom: 1px solid #f1f3f7;
+    }
+
     thead th {
       padding: 10px 24px;
       text-align: left;
@@ -126,31 +167,50 @@
       text-transform: uppercase;
       color: #9ca3af;
     }
+
     tbody tr {
       border-bottom: 1px solid #f8f9fb;
       transition: background .12s;
     }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fafbfc; }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #fafbfc;
+    }
+
     tbody td {
       padding: 14px 24px;
       font-size: 0.875rem;
       vertical-align: middle;
     }
 
-    /* Avatar */
-    .artist-cell { display: flex; align-items: center; gap: 12px; }
+    .artist-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .avatar {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
       color: #fff;
       flex-shrink: 0;
     }
-    .artist-name { font-weight: 600; color: #1a1d23; }
 
-    /* Genre badge */
+    .artist-name {
+      font-weight: 600;
+      color: #1a1d23;
+    }
+
     .badge {
       display: inline-block;
       padding: 3px 10px;
@@ -160,148 +220,313 @@
       letter-spacing: .05em;
       text-transform: uppercase;
     }
-    .badge-indie-folk     { background: #e0f2fe; color: #0369a1; }
-    .badge-indie-pop      { background: #ede9fe; color: #6d28d9; }
-    .badge-pop            { background: #fce7f3; color: #be185d; }
-    .badge-folk           { background: #fef9c3; color: #92400e; }
-    .badge-singer         { background: #fce7f3; color: #9d174d; }
-    .badge-rnb            { background: #ffe4e6; color: #be123c; }
 
-    /* ID cell */
-    .id-cell { color: #9ca3af; font-size: 0.8rem; font-weight: 500; }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      table thead th:nth-child(1),
-      table tbody td:nth-child(1) { display: none; }
+    .badge-indie-folk {
+      background: #e0f2fe;
+      color: #0369a1;
     }
+
+    .badge-indie-pop {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .badge-pop {
+      background: #fce7f3;
+      color: #be185d;
+    }
+
+    .badge-folk {
+      background: #fef9c3;
+      color: #92400e;
+    }
+
+    .badge-singer {
+      background: #fce7f3;
+      color: #9d174d;
+    }
+
+    .badge-rnb {
+      background: #ffe4e6;
+      color: #be123c;
+    }
+
+    @media (max-width: 640px) {
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
   </style>
 </head>
+
 <body>
 
-  <body>
+  <div style="margin-bottom: 24px;">
 
-    <div style="margin-bottom: 24px;">
-      <a 
-        href="{% url 'main:show_main' %}" 
-        style="
+    <a href="{% url 'main:show_main' %}"
+       style="
           color:#2563eb;
           text-decoration:none;
           font-weight:600;
           font-size:14px;
-        "
-      >
-        ← Kembali ke Dashboard
-      </a>
-    </div>
-  
-    <!-- Page Header -->
-    <div class="page-header">
+       ">
 
-  <!-- Page Header -->
+      ← Kembali ke Dashboard
+
+    </a>
+
+  </div>
+
   <div class="page-header">
+
     <h1>Daftar Artis</h1>
-    <p>Kelola artis yang ada di platform TikTakTuk</p>
+
+    <p>
+      Jelajahi artis yang tersedia di platform TikTakTuk
+    </p>
+
   </div>
 
-  <!-- Stats -->
   <div class="stats-grid">
+
     <div class="stat-card">
-      <div class="label">Total Artis</div>
-      <div class="value" id="totalArtis">6</div>
+
+      <div class="label">
+        Total Artis
+      </div>
+
+      <div class="value">
+        {{ total_artists }}
+      </div>
+
     </div>
+
     <div class="stat-card">
-      <div class="label">Genre</div>
-      <div class="value" id="totalGenre">6</div>
+
+      <div class="label">
+        Genre
+      </div>
+
+      <div class="value">
+        {{ total_genres }}
+      </div>
+
     </div>
+
     <div class="stat-card">
-      <div class="label">Tampil di Event</div>
-      <div class="value" id="totalEvent">6</div>
+
+      <div class="label">
+        Tampil di Event
+      </div>
+
+      <div class="value">
+        {{ total_artists }}
+      </div>
+
     </div>
+
   </div>
 
-  <!-- Table Card -->
   <div class="table-card">
+
     <div class="table-card-header">
+
       <h2>Tabel Artis</h2>
+
       <div class="view-toggle">
-        <button class="active" id="btnTabel">Tabel</button>
-        <button id="btnDaftar">Daftar</button>
+
+        <button class="active" id="btnTabel">
+          Tabel
+        </button>
+
+        <button id="btnDaftar">
+          Daftar
+        </button>
+
       </div>
+
     </div>
 
     <div class="search-bar">
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+
+      <svg width="16"
+           height="16"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2">
+
+        <circle cx="11" cy="11" r="8"/>
+
+        <path d="M21 21l-4.35-4.35"/>
+
       </svg>
-      <input type="text" id="searchInput" placeholder="Cari nama atau genre..." oninput="filterArtis()"/>
-      <span class="result-count" id="resultCount">6 artis ditemukan</span>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Cari nama atau genre..."
+        oninput="filterArtis()"
+      />
+
+      <span class="result-count" id="resultCount">
+        {{ total_artists }} artis ditemukan
+      </span>
+
     </div>
 
     <table id="artistTable">
+
       <thead>
+
         <tr>
+
           <th>Artis</th>
+
           <th>Genre</th>
+
         </tr>
+
       </thead>
-      <tbody id="tableBody">
-        <!-- Rows injected by JS -->
-      </tbody>
+
+      <tbody id="tableBody"></tbody>
+
     </table>
+
   </div>
 
   <script>
+
     const artists = [
-      { id: 'ART-001', name: 'Fourtwnty',   genre: 'Indie Folk',        badgeClass: 'badge-indie-folk' },
-      { id: 'ART-002', name: 'Hindia',       genre: 'Indie Pop',         badgeClass: 'badge-indie-pop'  },
-      { id: 'ART-003', name: 'Tulus',        genre: 'Pop',               badgeClass: 'badge-pop'        },
-      { id: 'ART-004', name: 'Nadin Amizah', genre: 'Folk',              badgeClass: 'badge-folk'       },
-      { id: 'ART-005', name: 'Pamungkas',    genre: 'Singer-Songwriter', badgeClass: 'badge-singer'     },
-      { id: 'ART-006', name: 'Raisa',        genre: 'R&B / Pop',         badgeClass: 'badge-rnb'        },
+
+      {% for artist in artists %}
+
+      {
+        id: "{{ artist.artist_id }}",
+        name: "{{ artist.name|escapejs }}",
+        genre: "{{ artist.genre|default:'-'|escapejs }}",
+
+        badgeClass:
+          "{% if 'folk' in artist.genre|lower %}badge-indie-folk
+          {% elif 'pop' in artist.genre|lower %}badge-pop
+          {% elif 'r&b' in artist.genre|lower %}badge-rnb
+          {% elif 'singer' in artist.genre|lower %}badge-singer
+          {% else %}badge-indie-pop{% endif %}"
+      },
+
+      {% endfor %}
+
     ];
 
-    const avatarColors = ['#4f46e5','#2563eb','#0891b2','#059669','#d97706','#dc2626'];
+    const avatarColors = [
+      '#4f46e5',
+      '#2563eb',
+      '#0891b2',
+      '#059669',
+      '#d97706',
+      '#dc2626'
+    ];
 
     function renderTable(data) {
+
       const tbody = document.getElementById('tableBody');
+
       tbody.innerHTML = data.map((a, i) => `
+
         <tr>
+
           <td>
+
             <div class="artist-cell">
-              <div class="avatar" style="background:${avatarColors[i % avatarColors.length]}">
+
+              <div class="avatar"
+                   style="background:${avatarColors[i % avatarColors.length]}">
+
                 ${a.name.charAt(0).toUpperCase()}
+
               </div>
-              <span class="artist-name">${a.name}</span>
+
+              <span class="artist-name">
+
+                ${a.name}
+
+              </span>
+
             </div>
+
           </td>
-          <td><span class="badge ${a.badgeClass}">${a.genre}</span></td>
+
+          <td>
+
+            <span class="badge ${a.badgeClass}">
+
+              ${a.genre}
+
+            </span>
+
+          </td>
+
         </tr>
+
       `).join('');
-      document.getElementById('resultCount').textContent = `${data.length} artis ditemukan`;
+
+      document.getElementById('resultCount').textContent =
+        `${data.length} artis ditemukan`;
+
     }
 
     function filterArtis() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
+
+      const q = document
+        .getElementById('searchInput')
+        .value
+        .toLowerCase();
+
       const filtered = artists.filter(a =>
-        a.name.toLowerCase().includes(q) || a.genre.toLowerCase().includes(q)
+
+        a.name.toLowerCase().includes(q) ||
+
+        a.genre.toLowerCase().includes(q)
+
       );
+
       renderTable(filtered);
+
     }
 
-    // View toggle (visual only for static demo)
-    document.getElementById('btnTabel').addEventListener('click', () => {
-      document.getElementById('btnTabel').classList.add('active');
-      document.getElementById('btnDaftar').classList.remove('active');
-    });
-    document.getElementById('btnDaftar').addEventListener('click', () => {
-      document.getElementById('btnDaftar').classList.add('active');
-      document.getElementById('btnTabel').classList.remove('active');
-    });
+    document
+      .getElementById('btnTabel')
+      .addEventListener('click', () => {
 
-    // Init
+        document
+          .getElementById('btnTabel')
+          .classList.add('active');
+
+        document
+          .getElementById('btnDaftar')
+          .classList.remove('active');
+
+      });
+
+    document
+      .getElementById('btnDaftar')
+      .addEventListener('click', () => {
+
+        document
+          .getElementById('btnDaftar')
+          .classList.add('active');
+
+        document
+          .getElementById('btnTabel')
+          .classList.remove('active');
+
+      });
+
     renderTable(artists);
+
   </script>
 
 </body>

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+body {
+  background: #f1f5f9;
+  font-family: Inter, sans-serif;
+}
+
+.main-content {
+  padding: 40px 50px;
+  width: 100%;
+}
+
+.back-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.page-title {
+  margin-top: 18px;
+  font-size: 48px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.venue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.venue-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  transition: 0.2s ease;
+}
+
+.venue-card:hover {
+  transform: translateY(-4px);
+}
+
+.venue-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.venue-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.venue-city {
+  color: #64748b;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.venue-desc {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.empty-card {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+</style>
+
+<div class="main-content">
+
+  <a href="{% url 'main:show_main' %}" class="back-link">
+    ← Kembali ke Dashboard
+  </a>
+
+  <h1 class="page-title">
+    Venue
+  </h1>
+
+  <p class="page-subtitle">
+    Jelajahi venue yang tersedia
+  </p>
+
+  <div class="venue-grid">
+
+    {% for venue in venues %}
+
+    <div class="venue-card">
+
+      <div class="venue-icon">
+        📍
+      </div>
+
+      <div class="venue-title">
+        {{ venue.nama_venue }}
+      </div>
+
+      <div class="venue-city">
+        {{ venue.kota }}
+      </div>
+
+      <div class="venue-desc">
+        Venue tersedia untuk berbagai acara
+      </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="empty-card">
+      Belum ada venue tersedia.
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+{% endblock %}

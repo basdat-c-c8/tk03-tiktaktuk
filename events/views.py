@@ -120,14 +120,28 @@ def ticket_category_manage(request):
         return redirect('main:show_main')
 
     categories = TicketCategory.objects.select_related('event').all()
-    events      = Event.objects.all().order_by('event_title')
-    form        = TicketCategoryForm()
+
+    # ambil event
+    if get_user_role(request.user) == 'penyelenggara':
+        events = Event.objects.filter(
+            organizer=request.user
+        ).order_by('event_title')
+
+    else:
+        events = Event.objects.all().order_by('event_title')
+
+    form = TicketCategoryForm()
+
+    # INI YANG PENTING
+    form.fields['event'].queryset = events
+
     context = {
         'categories': categories,
-        'events':     events,
-        'form':       form,
-           'role':       get_user_role(request.user),
+        'events': events,
+        'form': form,
+        'role': get_user_role(request.user),
     }
+
     return render(request, 'cudticketcategory.html', context)
 
 

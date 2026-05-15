@@ -55,6 +55,10 @@ def admin_dashboard(request):
     if venues.exists():
         largest_capacity = venues.order_by("-capacity").first().capacity
 
+    active_campaigns = Event.objects.filter(
+        event_datetime__gt=timezone.now()
+    ).count()
+
     context = {
         "name": request.user.username,
         "role": "admin",
@@ -65,9 +69,23 @@ def admin_dashboard(request):
         "total_venue": venues.count(),
         "reserved_count": venues.filter(has_reserved_seating=True).count(),
         "largest_capacity": largest_capacity,
+
+        # TAMBAHAN
+        "active_campaigns": active_campaigns,
     }
+    
 
     return render(request, "dashboard_admin.html", context)
+
+@login_required
+def venue_read(request):
+    venues = Venue.objects.all()
+
+    context = {
+        'venues': venues
+    }
+
+    return render(request, 'venue_read.html', context)
 
 
 @login_required(login_url='/login')

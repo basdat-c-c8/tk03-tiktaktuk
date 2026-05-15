@@ -9,14 +9,43 @@ from tickets.models import Ticket
 
 @login_required
 def order_list(request):
-	# show orders for current customer (admin sees all)
-	if request.user.is_superuser:
-		orders = Order.objects.all().order_by('-order_datetime')
-	else:
-		customer = Customer.objects.filter(user=request.user).first()
-		orders = Order.objects.filter(customer=customer).order_by('-order_datetime') if customer else []
-	return render(request, 'orders/order_list.html', {'orders': orders})
 
+    if request.user.is_superuser:
+
+        orders = Order.objects.all().order_by('-order_datetime')
+
+    else:
+
+        customer = Customer.objects.filter(user=request.user).first()
+
+        if customer:
+            orders = Order.objects.filter(
+                customer=customer
+            ).order_by('-order_datetime')
+
+        else:
+            orders = Order.objects.none()
+
+
+
+    paid_count = orders.filter(
+        payment_status__iexact='paid'
+    ).count()
+
+    pending_count = orders.filter(
+        payment_status__iexact='pending'
+    ).count()
+
+    revenue = sum(
+        order.total_price for order in orders
+    )
+
+    return render(request, 'orders/order_list.html', {
+        'orders': orders,
+        'paid_count': paid_count,
+        'pending_count': pending_count,
+        'revenue': revenue,
+    })
 
 @login_required
 def order_create(request):

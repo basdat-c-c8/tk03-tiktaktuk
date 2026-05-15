@@ -63,7 +63,7 @@ body {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 22px;
   margin-top: 28px;
 }
@@ -226,17 +226,8 @@ body {
 
     <div class="stat-card">
       <div>
-        <div class="stat-title">Omzet Platform</div>
-        <div class="stat-value">Rp 52.4M</div>
-        <div class="stat-desc">Gross volume</div>
-      </div>
-      <div class="stat-icon icon-purple">↗️</div>
-    </div>
-
-    <div class="stat-card">
-      <div>
         <div class="stat-title">Promosi Aktif</div>
-        <div class="stat-value">3</div>
+        <div class="stat-value">{{ active_campaigns }}</div>
         <div class="stat-desc">Running campaigns</div>
       </div>
       <div class="stat-icon icon-orange">🎟️</div>

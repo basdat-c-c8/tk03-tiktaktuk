@@ -29,18 +29,23 @@ class TicketCategoryForm(forms.ModelForm):
         fields = ['category_name', 'price', 'quota', 'event']
         widgets = {
             'category_name': forms.TextInput(attrs={
+                'class': 'form-input',
                 'placeholder': 'cth. VIP',
-                'autocomplete': 'off',
             }),
+
             'price': forms.NumberInput(attrs={
+                'class': 'form-input',
                 'placeholder': '750000',
-                'min': '0',
             }),
+
             'quota': forms.NumberInput(attrs={
+                'class': 'form-input',
                 'placeholder': '100',
-                'min': '1',
             }),
-            'event': forms.Select(),
+
+            'event': forms.Select(attrs={
+                'class': 'form-select',
+            }),
         }
         error_messages = {
             'category_name': {'required': 'Nama kategori wajib diisi.'},

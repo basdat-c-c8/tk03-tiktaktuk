@@ -1,734 +1,416 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    background: #f1f5f9;
-    font-family: Arial, sans-serif;
-    color: #1f2937;
-    font-size: 14px;
-  }
 
-  .container {
-    max-width: 1040px;
-    margin: 24px auto;
-    padding: 0 14px;
-  }
+*{
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
 
-  .role-box {
-    background: #ffffff;
-    border: 1px solid #dbe2ea;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+body{
+    background:#f4f7fb;
+}
 
-  .role-box label {
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #475569;
-  }
+.main-content{
+    width:100%;
+    min-height:100vh;
+    padding:90px 40px 50px 40px;
+    background:#f4f7fb;
+}
 
-  .role-box select {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 7px 10px;
-    font-size: 13px;
-    background: #ffffff;
-  }
+.content-wrap{
+    max-width:1100px;
+    margin:0 auto;
+}
 
-  .page-title {
-    margin: 0;
-    font-size: 24px;
-  }
+/* HEADER */
 
-  .subtitle {
-    margin: 4px 0 4px;
-    color: #475569;
-    font-size: 13px;
-    font-weight: 600;
-  }
+.back-link{
+    display:inline-block;
+    margin-bottom:24px;
+    text-decoration:none;
+    color:#2563eb;
+    font-size:14px;
+    font-weight:600;
+}
 
-  .filter-note {
-    margin: 0 0 12px;
-    color: #64748b;
-    font-size: 12px;
-  }
+.page-title{
+    margin:0;
+    font-size:48px;
+    line-height:1.1;
+    font-weight:700;
+    letter-spacing:-1px;
+    color:#0f172a;
+}
 
-  .toolbar {
-    display: grid;
-    grid-template-columns: 1fr 180px;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
+.page-subtitle{
+    margin-top:10px;
+    margin-bottom:30px;
+    color:#64748b;
+    font-size:16px;
+    font-weight:500;
+}
 
-  .search-wrap {
-    position: relative;
-  }
+.stat-value{
+    color:#0f172a;
+    font-size:20px;
+    line-height:1;
+    font-weight:700;
+}
 
-  .search-icon {
-    position: absolute;
-    left: 11px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 13px;
-    pointer-events: none;
-  }
+/* STATS */
 
-  .toolbar input,
-  .toolbar select {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 9px 10px;
-    background: #ffffff;
-    font-size: 13px;
-  }
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:22px;
+    margin-bottom:34px;
+}
 
-  .toolbar .search-wrap input {
-    padding-left: 30px;
-  }
+.stat-card{
+    background:#fff;
+    border-radius:28px;
+    padding:30px;
+    box-shadow:0 2px 10px rgba(15,23,42,.04);
+}
 
-  .stats {
-    display: grid;
-    gap: 10px;
-    margin-bottom: 12px;
-    align-items: stretch;
-  }
+.stat-label{
+    font-size:12px;
+    font-weight:600;
+    color:#94a3b8;
+    text-transform:uppercase;
+    margin-bottom:14px;
+}
 
-  .stats-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* TABLE */
 
-  .stats-4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.table-card{
+    background:#fff;
+    border-radius:30px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(15,23,42,.04);
+}
 
-  .stat-card {
-    background: #ffffff;
-    border: 1px solid #dbe2ea;
-    border-radius: 10px;
-    padding: 10px 12px;
-    min-height: 72px;
-  }
+.table-toolbar{
+    padding:22px;
+    display:flex;
+    gap:16px;
+    border-bottom:1px solid #e2e8f0;
+}
 
-  .stat-title {
-    margin: 0;
-    font-size: 11px;
-    color: #64748b;
-    text-transform: uppercase;
-    font-weight: bold;
-  }
+.search-input{
+    flex:1;
+    height:56px;
+    border:1px solid #cbd5e1;
+    border-radius:18px;
+    padding:0 18px;
+    font-size:15px;
+    outline:none;
+    background:#fff;
+}
 
-  .stat-value {
-    margin: 6px 0 0;
-    font-size: 20px;
-    font-weight: bold;
-  }
+.search-input:focus{
+    border-color:#2563eb;
+}
 
-  .role-section {
-    display: none;
-  }
+.filter-select{
+    width:190px;
+    border:1px solid #cbd5e1;
+    border-radius:18px;
+    padding:0 14px;
+    font-size:15px;
+    outline:none;
+    background:#fff;
+}
 
-  .role-section.active {
-    display: block;
-  }
+/* TABLE */
 
-  .stats.role-section.active {
-    display: grid;
-  }
+.order-table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-  .table-wrapper {
-    background: #ffffff;
-    border: 1px solid #dbe2ea;
-    border-radius: 10px;
-    overflow: hidden;
-  }
+.order-table thead{
+    background:#f8fafc;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
+.order-table th{
+    padding:22px 26px;
+    text-align:left;
+    font-size:13px;
+    color:#94a3b8;
+    font-weight:700;
+    text-transform:uppercase;
+}
 
-  th,
-  td {
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
-    vertical-align: middle;
-  }
+.order-table td{
+    padding:24px 26px;
+    border-top:1px solid #f1f5f9;
+    color:#0f172a;
+    font-size:15px;
+    font-weight:500;
+}
 
-  th {
-    background: #eef2f6;
-    color: #475569;
-    font-size: 11px;
-    text-transform: uppercase;
-    font-weight: bold;
-  }
+.price{
+    font-weight:700;
+}
 
-  tr:last-child td {
-    border-bottom: none;
-  }
+/* STATUS */
 
-  .money {
-    text-align: right;
-    white-space: nowrap;
-    font-weight: 600;
-  }
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
 
-  .status {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: bold;
-  }
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
 
-  .status-paid {
-    background: #dcfce7;
-    color: #166534;
-  }
+.warning{
+    background:#fef3c7;
+    color:#92400e;
+}
 
-  .status-pending {
-    background: #fef3c7;
-    color: #92400e;
-  }
+.danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
 
-  .status-cancelled {
-    background: #fee2e2;
-    color: #991b1b;
-  }
+/* EMPTY */
 
-  .actions {
-    display: flex;
-    gap: 6px;
-  }
+.empty{
+    text-align:center;
+    padding:56px;
+    color:#94a3b8;
+    font-size:15px;
+    font-weight:600;
+}
 
-  .mini-btn {
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 5px 8px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    background: #ffffff;
-  }
+/* RESPONSIVE */
 
-  .mini-btn.edit {
-    color: #1d4ed8;
-  }
+@media(max-width:1200px){
 
-  .mini-btn.delete {
-    color: #b91c1c;
-  }
-
-  .modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 999;
-  }
-
-  .modal.show {
-    display: flex;
-  }
-
-  .modal-card {
-    width: 100%;
-    max-width: 400px;
-    background: #ffffff;
-    border: 1px solid #dbe2ea;
-    border-radius: 10px;
-    padding: 16px;
-  }
-
-  .modal-card h3 {
-    margin: 0 0 10px;
-    font-size: 16px;
-  }
-
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-
-  .modal-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .modal-title-danger {
-    color: #dc2626;
-  }
-
-  .modal-close {
-    border: none;
-    background: transparent;
-    color: #64748b;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 2px;
-  }
-
-  .modal-close:hover {
-    color: #0f172a;
-  }
-
-  .modal-meta {
-    margin: 0 0 12px;
-    color: #64748b;
-    font-size: 13px;
-  }
-
-  .modal-meta-small {
-    margin: -8px 0 12px;
-    color: #94a3b8;
-    font-size: 12px;
-  }
-
-  .modal-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #334155;
-  }
-
-  .readonly-field,
-  .modal-card select {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 9px 10px;
-    font-size: 13px;
-    margin-bottom: 12px;
-    background: #ffffff;
-  }
-
-  .readonly-field {
-    background: #f8fafc;
-    color: #334155;
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-
-  .btn {
-    border: none;
-    border-radius: 7px;
-    padding: 7px 12px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .btn-secondary {
-    background: #e2e8f0;
-    color: #1e293b;
-  }
-
-  .btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-  }
-
-  .btn-danger {
-    background: #dc2626;
-    color: #ffffff;
-  }
-
-  @media (max-width: 768px) {
-    .toolbar {
-      grid-template-columns: 1fr;
+    .stats-grid{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .stats-3,
-    .stats-4 {
-      grid-template-columns: unset;
-    }
+}
 
-    .stats-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .stats-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      min-width: 760px;
-    }
-  }
 </style>
 
-<div class="container">
-  <!-- Dummy role selector for frontend-only -->
-  <div class="role-box">
-    <label for="roleSelector">Role Dummy</label>
-    <select id="roleSelector" onchange="switchRole(this.value)">
-      <option value="customer">Customer</option>
-      <option value="organizer">Organizer</option>
-      <option value="admin">Admin</option>
-    </select>
-  </div>
 
-  <h1 class="page-title">Daftar Order</h1>
-  <p class="subtitle" id="roleSubtitle">Riwayat pembelian tiket Anda</p>
 
-  <section class="toolbar">
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="searchInput" placeholder="Cari order ID...">
-    </div>
+<div class="main-content">
 
-    <select>
-      <option>Semua Status</option>
-      <option>Lunas</option>
-      <option>Pending</option>
-      <option>Dibatalkan</option>
-    </select>
-  </section>
+    <div class="content-wrap">
 
-  <section class="stats stats-3 role-section" data-role="customer">
-    <div class="stat-card">
-      <p class="stat-title">Total Order</p>
-      <p class="stat-value">2</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Lunas</p>
-      <p class="stat-value">1</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
-    </div>
-  </section>
+        <a href="{% url 'main:show_main' %}" class="back-link">
+            ← Kembali ke Dashboard
+        </a>
 
-  <section class="stats stats-4 role-section" data-role="organizer">
-    <div class="stat-card">
-      <p class="stat-title">Total Order</p>
-      <p class="stat-value">4</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Lunas</p>
-      <p class="stat-value">2</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Total Revenue</p>
-      <p class="stat-value">Rp 2.190.000</p>
-    </div>
-  </section>
+        <h1 class="page-title">
+            Daftar Order
+        </h1>
 
-  <section class="stats stats-4 role-section" data-role="admin">
-    <div class="stat-card">
-      <p class="stat-title">Total Order</p>
-      <p class="stat-value">4</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Lunas</p>
-      <p class="stat-value">2</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Pending</p>
-      <p class="stat-value">1</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-title">Total Revenue</p>
-      <p class="stat-value">Rp 2.190.000</p>
-    </div>
-  </section>
+        <div class="page-subtitle">
+            Riwayat pembelian tiket Anda
+        </div>
 
-  <section class="table-wrapper role-section" data-role="customer">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Tanggal</th>
-          <th>Status</th>
-          <th class="money">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in orders %}
-        <tr>
-          <td>{{ order.order_id }}</td>
-          <td>{{ order.order_datetime }}</td>
-          <td>
-            {% if order.payment_status == 'pending' %}
-              <span class="status status-pending">Pending</span>
-            {% elif order.payment_status == 'lunas' or order.payment_status == 'paid' %}
-              <span class="status status-paid">Lunas</span>
-            {% else %}
-              <span class="status status-cancelled">{{ order.payment_status }}</span>
-            {% endif %}
-          </td>
-          <td class="money">Rp {{ order.total_price }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4">Belum ada order.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
 
-  <section class="table-wrapper role-section" data-role="organizer">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Pelanggan</th>
-          <th>Tanggal</th>
-          <th>Status</th>
-          <th class="money">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>ORD-O104</td>
-          <td>Bagus Pratama</td>
-          <td>2026-04-27 13:05</td>
-          <td><span class="status status-cancelled">Dibatalkan</span></td>
-          <td class="money">Rp 0</td>
-        </tr>
-        <tr>
-          <td>ORD-O103</td>
-          <td>Gita Ayu</td>
-          <td>2026-04-26 16:20</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 1.120.000</td>
-        </tr>
-        <tr>
-          <td>ORD-O102</td>
-          <td>Dika Saputra</td>
-          <td>2026-04-25 10:12</td>
-          <td><span class="status status-pending">Pending</span></td>
-          <td class="money">Rp 420.000</td>
-        </tr>
-        <tr>
-          <td>ORD-O101</td>
-          <td>Rani Putri</td>
-          <td>2026-04-24 19:40</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 650.000</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
 
-  <section class="table-wrapper role-section" data-role="admin">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Pelanggan</th>
-          <th>Tanggal</th>
-          <th>Status</th>
-          <th class="money">Total</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>ORD-A204</td>
-          <td>Shafa Azka</td>
-          <td>2026-04-27 13:05</td>
-          <td><span class="status status-cancelled">Dibatalkan</span></td>
-          <td class="money">Rp 0</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A204" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A204" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+        <!-- STATS -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    TOTAL ORDER
+                </div>
+
+                <div class="stat-value">
+                    {{ orders|length }}
+                </div>
+
             </div>
-          </td>
-        </tr>
-        <tr>
-          <td>ORD-A203</td>
-          <td>Rindu Zahra</td>
-          <td>2026-04-26 16:20</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 1.120.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A203" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A203" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    LUNAS
+                </div>
+
+                <div class="stat-value">
+                    {{ paid_count }}
+                </div>
+
             </div>
-          </td>
-        </tr>
-        <tr>
-          <td>ORD-A202</td>
-          <td>Nita Pasaribu</td>
-          <td>2026-04-25 10:12</td>
-          <td><span class="status status-pending">Pending</span></td>
-          <td class="money">Rp 420.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A202" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A202" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    PENDING
+                </div>
+
+                <div class="stat-value">
+                    {{ pending_count }}
+                </div>
+
             </div>
-          </td>
-        </tr>
-        <tr>
-          <td>ORD-A201</td>
-          <td>Flora Cahaya</td>
-          <td>2026-04-24 19:40</td>
-          <td><span class="status status-paid">Lunas</span></td>
-          <td class="money">Rp 650.000</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="mini-btn edit" data-order-id="ORD-A201" onclick="openUpdateModal(this)" title="Update Order" aria-label="Update Order">✎</button>
-              <button type="button" class="mini-btn delete" data-order-id="ORD-A201" onclick="openDeleteModal(this)" title="Hapus Order" aria-label="Hapus Order">🗑</button>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    TOTAL REVENUE
+                </div>
+
+                <div class="stat-value">
+                    Rp {{ revenue|floatformat:0 }}
+                </div>
+
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+
+        </div>
+
+
+
+        <!-- TABLE -->
+
+        <div class="table-card">
+
+            <div class="table-toolbar">
+
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Cari order ID..."
+                >
+
+                <select class="filter-select">
+
+                    <option>
+                        Semua Status
+                    </option>
+
+                    <option>
+                        Lunas
+                    </option>
+
+                    <option>
+                        Pending
+                    </option>
+
+                    <option>
+                        Dibatalkan
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <table class="order-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ORDER ID</th>
+
+                        <th>TANGGAL</th>
+
+                        <th>STATUS</th>
+
+                        <th>TOTAL</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                    <tr>
+
+                        <td>
+                            {{ order.order_id }}
+                        </td>
+
+                        <td>
+                            {{ order.order_datetime|date:"Y-m-d H:i" }}
+                        </td>
+
+                        <td>
+
+                            {% if order.payment_status == "PAID" %}
+
+                                <span class="badge success">
+                                    ● LUNAS
+                                </span>
+
+                            {% elif order.payment_status == "PENDING" %}
+
+                                <span class="badge warning">
+                                    ● PENDING
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge danger">
+                                    ● DIBATALKAN
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="price">
+                            Rp {{ order.total_price|floatformat:0 }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4" class="empty">
+                            Belum ada order.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>
-
-<div class="modal" id="updateModal" aria-hidden="true">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 class="modal-title">Update Status Order</h3>
-      <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('updateModal')">&times;</button>
-    </div>
-
-    <label class="modal-label" for="updateOrderIdInput">Order ID</label>
-    <input id="updateOrderIdInput" class="readonly-field" type="text" readonly value="-">
-
-    <label class="modal-label" for="paymentStatus">PAYMENT STATUS</label>
-    <select id="paymentStatus">
-      <option>Lunas</option>
-      <option>Pending</option>
-      <option>Dibatalkan</option>
-    </select>
-
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Batal</button>
-      <button type="button" class="btn btn-primary" onclick="submitUpdateOrder()">Update</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="deleteModal" aria-hidden="true">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 class="modal-title modal-title-danger">Hapus Order</h3>
-      <button type="button" class="modal-close" aria-label="Tutup" onclick="closeModal('deleteModal')">&times;</button>
-    </div>
-    <p class="modal-meta" id="deleteText">Apakah Anda yakin ingin menghapus catatan order ini?</p>
-    <p class="modal-meta-small">Tindakan ini tidak dapat dibatalkan.</p>
-
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Batal</button>
-      <button type="button" class="btn btn-danger" onclick="confirmDeleteOrder()">Hapus</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  function openModal(id) {
-    document.getElementById(id).classList.add('show');
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
-  }
-
-  function openUpdateModal(button) {
-    const orderId = button.getAttribute('data-order-id');
-    document.getElementById('updateOrderIdInput').value = orderId;
-    openModal('updateModal');
-  }
-
-  function openDeleteModal(button) {
-    const orderId = button.getAttribute('data-order-id');
-    document.getElementById('deleteText').textContent =
-      'Apakah Anda yakin ingin menghapus catatan order ini? (Order ID: ' + orderId + ')';
-    openModal('deleteModal');
-  }
-
-  function submitUpdateOrder() {
-    closeModal('updateModal');
-    alert('Status order berhasil diperbarui');
-  }
-
-  function confirmDeleteOrder() {
-    closeModal('deleteModal');
-    alert('Order berhasil dihapus');
-  }
-
-  function switchRole(role) {
-    const subtitleMap = {
-      customer: 'Riwayat pembelian tiket Anda',
-      organizer: 'Order dari event yang Anda selenggarakan',
-      admin: 'Kelola seluruh order pada sistem'
-    };
-
-    const noteMap = {
-      customer: 'Menampilkan order milik Anda (filtered by customer_id)',
-      organizer: 'Menampilkan order dari event yang Anda selenggarakan (filtered by organizer_id)',
-      admin: 'Menampilkan semua order'
-    };
-
-    const placeholderMap = {
-      customer: 'Cari order ID...',
-      organizer: 'Cari ID atau pelanggan...',
-      admin: 'Cari ID atau pelanggan...'
-    };
-
-    document.querySelectorAll('.role-section').forEach(function(section) {
-      section.classList.remove('active');
-      if (section.getAttribute('data-role') === role) {
-        section.classList.add('active');
-      }
-    });
-
-    document.getElementById('roleSubtitle').textContent = subtitleMap[role];
-    document.getElementById('roleFilterNote').textContent = noteMap[role];
-    document.getElementById('searchInput').placeholder = placeholderMap[role];
-  }
-
-  document.getElementById('updateModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-      closeModal('updateModal');
-    }
-  });
-
-  document.getElementById('deleteModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-      closeModal('deleteModal');
-    }
-  });
-
-  switchRole('customer');
-</script>
 
 {% endblock %}

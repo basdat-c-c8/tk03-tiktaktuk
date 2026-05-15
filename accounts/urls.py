@@ -2,7 +2,7 @@ from django.urls import path
 from accounts.views import (
     show_main, register, login_user, logout_user, choose_role,
     venue_list, create_venue, update_venue, delete_venue, profile_view, event_list, create_event, update_event, browse_events, create_pengguna,
-   admin_dashboard, organizer_dashboard, customer_dashboard
+   admin_dashboard, organizer_dashboard, customer_dashboard, venue_read
 )
 
 app_name = 'main'
@@ -19,6 +19,7 @@ urlpatterns = [
     # 🧠 DASHBOARD (HARUS LOGIN)
     path('dashboard/', show_main, name='show_main'),
     path('venues/', venue_list, name='venue_list'),
+    path('venues/read/', venue_read, name='venue_read'),
     path('venues/create/', create_venue, name='create_venue'),
     path('venues/<uuid:id>/edit/', update_venue, name='update_venue'),
     path('venues/<uuid:id>/delete/', delete_venue, name='delete_venue'),
