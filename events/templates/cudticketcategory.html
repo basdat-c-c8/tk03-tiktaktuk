@@ -1,926 +1,400 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kategori Tiket – TikTakTuk</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --primary: #2563EB;
-      --primary-hover: #1D4ED8;
-      --primary-light: #EFF6FF;
-      --danger: #DC2626;
-      --danger-hover: #B91C1C;
-      --danger-light: #FEF2F2;
-      --success: #16A34A;
-      --success-light: #F0FDF4;
-      --warning: #D97706;
-      --bg: #F8FAFC;
-      --surface: #FFFFFF;
-      --border: #E2E8F0;
-      --text-primary: #0F172A;
-      --text-secondary: #475569;
-      --text-muted: #94A3B8;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
-      --radius: 12px;
-      --radius-sm: 8px;
-    }
+{% extends 'base.html' %}
+{% load static %}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{% block content %}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text-primary);
-      min-height: 100vh;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    /* ── LAYOUT ── */
-    .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 36px 28px; }
+<style>
+:root{
+  --primary:#2563EB;
+  --bg:#F4F7FB;
+  --surface:#FFFFFF;
+  --border:#E2E8F0;
+  --text:#0F172A;
+  --muted:#64748B;
+}
 
-    /* ── TOAST NOTIFICATION ── */
-    #toast-container {
-      position: fixed;
-      top: 76px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      box-shadow: var(--shadow-lg);
-      font-size: 14px;
-      font-weight: 500;
-      min-width: 300px;
-      border-left: 4px solid transparent;
-      animation: slideIn .25s ease forwards;
-      transition: opacity .3s;
-    }
-    .toast.success { border-left-color: var(--success); }
-    .toast.success .toast-icon { color: var(--success); }
-    .toast.danger  { border-left-color: var(--danger); }
-    .toast.danger  .toast-icon { color: var(--danger); }
-    .toast-icon { font-size: 18px; }
-    .toast-close {
-      margin-left: auto;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 16px;
-    }
-    @keyframes slideIn {
-      from { transform: translateX(40px); opacity: 0; }
-      to   { transform: translateX(0);   opacity: 1; }
-    }
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+}
 
-    /* ── PAGE HEADER ── */
-    .page-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .page-title { font-size: 24px; font-weight: 700; color: var(--text-primary); }
-    .page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+.ticket-wrapper{
+  width:100%;
+  max-width:1150px;
+  margin:0 auto;
+  padding:24px;
+}
 
-    /* ── STAT CARDS ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 8px; }
-    .stat-value { font-size: 28px; font-weight: 700; color: var(--text-primary); }
+.ticket-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:20px;
+}
 
-    /* ── FILTER BAR ── */
-    .filter-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow-sm);
-    }
-    .search-wrap {
-      position: relative;
-      flex: 1;
-    }
-    .search-wrap .icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      pointer-events: none;
-    }
-    input[type="text"], select {
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 9px 12px;
-      color: var(--text-primary);
-      background: var(--bg);
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
-    }
-    input[type="text"]:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-    }
-    .search-input { padding-left: 36px; width: 100%; }
-    select { min-width: 180px; cursor: pointer; font-family: 'Inter', sans-serif; }
+.ticket-title{
+  font-size:28px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+}
 
-    /* ── TABLE SECTION ── */
-    .table-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-    .table-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .result-count { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-    .view-toggle { display: flex; gap: 4px; }
-    .view-btn {
-      padding: 5px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: transparent;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      transition: background .15s, color .15s;
-      font-family: 'Inter', sans-serif;
-    }
-    .view-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+.ticket-subtitle{
+  font-size:14px;
+  color:var(--muted);
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    thead th {
-      background: #F8FAFC;
-      padding: 11px 16px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background .1s;
-    }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #F8FAFC; }
-    td {
-      padding: 13px 16px;
-      color: var(--text-primary);
-      vertical-align: middle;
-    }
-    .td-category { font-weight: 600; }
-    .td-price { color: var(--primary); font-weight: 600; }
-    .td-quota { color: var(--text-secondary); }
+.back-link{
+  display:inline-block;
+  margin-bottom:10px;
+  color:#2563EB;
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+}
 
-    /* ── BUTTON STYLES ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: background .15s, transform .1s;
-      font-family: 'Inter', sans-serif;
-      text-decoration: none;
-    }
-    .btn:active { transform: scale(.97); }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-sm { padding: 5px 11px; font-size: 13px; }
-    .btn-edit {
-      background: #EFF6FF;
-      color: var(--primary);
-      border: 1px solid #BFDBFE;
-      gap: 5px;
-    }
-    .btn-edit:hover { background: #DBEAFE; }
-    .btn-delete {
-      background: #FFF1F0;
-      color: #E55A4E;
-      border: 1px solid #FECACA;
-      gap: 5px;
-    }
-    .btn-delete:hover { background: #FFE4E1; }
-    .btn-outline {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { background: var(--bg); color: var(--text-primary); }
-    .btn-danger { background: var(--danger); color: #fff; }
-    .btn-danger:hover { background: var(--danger-hover); }
-    .btn-actions { display: flex; gap: 6px; }
+.back-link:hover{
+  text-decoration:underline;
+}
 
-    /* ── MODAL OVERLAY ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,.45);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s;
-    }
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      width: 100%;
-      max-width: 480px;
-      transform: translateY(20px) scale(.97);
-      transition: transform .22s cubic-bezier(.34,1.4,.64,1);
-    }
-    .modal-overlay.open .modal {
-      transform: translateY(0) scale(1);
-    }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 0;
-    }
-    .modal-title { font-size: 18px; font-weight: 700; }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      color: var(--text-muted);
-      line-height: 1;
-      padding: 4px;
-      transition: color .15s;
-    }
-    .modal-close:hover { color: var(--text-primary); }
-    .modal-body { padding: 20px 24px; }
-    .modal-footer {
-      display: flex;
-      gap: 10px;
-      padding: 0 24px 24px;
-      justify-content: flex-end;
-    }
+.ticket-btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:11px 18px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
 
-    /* ── FORM ── */
-    .form-group { margin-bottom: 18px; }
-    .form-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--text-secondary);
-      margin-bottom: 7px;
-    }
-    .form-label .required { color: var(--danger); margin-left: 2px; }
-    .form-control {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      color: var(--text-primary);
-      background: var(--surface);
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
-    }
-    .form-control:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-    }
-    .form-control::placeholder { color: var(--text-muted); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-error {
-      font-size: 12px;
-      color: var(--danger);
-      margin-top: 5px;
-      display: none;
-    }
-    .form-control.invalid { border-color: var(--danger); }
-    .form-control.invalid:focus { box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:20px;
+}
 
-    /* ── DELETE MODAL ── */
-    .delete-modal .modal-header { padding-bottom: 16px; }
-    .delete-modal .modal-title { color: var(--danger); }
-    .delete-info {
-      background: var(--danger-light);
-      border: 1px solid #FECACA;
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 14px;
-    }
-    .delete-info-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 4px; }
-    .delete-info-row:last-child { margin-bottom: 0; }
-    .delete-info-label { font-weight: 600; color: var(--danger); min-width: 120px; }
-    .delete-info-value { color: var(--text-primary); font-family: 'DM Mono', monospace; font-size: 12.5px; }
-    .delete-warning { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.stat-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px;
+}
 
-    /* ── EMPTY STATE ── */
-    .empty-state {
-      text-align: center;
-      padding: 56px 24px;
-      color: var(--text-muted);
-    }
-    .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-state-text { font-size: 15px; font-weight: 500; color: var(--text-secondary); }
+.stat-label{
+  font-size:11px;
+  font-weight:600;
+  color:#94A3B8;
+  margin-bottom:8px;
+  text-transform:uppercase;
+}
 
-    /* ── CARD VIEW (Daftar) ── */
-    .card-grid {
-      display: none;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      padding: 20px;
-    }
-    .card-grid.active { display: grid; }
-    .table-wrap.hidden { display: none; }
+.stat-value{
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+}
 
-    .category-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      background: var(--surface);
-      transition: box-shadow .15s, transform .15s;
-    }
-    .category-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .card-event-badge {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--primary);
-      background: var(--primary-light);
-      padding: 3px 8px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-    .card-category-name { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-    .card-meta { display: flex; gap: 16px; margin-bottom: 14px; }
-    .card-meta-item { font-size: 13px; }
-    .card-meta-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
-    .card-price { font-weight: 700; color: var(--primary); font-size: 16px; }
-    .card-quota { font-weight: 600; color: var(--text-primary); }
-    .card-actions { display: flex; gap: 8px; }
+.filter-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  display:flex;
+  gap:12px;
+}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .stats-row { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .page-header { flex-direction: column; gap: 12px; }
-    }
-  </style>
-</head>
-<body>
+.search-input,
+.filter-select{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 14px;
+  font-size:13px;
+  font-family:'Inter',sans-serif;
+}
 
-<!-- ════════ TOAST CONTAINER ════════ -->
-<div id="toast-container"></div>
+.search-input{
+  flex:1;
+}
 
-<!-- ════════ MAIN CONTENT ════════ -->
-<div class="page-wrapper">
+.table-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+}
 
-  <!-- Page Header -->
-  <div class="page-header">
+.table-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.table-title{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+}
+
+.table-count{
+  font-size:13px;
+  color:var(--muted);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#F8FAFC;
+}
+
+thead th{
+  padding:14px 18px;
+  text-align:left;
+  font-size:11px;
+  text-transform:uppercase;
+  color:#94A3B8;
+}
+
+tbody td{
+  padding:18px;
+  border-top:1px solid #F1F5F9;
+  font-size:14px;
+  color:var(--text);
+}
+
+.ticket-price{
+  color:#2563EB;
+  font-weight:600;
+}
+
+.action-wrap{
+  display:flex;
+  gap:8px;
+}
+
+.btn-edit{
+  border:none;
+  background:#EFF6FF;
+  color:#2563EB;
+  padding:8px 14px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-delete{
+  border:none;
+  background:#FEF2F2;
+  color:#DC2626;
+  padding:8px 14px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.empty-state{
+  text-align:center;
+  padding:40px;
+  color:#94A3B8;
+  font-size:14px;
+}
+
+@media(max-width:900px){
+
+  .stats-grid{
+    grid-template-columns:1fr;
+  }
+
+  .filter-card{
+    flex-direction:column;
+  }
+
+  .ticket-header{
+    flex-direction:column;
+    gap:14px;
+  }
+}
+</style>
+
+<div class="ticket-wrapper">
+
+  <div class="ticket-header">
+
     <div>
-      <h1 class="page-title">Kategori Tiket</h1>
-      <p class="page-subtitle">Kelola kategori dan harga tiket per acara</p>
+
+      <div class="ticket-title">
+        Kategori Tiket
+      </div>
+
+      <div class="ticket-subtitle">
+        Kelola kategori dan harga tiket per acara
+      </div>
+
     </div>
-    <button class="btn btn-primary" onclick="openCreateModal()">
-      ＋ Tambah Kategori
+
+    <button class="ticket-btn">
+      + Tambah Kategori
     </button>
+
   </div>
 
-  <!-- Stats -->
-  <div class="stats-row">
+  <div class="stats-grid">
+
     <div class="stat-card">
-      <div class="stat-label">Total Kategori</div>
-      <div class="stat-value" id="stat-total">8</div>
+      <div class="stat-label">
+        Total Kategori
+      </div>
+
+      <div class="stat-value">
+        {{ categories|length }}
+      </div>
     </div>
+
     <div class="stat-card">
-      <div class="stat-label">Total Kuota</div>
-      <div class="stat-value" id="stat-kuota">2,030</div>
+      <div class="stat-label">
+        Total Kuota
+      </div>
+
+      <div class="stat-value">
+        {{ total_quota }}
+      </div>
     </div>
+
     <div class="stat-card">
-      <div class="stat-label">Harga Tertinggi</div>
-      <div class="stat-value" id="stat-harga">Rp 2,000,000</div>
+      <div class="stat-label">
+        Harga Tertinggi
+      </div>
+
+      <div class="stat-value">
+        Rp {{ highest_price }}
+      </div>
     </div>
+
   </div>
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <div class="search-wrap">
-      <span class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </span>
-      <input type="text" id="searchInput" class="search-input" placeholder="Cari kategori..." oninput="filterTable()"/>
-    </div>
-    <select id="eventFilter" onchange="filterTable()">
-      <option value="">Semua Acara</option>
-      <option value="Konser Melodi Senja">Konser Melodi Senja</option>
-      <option value="Festival Seni Budaya">Festival Seni Budaya</option>
-      <option value="Malam Akustik Bandung">Malam Akustik Bandung</option>
+  <div class="filter-card">
+
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Cari kategori..."
+    >
+
+    <select class="filter-select">
+
+      <option>
+        Semua Acara
+      </option>
+
+      {% for e in events %}
+      <option>
+        {{ e.event_title }}
+      </option>
+      {% endfor %}
+
     </select>
+
   </div>
 
-  <!-- Table Section -->
-  <div class="table-section">
+  <div class="table-card">
+
     <div class="table-header">
-      <span class="result-count" id="result-count">8 kategori ditemukan</span>
-      <div class="view-toggle">
-        <button class="view-btn active" id="btn-tabel" onclick="switchView('tabel')">Tabel</button>
-        <button class="view-btn" id="btn-daftar" onclick="switchView('daftar')">Daftar</button>
+
+      <div class="table-title">
+        Daftar Kategori
       </div>
-    </div>
 
-    <!-- TABLE VIEW -->
-    <div class="table-wrap" id="table-view">
-      <table id="mainTable">
-        <thead>
-          <tr>
-            <th>Kategori</th>
-            <th>Acara</th>
-            <th>Harga</th>
-            <th>Kuota</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-      <div class="empty-state" id="emptyState" style="display:none;">
-        <div class="empty-state-icon">🎫</div>
-        <div class="empty-state-text">Tidak ada kategori tiket ditemukan</div>
+      <div class="table-count">
+        {{ categories|length }} kategori ditemukan
       </div>
+
     </div>
 
-    <!-- CARD VIEW -->
-    <div class="card-grid" id="card-view"></div>
-  </div>
-</div>
+    <table>
 
-
-<!-- ════════ MODAL: CREATE / EDIT ════════ -->
-<div class="modal-overlay" id="formModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 class="modal-title" id="modalTitle">Tambah Kategori Baru</h2>
-      <button class="modal-close" onclick="closeFormModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Acara <span class="required">*</span></label>
-        <select id="fEvent" class="form-control" onchange="clearError('fEvent')">
-          <option value="">Pilih acara...</option>
-          <option value="Konser Melodi Senja">Konser Melodi Senja</option>
-          <option value="Festival Seni Budaya">Festival Seni Budaya</option>
-          <option value="Malam Akustik Bandung">Malam Akustik Bandung</option>
-        </select>
-        <div class="form-error" id="err-fEvent">Acara wajib dipilih.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Nama Kategori <span class="required">*</span></label>
-        <input type="text" id="fName" class="form-control" placeholder="cth. WVIP" oninput="clearError('fName')"/>
-        <div class="form-error" id="err-fName">Nama kategori wajib diisi.</div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Harga (Rp) <span class="required">*</span></label>
-          <input type="number" id="fPrice" class="form-control" placeholder="750000" min="0" oninput="clearError('fPrice')"/>
-          <div class="form-error" id="err-fPrice">Harga tidak valid (≥ 0).</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kuota <span class="required">*</span></label>
-          <input type="number" id="fQuota" class="form-control" placeholder="100" min="1" oninput="clearError('fQuota')"/>
-          <div class="form-error" id="err-fQuota">Kuota harus bilangan bulat positif (> 0).</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeFormModal()">Batal</button>
-      <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Tambah</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════ MODAL: DELETE CONFIRM ════════ -->
-<div class="modal-overlay" id="deleteModal">
-  <div class="modal delete-modal">
-    <div class="modal-header">
-      <h2 class="modal-title">Hapus Kategori Tiket</h2>
-      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="delete-info">
-        <div class="delete-info-row">
-          <span class="delete-info-label">Category ID</span>
-          <span class="delete-info-value" id="del-id">—</span>
-        </div>
-        <div class="delete-info-row">
-          <span class="delete-info-label">Nama Kategori</span>
-          <span class="delete-info-value" id="del-name">—</span>
-        </div>
-        <div class="delete-info-row">
-          <span class="delete-info-label">Acara</span>
-          <span class="delete-info-value" id="del-event">—</span>
-        </div>
-      </div>
-      <p class="delete-warning">Apakah Anda yakin ingin menghapus kategori tiket ini? Tindakan ini tidak dapat dibatalkan.</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeDeleteModal()">Batal</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Hapus</button>
-    </div>
-  </div>
-</div>
-
-
-<script>
-  let categories = [
-  {% for c in categories %}
-  {
-    id: "{{ c.category_id }}",
-    name: "{{ c.category_name|escapejs }}",
-    event_id: "{{ c.event_id }}",
-    event: "{{ c.event.event_title|escapejs }}",
-    price: Number("{{ c.price }}"),
-    quota: Number("{{ c.quota }}")
-  }{% if not forloop.last %},{% endif %}
-  {% endfor %}
-  ];
-
-  const eventsData = [
-  {% for ev in events %}
-  {
-    id: "{{ ev.event_id }}",
-    title: "{{ ev.event_title|escapejs }}"
-  }{% if not forloop.last %},{% endif %}
-  {% endfor %}
-  ];
-
-  let editingId = null;
-  let deletingId = null;
-  let currentView = 'tabel';
-
-  const fmt = n => 'Rp ' + Number(n).toLocaleString('id-ID');
-
-  function csrfToken() {
-    const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
-    return m ? decodeURIComponent(m[1]) : '{{ csrf_token }}';
-  }
-
-  function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `
-      <span class="toast-icon">${type === 'success' ? '✅' : '❌'}</span>
-      <span>${message}</span>
-      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-    `;
-    container.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2800);
-  }
-
-  function syncEventOptions() {
-    const eventFilter = document.getElementById('eventFilter');
-    const formEvent = document.getElementById('fEvent');
-
-    eventFilter.innerHTML = '<option value="">Semua Acara</option>';
-    formEvent.innerHTML = '<option value="">Pilih acara...</option>';
-
-    eventsData.forEach(ev => {
-      eventFilter.insertAdjacentHTML('beforeend', `<option value="${ev.id}">${ev.title}</option>`);
-      formEvent.insertAdjacentHTML('beforeend', `<option value="${ev.id}">${ev.title}</option>`);
-    });
-  }
-
-  function sortedCategories(list) {
-    return [...list].sort((a, b) => {
-      if (a.event < b.event) return -1;
-      if (a.event > b.event) return 1;
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
-      return 0;
-    });
-  }
-
-  function getFiltered() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const ev = document.getElementById('eventFilter').value;
-    return sortedCategories(categories).filter(c =>
-      (c.name.toLowerCase().includes(q) || c.event.toLowerCase().includes(q)) &&
-      (!ev || c.event_id === ev)
-    );
-  }
-
-  function updateStats() {
-    const totalKuota = categories.reduce((s, c) => s + Number(c.quota), 0);
-    const maxHarga = categories.length ? Math.max(...categories.map(c => Number(c.price))) : 0;
-    document.getElementById('stat-total').textContent = categories.length;
-    document.getElementById('stat-kuota').textContent = totalKuota.toLocaleString('id-ID');
-    document.getElementById('stat-harga').textContent = fmt(maxHarga);
-  }
-
-  function renderTable() {
-    const data = getFiltered();
-    const tbody = document.getElementById('tableBody');
-    const empty = document.getElementById('emptyState');
-    document.getElementById('result-count').textContent = `${data.length} kategori ditemukan`;
-
-    if (!data.length) {
-      tbody.innerHTML = '';
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-      tbody.innerHTML = data.map(c => `
+      <thead>
         <tr>
-          <td class="td-category">${c.name}</td>
-          <td>${c.event}</td>
-          <td class="td-price">${fmt(c.price)}</td>
-          <td class="td-quota">${Number(c.quota).toLocaleString('id-ID')} tiket</td>
-          <td>
-            <div class="btn-actions">
-              <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">Edit</button>
-              <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">Hapus</button>
-            </div>
-          </td>
+          <th>Kategori</th>
+          <th>Acara</th>
+          <th>Harga</th>
+          <th>Kuota</th>
+          <th>Aksi</th>
         </tr>
-      `).join('');
-    }
+      </thead>
 
-    renderCards(data);
-    updateStats();
-  }
+      <tbody>
 
-  function renderCards(data) {
-    const grid = document.getElementById('card-view');
-    if (!data.length) {
-      grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">Tidak ada kategori tiket ditemukan</div></div>';
-      return;
-    }
-    grid.innerHTML = data.map(c => `
-      <div class="category-card">
-        <span class="card-event-badge">${c.event}</span>
-        <div class="card-category-name">${c.name}</div>
-        <div class="card-meta">
-          <div class="card-meta-item"><div class="card-meta-label">Harga</div><div class="card-price">${fmt(c.price)}</div></div>
-          <div class="card-meta-item"><div class="card-meta-label">Kuota</div><div class="card-quota">${Number(c.quota).toLocaleString('id-ID')} tiket</div></div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-sm btn-edit" onclick="openEditModal('${c.id}')">Edit</button>
-          <button class="btn btn-sm btn-delete" onclick="openDeleteModal('${c.id}')">Hapus</button>
-        </div>
-      </div>
-    `).join('');
-  }
+        {% for c in categories %}
 
-  function switchView(v) {
-    currentView = v;
-    document.getElementById('table-view').classList.toggle('hidden', v !== 'tabel');
-    document.getElementById('card-view').classList.toggle('active', v === 'daftar');
-    document.getElementById('btn-tabel').classList.toggle('active', v === 'tabel');
-    document.getElementById('btn-daftar').classList.toggle('active', v === 'daftar');
-  }
+        <tr>
 
-  function filterTable() { renderTable(); }
+          <td>
+            <strong>{{ c.category_name }}</strong>
+          </td>
 
-  function openCreateModal() {
-    editingId = null;
-    document.getElementById('modalTitle').textContent = 'Tambah Kategori Baru';
-    document.getElementById('submitBtn').textContent = 'Tambah';
-    document.getElementById('fEvent').value = '';
-    document.getElementById('fName').value = '';
-    document.getElementById('fPrice').value = '';
-    document.getElementById('fQuota').value = '';
-    clearAllErrors();
-    document.getElementById('formModal').classList.add('open');
-  }
+          <td>
+            {{ c.event.event_title }}
+          </td>
 
-  async function openEditModal(id) {
-    const res = await fetch('/ticket-categories/update/' + id + '/');
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      showToast(data.error || 'Data kategori tidak ditemukan.', 'danger');
-      return;
-    }
+          <td class="ticket-price">
+            Rp {{ c.price }}
+          </td>
 
-    editingId = id;
-    document.getElementById('modalTitle').textContent = 'Edit Kategori';
-    document.getElementById('submitBtn').textContent = 'Simpan';
-    document.getElementById('fEvent').value = data.event_id || '';
-    document.getElementById('fName').value = data.name || '';
-    document.getElementById('fPrice').value = data.price || '';
-    document.getElementById('fQuota').value = data.quota || '';
-    clearAllErrors();
-    document.getElementById('formModal').classList.add('open');
-  }
+          <td>
+            {{ c.quota }} tiket
+          </td>
 
-  function closeFormModal() {
-    document.getElementById('formModal').classList.remove('open');
-  }
+          <td>
 
-  function clearError(fieldId) {
-    const el = document.getElementById(fieldId);
-    const err = document.getElementById('err-' + fieldId);
-    if (el) el.classList.remove('invalid');
-    if (err) err.style.display = 'none';
-  }
+            <div class="action-wrap">
 
-  function clearAllErrors() {
-    ['fEvent', 'fName', 'fPrice', 'fQuota'].forEach(clearError);
-  }
+              <button class="btn-edit">
+                Edit
+              </button>
 
-  function showError(fieldId, msg) {
-    const el = document.getElementById(fieldId);
-    const err = document.getElementById('err-' + fieldId);
-    if (el) el.classList.add('invalid');
-    if (err) { err.textContent = msg; err.style.display = 'block'; }
-  }
+              <button class="btn-delete">
+                Hapus
+              </button>
 
-  function validateForm() {
-    let ok = true;
-    const event = document.getElementById('fEvent').value.trim();
-    const name = document.getElementById('fName').value.trim();
-    const price = document.getElementById('fPrice').value;
-    const quota = document.getElementById('fQuota').value;
+            </div>
 
-    if (!event) { showError('fEvent', 'Acara wajib dipilih.'); ok = false; }
-    if (!name) { showError('fName', 'Nama kategori wajib diisi.'); ok = false; }
-    if (price === '' || isNaN(price) || Number(price) < 0) {
-      showError('fPrice', 'Harga tidak valid (harus ≥ 0).'); ok = false;
-    }
-    if (quota === '' || isNaN(quota) || !Number.isInteger(Number(quota)) || Number(quota) < 1) {
-      showError('fQuota', 'Kuota harus bilangan bulat positif (> 0).'); ok = false;
-    }
-    return ok;
-  }
+          </td>
 
-  async function submitForm() {
-    if (!validateForm()) return;
+        </tr>
 
-    const payload = {
-      category_name: document.getElementById('fName').value.trim(),
-      price: document.getElementById('fPrice').value.trim(),
-      quota: document.getElementById('fQuota').value.trim(),
-      event: document.getElementById('fEvent').value.trim(),
-    };
+        {% empty %}
 
-    const isEdit = Boolean(editingId);
-    const url = isEdit ? '/ticket-categories/update/' + editingId + '/' : '/ticket-categories/create/';
+        <tr>
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        'X-CSRFToken': csrfToken(),
-      },
-      body: new URLSearchParams(payload),
-    });
+          <td colspan="5">
 
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      if (data.errors) {
-        if (data.errors.category_name) showError('fName', data.errors.category_name[0]);
-        if (data.errors.price) showError('fPrice', data.errors.price[0]);
-        if (data.errors.quota) showError('fQuota', data.errors.quota[0]);
-        if (data.errors.event) showError('fEvent', data.errors.event[0]);
-      } else {
-        showToast(data.error || 'Gagal menyimpan kategori.', 'danger');
-      }
-      return;
-    }
+            <div class="empty-state">
+              Belum ada kategori tiket.
+            </div>
 
-    if (isEdit) {
-      const ev = eventsData.find(e => e.id === payload.event);
-      categories = categories.map(c => c.id === editingId ? {
-        ...c,
-        name: payload.category_name,
-        event_id: payload.event,
-        event: ev ? ev.title : c.event,
-        price: Number(payload.price),
-        quota: Number(payload.quota),
-      } : c);
-      showToast('Kategori berhasil diperbarui.');
-    } else {
-      categories.push({
-        id: data.id,
-        name: data.name,
-        event_id: payload.event,
-        event: data.event,
-        price: Number(data.price),
-        quota: Number(data.quota),
-      });
-      showToast('Kategori berhasil ditambahkan.');
-    }
+          </td>
 
-    closeFormModal();
-    renderTable();
-  }
+        </tr>
 
-  function openDeleteModal(id) {
-    const c = categories.find(x => x.id === id);
-    if (!c) return;
-    deletingId = id;
-    document.getElementById('del-id').textContent = c.id;
-    document.getElementById('del-name').textContent = c.name;
-    document.getElementById('del-event').textContent = c.event;
-    document.getElementById('deleteModal').classList.add('open');
-  }
+        {% endfor %}
 
-  function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.remove('open');
-    deletingId = null;
-  }
+      </tbody>
 
-  async function confirmDelete() {
-    const id = deletingId;
-    if (!id) return;
+    </table>
 
-    const res = await fetch('/ticket-categories/delete/' + id + '/', {
-      method: 'POST',
-      headers: { 'X-CSRFToken': csrfToken() },
-    });
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      showToast(data.error || 'Gagal menghapus kategori.', 'danger');
-      return;
-    }
+  </div>
 
-    categories = categories.filter(x => x.id !== id);
-    closeDeleteModal();
-    renderTable();
-    showToast('Kategori berhasil dihapus.', 'success');
-  }
+</div>
 
-  document.getElementById('formModal').addEventListener('click', function(e) {
-    if (e.target === this) closeFormModal();
-  });
-  document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) closeDeleteModal();
-  });
-
-  syncEventOptions();
-  renderTable();
-</script>
-</body>
-</html>
+{% endblock content %}

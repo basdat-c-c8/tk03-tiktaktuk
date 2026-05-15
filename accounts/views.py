@@ -92,30 +92,47 @@ def admin_dashboard(request):
 
 @login_required(login_url='/login')
 def organizer_dashboard(request):
-    # ROLE PROTECTION: Only organizer can access
+
     user_role = get_user_role(request.user)
+
     if user_role not in ("penyelenggara", "admin"):
         return redirect("main:show_main")
 
-    events = Event.objects.all().order_by("-event_datetime")
-    venues = Venue.objects.all()
+    organizer = get_current_organizer(request.user)
+
+    today = timezone.now()
+
+    events = Event.objects.filter(
+        organizer=organizer
+    ).select_related(
+        "venue"
+    ).order_by("event_datetime")
+
+    upcoming_events = events.filter(
+        event_datetime__gte=today
+    )
+
+    used_venues = Venue.objects.filter(
+        event__organizer=organizer
+    ).distinct()
 
     context = {
-        "name": request.user.username,
-        "role": "penyelenggara",
-        "last_login": request.COOKIES.get("last_login", "Never"),
+    "name": request.user.username,
+    "role": "penyelenggara",
+    "last_login": request.COOKIES.get("last_login", "Never"),
 
-        "events": events,
-        "total_events": events.count(),
-        "total_venues": venues.count(),
-    }
+    "upcoming_events": upcoming_events,
+
+    "active_event_count": events.count(),
+
+    "venue_count": used_venues.count(),
+}
 
     return render(
         request,
         "dashboard_organizer.html",
         context
     )
-
 
 @login_required(login_url='/login')
 def customer_dashboard(request):

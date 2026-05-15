@@ -47,20 +47,46 @@ def can_manage_ticket_category(request, category):
 
 @login_required(login_url='/login')
 def artist_list(request):
-    # ROLE PROTECTION: Only admin can manage artists
-    if not is_admin(request):
-        return redirect('events:artist_read')
-    
-    artists = Artist.objects.all().order_by('name')
-    context = {
-        'artists':       artists,
-        'total_artists': artists.count(),
-        'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
-        'total_event':   artists.count(),
-           'role':          get_user_role(request.user),
-    }
-    return render(request, 'cudartist.html', context)
 
+    role = get_user_role(request.user)
+
+    artists = Artist.objects.all().order_by('name')
+
+    # total artis
+    total_artists = artists.count()
+
+    # total genre unik
+    total_genre = (
+        artists.exclude(genre__isnull=True)
+        .exclude(genre='')
+        .values('genre')
+        .distinct()
+        .count()
+    )
+
+    # total artist yg tampil di event
+    tampil_event = 0
+
+    for artist in artists:
+        try:
+            if artist.event_set.exists():
+                tampil_event += 1
+        except:
+            pass
+
+    context = {
+        "artists": artists,
+        "role": role,
+        "total_artists": total_artists,
+        "total_genre": total_genre,
+        "tampil_event": tampil_event,
+    }
+
+    return render(
+        request,
+        "rartist.html",
+        context
+    )
 
 @login_required(login_url='/login')
 @require_POST

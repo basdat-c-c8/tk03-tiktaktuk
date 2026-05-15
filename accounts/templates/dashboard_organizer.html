@@ -7,11 +7,12 @@
 
 body{
   background:#f1f5f9;
-  font-family:Arial,sans-serif;
+  font-family:Inter,sans-serif;
   color:#111827;
 }
 
 /* CONTAINER */
+
 .container{
   max-width:1300px;
   margin:40px auto;
@@ -19,6 +20,7 @@ body{
 }
 
 /* HERO */
+
 .hero{
   background:linear-gradient(to right,#0f172a,#020617);
   border-radius:20px;
@@ -38,6 +40,7 @@ body{
 .hero h1{
   margin:8px 0;
   font-size:42px;
+  font-weight:700;
 }
 
 .hero p{
@@ -64,15 +67,11 @@ body{
   transform:translateY(-2px);
 }
 
-.hero-btn.secondary{
-  background:#374151;
-  color:white;
-}
-
 /* STATS */
+
 .stats-grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:18px;
   margin-bottom:24px;
 }
@@ -94,8 +93,8 @@ body{
 }
 
 .stat-number{
-  font-size:38px;
-  font-weight:bold;
+  font-size:36px;
+  font-weight:700;
   margin-bottom:8px;
 }
 
@@ -119,6 +118,7 @@ body{
 }
 
 /* SECTION */
+
 .section{
   background:white;
   border-radius:20px;
@@ -134,8 +134,8 @@ body{
 }
 
 .section-title{
-  font-size:30px;
-  font-weight:bold;
+  font-size:28px;
+  font-weight:700;
   margin-bottom:4px;
 }
 
@@ -150,6 +150,7 @@ body{
 }
 
 /* EVENT */
+
 .event-item{
   padding:22px 0;
   border-top:1px solid #e5e7eb;
@@ -171,7 +172,7 @@ body{
 
 .event-title{
   font-size:22px;
-  font-weight:bold;
+  font-weight:700;
 }
 
 .event-info{
@@ -186,7 +187,7 @@ body{
   padding:4px 10px;
   border-radius:999px;
   font-size:11px;
-  font-weight:bold;
+  font-weight:700;
   margin-left:8px;
 }
 
@@ -195,11 +196,21 @@ body{
   font-size:28px;
 }
 
+/* EMPTY */
+
+.empty-state{
+  padding:50px 0;
+  text-align:center;
+  color:#6b7280;
+  font-weight:600;
+}
+
 /* RESPONSIVE */
+
 @media(max-width:1000px){
 
   .stats-grid{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:1fr;
   }
 
   .hero{
@@ -210,29 +221,30 @@ body{
 
 }
 
-@media(max-width:700px){
-
-  .stats-grid{
-    grid-template-columns:1fr;
-  }
-
-  .hero h1{
-    font-size:32px;
-  }
-
-}
-
 </style>
+
+
 
 <div class="container">
 
   <!-- HERO -->
+
   <div class="hero">
 
     <div>
-      <small>Dashboard Penyelenggara</small>
-      <h1>{{ user.username }}</h1>
-      <p>Kelola 3 acara aktif Anda</p>
+
+      <small>
+        Dashboard Penyelenggara
+      </small>
+
+      <h1>
+        {{ user.username }}
+      </h1>
+
+      <p>
+        Kelola acara dan venue Anda
+      </p>
+
     </div>
 
     <div class="hero-actions">
@@ -249,142 +261,155 @@ body{
 
   </div>
 
+
+
   <!-- STATS -->
+
   <div class="stats-grid">
 
     <div class="stat-card">
 
-      <div class="stat-label">ACARA AKTIF</div>
+      <div class="stat-label">
+        TOTAL ACARA
+      </div>
 
-      <div class="stat-number">3</div>
+      <div class="stat-number">
+        {{ active_event_count }}
+      </div>
 
-      <div class="stat-desc">Dalam koordinasi</div>
+      <div class="stat-desc">
+        Total acara yang berlangsung
+      </div>
 
-      <div class="stat-icon">📅</div>
-
-    </div>
-
-    <div class="stat-card">
-
-      <div class="stat-label">TIKET TERJUAL</div>
-
-      <div class="stat-number">1,243</div>
-
-      <div class="stat-desc">Total terjual</div>
-
-      <div class="stat-icon">🎟️</div>
+      <div class="stat-icon">
+        📅
+      </div>
 
     </div>
 
+
+
     <div class="stat-card">
 
-      <div class="stat-label">REVENUE</div>
+      <div class="stat-label">
+        VENUE MITRA
+      </div>
 
-      <div class="stat-number">Rp 4.8M</div>
+      <div class="stat-number">
+        {{ venue_count }}
+      </div>
 
-      <div class="stat-desc">Bulan ini</div>
+      <div class="stat-desc">
+        Venue yang digunakan
+      </div>
 
-      <div class="stat-icon">📈</div>
+      <div class="stat-icon">
+        📍
+      </div>
 
     </div>
 
+
+
     <div class="stat-card">
 
-      <div class="stat-label">VENUE MITRA</div>
+      <div class="stat-label">
+        UPCOMING EVENT
+      </div>
 
-      <div class="stat-number">3</div>
+      <div class="stat-number">
+        {{ upcoming_events|length }}
+      </div>
 
-      <div class="stat-desc">Lokasi aktif</div>
+      <div class="stat-desc">
+        Menunggu pelaksanaan
+      </div>
 
-      <div class="stat-icon">📍</div>
+      <div class="stat-icon">
+        🎟️
+      </div>
 
     </div>
 
   </div>
 
+
+
   <!-- SECTION -->
+
   <div class="section">
 
     <div class="section-top">
 
       <div>
-        <div class="section-title">Performa Acara</div>
-        <div class="section-subtitle">
-          Status acara yang Anda kelola
+
+        <div class="section-title">
+          Acara Yang Akan Berlangsung
         </div>
+
+        <div class="section-subtitle">
+          Daftar acara mendatang milik Anda
+        </div>
+
       </div>
 
-      <a href="#" class="view-all">
-        Lihat Semua
+      <a href="{% url 'main:event_list' %}" class="view-all">
+        Kelola Acara
       </a>
 
     </div>
 
-    <!-- EVENT -->
+
+
+    {% for event in upcoming_events %}
+
     <div class="event-item">
 
       <div class="event-left">
 
         <div class="event-title">
-          Konser Melodi Senja
-          <span class="badge">LIVE</span>
+
+          {{ event.event_title }}
+
+          <span class="badge">
+
+            {% if event.event_datetime.date == now.date %}
+              HARI INI
+            {% else %}
+              UPCOMING
+            {% endif %}
+
+          </span>
+
         </div>
 
         <div class="event-info">
-          ↗ 85% terjual
+
+          📅 {{ event.event_datetime|date:"d M Y • H:i" }}
+
           &nbsp;&nbsp;
-          📍 Jakarta Convention Center
+
+          📍 {{ event.venue.venue_name }}
+
         </div>
 
       </div>
 
-      <div class="arrow">›</div>
-
-    </div>
-
-    <!-- EVENT -->
-    <div class="event-item">
-
-      <div class="event-left">
-
-        <div class="event-title">
-          Festival Seni Budaya
-          <span class="badge">LIVE</span>
-        </div>
-
-        <div class="event-info">
-          ↗ 85% terjual
-          &nbsp;&nbsp;
-          📍 Taman Impian Jayakarta
-        </div>
-
+      <div class="arrow">
+        ›
       </div>
 
-      <div class="arrow">›</div>
+    </div>
+
+    {% empty %}
+
+    <div class="empty-state">
+
+      Belum ada acara mendatang.
 
     </div>
 
-    <!-- EVENT -->
-    <div class="event-item">
-
-      <div class="event-left">
-
-        <div class="event-title">
-          Malam Akustik Bandung
-          <span class="badge">LIVE</span>
-        </div>
-
-        <div class="event-info">
-          ↗ 85% terjual
-          &nbsp;&nbsp;
-          📍 Bandung Hall Center
-        </div>
-
-      </div>
-
-      <div class="arrow">›</div>
-
-    </div>
+    {% endfor %}
 
   </div>
 
