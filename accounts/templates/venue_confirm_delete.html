@@ -58,7 +58,7 @@ h2 {
   <form method="POST">
     {% csrf_token %}
     <div class="buttons">
-      <a href="{{ cancel_url|default:request.META.HTTP_REFERER }}" class="btn cancel">Batal</a>
+      <a href="{{ cancel_url|default:'/venues/' }}" class="btn cancel">Batal</a>
       <button type="submit" class="btn delete">Hapus</button>
     </div>
   </form>

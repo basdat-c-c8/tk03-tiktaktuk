@@ -665,21 +665,21 @@ def create_event(request):
         form = EventForm(post_data)
         if form.is_valid():
             event = form.save()
-            
+
             category_names = request.POST.getlist("category_name[]")
-        prices = request.POST.getlist("price[]")
-        quotas = request.POST.getlist("quota[]")
+            prices = request.POST.getlist("price[]")
+            quotas = request.POST.getlist("quota[]")
 
-        for i in range(len(category_names)):
-            if category_names[i] and prices[i] and quotas[i]:
-                TicketCategory.objects.create(
-                    event=event,
-                    category_name=category_names[i],
-                    price=prices[i],
-                    quota=quotas[i]
-                )
+            for i in range(len(category_names)):
+                if category_names[i] and prices[i] and quotas[i]:
+                    TicketCategory.objects.create(
+                        event=event,
+                        category_name=category_names[i],
+                        price=prices[i],
+                        quota=quotas[i]
+                    )
 
-        return redirect("main:event_list")
+            return redirect("main:event_list")
 
     return render(request, "event_form.html", {
         "form": form,

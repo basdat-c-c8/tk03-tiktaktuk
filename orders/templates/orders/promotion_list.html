@@ -453,14 +453,26 @@
         {% for promo in promos %}
         <tr>
           <td>{{ promo.promo_code }}</td>
-          <td><span class="badge badge-nominal">Diskon</span></td>
-          <td>Rp {{ promo.discount_amount }}</td>
-          <td>-</td>
-          <td>-</td>
+          <td>
+            {% if promo.discount_type == 'percentage' %}
+              <span class="badge badge-percent">Persentase</span>
+            {% else %}
+              <span class="badge badge-nominal">Nominal</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if promo.discount_type == 'percentage' %}
+              {{ promo.discount_amount }}%
+            {% else %}
+              Rp {{ promo.discount_amount }}
+            {% endif %}
+          </td>
+          <td>{{ promo.start_date|date:"Y-m-d"|default:"-" }}</td>
+          <td>{{ promo.end_date|date:"Y-m-d"|default:"-" }}</td>
           <td>{{ promo.quota }}</td>
           <td class="admin-action-cell" {% if role != 'admin' %}hidden{% endif %}>
             <div class="actions admin-action-group">
-              <button type="button" class="btn btn-edit editPromoBtn" data-id="{{ promo.promotion_id }}" data-code="{{ promo.promo_code }}" data-value="{{ promo.discount_amount }}" data-limit="{{ promo.quota }}" data-active="{% if promo.is_active %}1{% else %}0{% endif %}" title="Edit promo" aria-label="Edit promo">✎</button>
+              <button type="button" class="btn btn-edit editPromoBtn" data-id="{{ promo.promotion_id }}" data-code="{{ promo.promo_code }}" data-type="{{ promo.discount_type }}" data-value="{{ promo.discount_amount }}" data-start="{{ promo.start_date|date:'Y-m-d' }}" data-end="{{ promo.end_date|date:'Y-m-d' }}" data-limit="{{ promo.quota }}" data-active="{% if promo.is_active %}1{% else %}0{% endif %}" title="Edit promo" aria-label="Edit promo">✎</button>
               <button type="button" class="btn btn-delete deletePromoBtn" data-id="{{ promo.promotion_id }}" data-code="{{ promo.promo_code }}" title="Hapus promo" aria-label="Hapus promo">🗑</button>
             </div>
           </td>
@@ -490,9 +502,9 @@
       </div>
       <div class="form-group full">
         <label for="createType">Tipe Diskon</label>
-        <select id="createType">
-          <option>Persentase</option>
-          <option>Nominal</option>
+        <select id="createType" name="discount_type">
+          <option value="nominal">Nominal</option>
+          <option value="percentage">Persentase</option>
         </select>
       </div>
       <div class="form-group full">
@@ -502,11 +514,11 @@
       <div class="form-row">
         <div class="form-group">
           <label for="createStart">Tanggal Mulai</label>
-          <input id="createStart" type="date">
+          <input id="createStart" name="start_date" type="date">
         </div>
         <div class="form-group">
           <label for="createEnd">Tanggal Berakhir</label>
-          <input id="createEnd" type="date">
+          <input id="createEnd" name="end_date" type="date">
         </div>
       </div>
       <div class="form-group full">
@@ -545,9 +557,9 @@
       </div>
       <div class="form-group full">
         <label for="updateType">Tipe Diskon</label>
-        <select id="updateType">
-          <option>Persentase</option>
-          <option>Nominal</option>
+        <select id="updateType" name="discount_type">
+          <option value="nominal">Nominal</option>
+          <option value="percentage">Persentase</option>
         </select>
       </div>
       <div class="form-group full">
@@ -557,11 +569,11 @@
       <div class="form-row">
         <div class="form-group">
           <label for="updateStart">Tanggal Mulai</label>
-          <input id="updateStart" type="date">
+          <input id="updateStart" name="start_date" type="date">
         </div>
         <div class="form-group">
           <label for="updateEnd">Tanggal Berakhir</label>
-          <input id="updateEnd" type="date">
+          <input id="updateEnd" name="end_date" type="date">
         </div>
       </div>
       <div class="form-group full">
@@ -652,6 +664,7 @@
 
     document.getElementById('openCreateBtn').addEventListener('click', function () {
       createCode.value = '';
+      createType.value = 'nominal';
       createValue.value = '';
       createStart.value = '';
       createEnd.value = '';
@@ -673,7 +686,10 @@
       button.addEventListener('click', function () {
         document.getElementById('updatePromotionId').value = button.getAttribute('data-id');
         updateCode.value = button.getAttribute('data-code');
+        updateType.value = button.getAttribute('data-type') || 'nominal';
         updateValue.value = button.getAttribute('data-value');
+        updateStart.value = button.getAttribute('data-start') || '';
+        updateEnd.value = button.getAttribute('data-end') || '';
         updateActive.checked = button.getAttribute('data-active') === '1';
         updateLimit.value = button.getAttribute('data-limit');
         openModal(updateModal);

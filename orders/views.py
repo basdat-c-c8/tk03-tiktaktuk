@@ -2,8 +2,10 @@ from decimal import Decimal, InvalidOperation
 import uuid
 
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -42,6 +44,20 @@ def _parse_positive_int(value, default=None):
 	except (TypeError, ValueError):
 		return default
 	return parsed if parsed > 0 else default
+
+
+def _parse_date_value(value):
+	if not value:
+		return None
+	return parse_date(value.strip())
+
+
+def _get_active_promos():
+	today = timezone.localdate()
+	return Promotion.objects.filter(is_active=True).filter(
+		Q(start_date__isnull=True) | Q(start_date__lte=today),
+		Q(end_date__isnull=True) | Q(end_date__gte=today),
+	).order_by('promo_code')
 
 
 def _generate_ticket_code():
@@ -144,7 +160,7 @@ def order_create(request):
 	categories = TicketCategory.objects.select_related('event', 'event__venue').all().order_by('category_name')
 	selected_event = None
 	selected_category = None
-	active_promos = Promotion.objects.filter(is_active=True).order_by('promo_code')
+	active_promos = _get_active_promos()
 	selected_seat_ids = []
 
 	if selected_event_id:
@@ -233,13 +249,15 @@ def order_create(request):
 						promo = Promotion.objects.filter(promo_code__iexact=promo_code, is_active=True).first()
 						if not promo:
 							checkout_error = 'Kode promo tidak valid atau sudah nonaktif.'
+						elif not promo.is_currently_active():
+							checkout_error = 'Kode promo belum aktif atau sudah berakhir.'
 						else:
 							used_quota = OrderPromotion.objects.filter(promotion=promo).count()
 							if promo.quota > 0 and used_quota >= promo.quota:
 								checkout_error = 'Kuota promo sudah habis.'
 								promo = None
 							else:
-								discount_amount = min(Decimal(promo.discount_amount), line_total)
+								discount_amount = promo.calculate_discount(line_total)
 
 					if not checkout_error:
 						total = max(line_total - discount_amount, Decimal('0'))
@@ -314,14 +332,21 @@ def promotion_list(request):
 
 		if action == 'create':
 			promo_code = request.POST.get('promo_code', '').strip().upper()
+			discount_type = request.POST.get('discount_type', '').strip()
 			discount_amount = request.POST.get('discount_amount', '').strip()
+			start_date = _parse_date_value(request.POST.get('start_date', '').strip())
+			end_date = _parse_date_value(request.POST.get('end_date', '').strip())
 			quota = _parse_positive_int(request.POST.get('quota'))
 			is_active = request.POST.get('is_active') == 'on'
 
 			if not promo_code:
 				messages.error(request, 'Kode promo wajib diisi.')
+			elif discount_type not in dict(Promotion.DISCOUNT_TYPE_CHOICES):
+				messages.error(request, 'Tipe diskon promo tidak valid.')
 			elif Promotion.objects.filter(promo_code__iexact=promo_code).exists():
 				messages.error(request, 'Kode promo sudah digunakan.')
+			elif start_date and end_date and end_date < start_date:
+				messages.error(request, 'Tanggal berakhir tidak boleh sebelum tanggal mulai.')
 			else:
 				try:
 					discount_value = Decimal(discount_amount)
@@ -331,10 +356,17 @@ def promotion_list(request):
 
 				if quota is None:
 					messages.error(request, 'Quota promo harus berupa bilangan bulat positif.')
+				elif discount_value < 0:
+					messages.error(request, 'Nilai diskon tidak boleh negatif.')
+				elif discount_type == Promotion.DISCOUNT_TYPE_PERCENTAGE and discount_value > 100:
+					messages.error(request, 'Diskon persentase maksimal 100%.')
 				else:
 					Promotion.objects.create(
 						promo_code=promo_code,
+						discount_type=discount_type,
 						discount_amount=discount_value,
+						start_date=start_date,
+						end_date=end_date,
 						quota=quota,
 						is_active=is_active,
 					)
@@ -345,14 +377,21 @@ def promotion_list(request):
 				messages.error(request, 'Promo yang dipilih tidak ditemukan.')
 			else:
 				promo_code = request.POST.get('promo_code', '').strip().upper()
+				discount_type = request.POST.get('discount_type', '').strip()
 				discount_amount = request.POST.get('discount_amount', '').strip()
+				start_date = _parse_date_value(request.POST.get('start_date', '').strip())
+				end_date = _parse_date_value(request.POST.get('end_date', '').strip())
 				quota = _parse_positive_int(request.POST.get('quota'))
 				is_active = request.POST.get('is_active') == 'on'
 
 				if not promo_code:
 					messages.error(request, 'Kode promo wajib diisi.')
+				elif discount_type not in dict(Promotion.DISCOUNT_TYPE_CHOICES):
+					messages.error(request, 'Tipe diskon promo tidak valid.')
 				elif Promotion.objects.exclude(pk=promo.pk).filter(promo_code__iexact=promo_code).exists():
 					messages.error(request, 'Kode promo sudah digunakan oleh promo lain.')
+				elif start_date and end_date and end_date < start_date:
+					messages.error(request, 'Tanggal berakhir tidak boleh sebelum tanggal mulai.')
 				else:
 					try:
 						discount_value = Decimal(discount_amount)
@@ -362,12 +401,19 @@ def promotion_list(request):
 
 					if quota is None:
 						messages.error(request, 'Quota promo harus berupa bilangan bulat positif.')
+					elif discount_value < 0:
+						messages.error(request, 'Nilai diskon tidak boleh negatif.')
+					elif discount_type == Promotion.DISCOUNT_TYPE_PERCENTAGE and discount_value > 100:
+						messages.error(request, 'Diskon persentase maksimal 100%.')
 					else:
 						promo.promo_code = promo_code
+						promo.discount_type = discount_type
 						promo.discount_amount = discount_value
+						promo.start_date = start_date
+						promo.end_date = end_date
 						promo.quota = quota
 						promo.is_active = is_active
-						promo.save(update_fields=['promo_code', 'discount_amount', 'quota', 'is_active'])
+						promo.save(update_fields=['promo_code', 'discount_type', 'discount_amount', 'start_date', 'end_date', 'quota', 'is_active'])
 						messages.success(request, 'Promo berhasil diperbarui.')
 
 		elif action == 'delete':
