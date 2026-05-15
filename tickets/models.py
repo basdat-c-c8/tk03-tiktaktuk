@@ -9,5 +9,8 @@ class Ticket(models.Model):
 	seat = models.ForeignKey('accounts.Seat', on_delete=models.SET_NULL, null=True, blank=True)
 	purchase_date = models.DateTimeField(auto_now_add=True)
 
+	class Meta:
+		db_table = 'ticket'
+
 	def __str__(self):
 		return self.ticket_code

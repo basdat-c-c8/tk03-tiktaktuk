@@ -8,6 +8,7 @@ class Artist(models.Model):
     genre     = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
+        db_table = 'artist'
         ordering = ['name']
 
     def __str__(self):
@@ -20,8 +21,8 @@ class EventArtist(models.Model):
     role   = models.CharField(max_length=100, blank=True)
 
     class Meta:
+        db_table = 'event_artist'
         unique_together = ("event", "artist")
-        db_table = 'accounts_eventartist'
 
     def __str__(self):
         return f"{self.event} – {self.artist}"
@@ -39,7 +40,7 @@ class TicketCategory(models.Model):
     )
 
     class Meta:
-        db_table = 'accounts_ticketcategory'
+        db_table = 'ticket_category'
         ordering = ['event__event_title', 'category_name']
 
     def __str__(self):

@@ -8,26 +8,52 @@ class Role(models.Model):
     role_id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     role_name = models.CharField(max_length=50, unique=True)
 
+    class Meta:
+        db_table = 'role'
+
     def __str__(self):
         return self.role_name
 
 
 class AccountRole(models.Model):
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, db_column='role_id')
+    user = models.ForeignKey(
+        'UserAccount',  # pakai model custom, bukan Django User
+        on_delete=models.CASCADE,
+        db_column='user_id'
+    )
 
     class Meta:
+        db_table = 'account_role'
         unique_together = ("role", "user")
 
     def __str__(self):
         return f"{self.user.username} - {self.role.role_name}"
 
+class UserAccount(models.Model):
+    user_id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=255)
 
+    class Meta:
+        db_table = 'user_account'
+
+    def __str__(self):
+        return self.username
+    
 class Customer(models.Model):
     customer_id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     full_name    = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20, blank=True)
-    user         = models.OneToOneField(User, on_delete=models.CASCADE)
+    user         = models.OneToOneField(
+        UserAccount,
+        on_delete=models.SET_NULL,
+        null=True,
+        db_column='user_id'
+    )
+
+    class Meta:
+        db_table = 'customer'
 
     def __str__(self):
         return self.full_name
@@ -37,7 +63,15 @@ class Organizer(models.Model):
     organizer_id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organizer_name = models.CharField(max_length=100)
     contact_email  = models.CharField(max_length=100, blank=True)
-    user           = models.OneToOneField(User, on_delete=models.CASCADE)
+    user           = models.OneToOneField(
+        UserAccount,
+        on_delete=models.SET_NULL,
+        null=True,
+        db_column='user_id'
+    )
+
+    class Meta:
+        db_table = 'organizer'
 
     def __str__(self):
         return self.organizer_name
@@ -51,6 +85,9 @@ class Venue(models.Model):
     city                = models.CharField(max_length=100)
     has_reserved_seating = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'venue'
+
     def __str__(self):
         return self.venue_name
 
@@ -61,6 +98,9 @@ class Seat(models.Model):
     seat_number = models.CharField(max_length=10)
     row_number  = models.CharField(max_length=10)
     venue       = models.ForeignKey(Venue, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'seat'
 
     def __str__(self):
         return f"{self.section} - Row {self.row_number} Seat {self.seat_number}"
@@ -73,6 +113,9 @@ class Event(models.Model):
     venue          = models.ForeignKey(Venue, on_delete=models.CASCADE)
     organizer      = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     description    = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'event'
 
     def __str__(self):
         return self.event_title

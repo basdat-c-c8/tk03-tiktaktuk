@@ -11,6 +11,9 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=30, default='pending')
     quantity = models.IntegerField(default=1)
 
+    class Meta:
+        db_table = 'order'
+
     def __str__(self):
         return f"Order {self.order_id} - {self.customer.full_name}"
 
@@ -31,6 +34,9 @@ class Promotion(models.Model):
     end_date = models.DateField(null=True, blank=True)
     quota = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'promotion'
 
     def __str__(self):
         return self.promo_code
@@ -59,6 +65,7 @@ class OrderPromotion(models.Model):
     promotion = models.ForeignKey('orders.Promotion', on_delete=models.CASCADE)
 
     class Meta:
+        db_table = 'order_promotion'
         unique_together = ('order', 'promotion')
 
     def __str__(self):
