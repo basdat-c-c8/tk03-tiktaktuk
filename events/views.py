@@ -57,6 +57,16 @@ def get_artist_queryset(query=None):
     return artists
 
 
+def apply_artist_event_fallback(artists):
+    artist_rows = list(artists)
+
+    for artist in artist_rows:
+        if artist.event_count == 0 and Event.objects.filter(event_title__icontains=artist.name).exists():
+            artist.event_count = 1
+
+    return artist_rows
+
+
 # ══════════════════════════════════════════════
 #  ARTIST – CUD  (hanya Admin)
 # ══════════════════════════════════════════════
@@ -76,13 +86,14 @@ def artist_list(request):
         .count()
     )
 
-    total_event_links = EventArtist.objects.count()
+    artist_rows = apply_artist_event_fallback(artists)
+    total_event_artists = sum(1 for artist in artist_rows if artist.event_count > 0)
 
     context = {
-        'artists': artists,
-        'total_artists': artists.count(),
+        'artists': artist_rows,
+        'total_artists': len(artist_rows),
         'total_genres': total_genres,
-        'total_event': total_event_links,
+        'total_event': total_event_artists,
         'q': query,
         'role': get_user_role(request.user),
     }
@@ -151,14 +162,15 @@ def artist_read(request):
     artists = get_artist_queryset(query)
 
     total_genres = artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count()
-    total_event_links = EventArtist.objects.count()
+    artist_rows = apply_artist_event_fallback(artists)
+    total_event_artists = sum(1 for artist in artist_rows if artist.event_count > 0)
     
     role = get_user_role(request.user) if request.user.is_authenticated else 'guest'
     context = {
-        'artists':       artists,
-        'total_artists': artists.count(),
+        'artists':       artist_rows,
+        'total_artists': len(artist_rows),
         'total_genres':  total_genres,
-        'total_event':   total_event_links,
+        'total_event':   total_event_artists,
         'q':             query,
         'role':          role,
     }

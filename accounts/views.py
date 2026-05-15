@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, Count, Q
 import re
 from tiktaktuk.helpers import get_user_role, get_current_customer, get_current_organizer
-from orders.models import Order, OrderPromotion
+from orders.models import Order, OrderPromotion, Promotion
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
 from accounts.models import (
     Role,
@@ -26,7 +26,8 @@ from accounts.models import (
     Seat,
 )
 
-from events.models import TicketCategory
+from events.models import EventArtist, TicketCategory
+from tickets.models import Ticket
 
 def get_user_role(user):
     # TODO(TK04): candidate for a reusable scalar function in Postgres
@@ -52,6 +53,26 @@ def can_organizer_manage_venue(user, venue):
     # only when it is not used by other organizers' events.
     used_by_other_organizers = Event.objects.filter(venue=venue).exclude(organizer=organizer).exists()
     return not used_by_other_organizers
+
+
+def sync_event_artists(event, artists):
+    selected_artist_ids = [artist.artist_id for artist in artists]
+
+    EventArtist.objects.filter(event=event).exclude(
+        artist_id__in=selected_artist_ids
+    ).delete()
+
+    existing_artist_ids = set(
+        EventArtist.objects
+        .filter(event=event)
+        .values_list("artist_id", flat=True)
+    )
+
+    EventArtist.objects.bulk_create([
+        EventArtist(event=event, artist=artist)
+        for artist in artists
+        if artist.artist_id not in existing_artist_ids
+    ])
 
 
 @login_required(login_url='/login')
@@ -88,6 +109,14 @@ def admin_dashboard(request):
         "total_venue": venues.count(),
         "reserved_count": venues.filter(has_reserved_seating=True).count(),
         "largest_capacity": largest_capacity,
+        "promo_total": Promotion.objects.count(),
+        "promo_active": Promotion.objects.filter(is_active=True).count(),
+        "promo_usage": OrderPromotion.objects.count(),
+        "total_revenue": (
+            Order.objects
+            .filter(payment_status__in=["lunas", "paid"])
+            .aggregate(total=Sum("total_price"))["total"] or 0
+        ),
     }
 
     return render(request, "dashboard_admin.html", context)
@@ -119,6 +148,20 @@ def organizer_dashboard(request):
         event__organizer=organizer
     ).distinct()
 
+    paid_orders = Order.objects.filter(
+        event__organizer=organizer,
+        payment_status__in=["lunas", "paid"],
+    )
+
+    tickets_sold = Ticket.objects.filter(
+        order__event__organizer=organizer,
+        order__payment_status__in=["lunas", "paid"],
+    ).count()
+
+    organizer_revenue = (
+        paid_orders.aggregate(total=Sum("total_price"))["total"] or 0
+    )
+
     context = {
     "name": request.user.username,
     "role": "penyelenggara",
@@ -129,6 +172,8 @@ def organizer_dashboard(request):
     "active_event_count": events.count(),
 
     "venue_count": used_venues.count(),
+    "tickets_sold": tickets_sold,
+    "organizer_revenue": organizer_revenue,
 }
 
     return render(
@@ -147,20 +192,24 @@ def customer_dashboard(request):
     customer = get_current_customer(request.user)
     today = timezone.now()
 
-    # Get all paid orders for statistics
-    paid_orders = Order.objects.filter(customer=customer, payment_status='lunas')
-    
-    # 1. Active/Upcoming Tickets (Orders with event in the future)
-    upcoming_orders = paid_orders.filter(event__event_datetime__gte=today).order_by('event__event_datetime')
+    customer_orders = (
+        Order.objects
+        .select_related("event", "event__venue")
+        .filter(customer=customer)
+        .exclude(payment_status__in=["cancelled", "dibatalkan"])
+    )
+    # 1. Active Tickets (pending and paid orders that are not cancelled)
+    upcoming_orders = customer_orders.order_by('event__event_datetime')
     active_ticket_count = upcoming_orders.count()
     
-    # 2. Total Events Attended or Planning to Attend (Unique events from all paid orders)
-    unique_event_count = paid_orders.values('event').distinct().count()
+    # 2. Total Events Attended or Planning to Attend
+    unique_event_count = customer_orders.values('event').distinct().count()
     
     # 3. Available Promo Codes used by this customer (Count from OrderPromotion)
     promo_count = OrderPromotion.objects.filter(order__customer=customer).values('promotion').distinct().count()
     
-    # 4. Total Spent (Sum of total_price from all paid orders)
+    # 4. Total Spent (only paid orders)
+    paid_orders = customer_orders.filter(payment_status__in=["lunas", "paid"])
     total_spent_result = paid_orders.aggregate(total=Sum('total_price'))
     total_spent = total_spent_result['total'] or 0
 
@@ -517,29 +566,34 @@ def profile_view(request):
             initial_data["full_name"] = organizer.organizer_name
             initial_data["email"] = organizer.contact_email
 
-    profile_form = ProfileUpdateForm(initial=initial_data)
+    profile_form = ProfileUpdateForm(initial=initial_data, role=role)
 
     password_form = PasswordChangeForm(request.user)
 
     if request.method == "POST":
         if "update_profile" in request.POST:
-            profile_form = ProfileUpdateForm(request.POST)
+            profile_form = ProfileUpdateForm(request.POST, role=role)
 
             if profile_form.is_valid():
                 full_name = profile_form.cleaned_data.get("full_name")
-                email = profile_form.cleaned_data.get("email")
-                phone_number = profile_form.cleaned_data.get("phone_number")
 
                 if role == "pelanggan":
-                    customer, created = Customer.objects.get_or_create(user=request.user)
+                    phone_number = profile_form.cleaned_data.get("phone_number", "")
+                    customer, created = Customer.objects.get_or_create(
+                        user=request.user,
+                        defaults={
+                            "full_name": full_name,
+                            "phone_number": phone_number,
+                        }
+                    )
                     customer.full_name = full_name
                     customer.phone_number = phone_number
                     customer.save()
-                    # Also update User model for consistency if needed
                     request.user.first_name = full_name
                     request.user.save()
 
                 elif role == "penyelenggara":
+                    email = profile_form.cleaned_data.get("email", "")
                     organizer = get_current_organizer(request.user)
                     if organizer:
                         organizer.organizer_name = full_name
@@ -547,8 +601,12 @@ def profile_view(request):
                         organizer.save()
                         request.user.email = email
                         request.user.save()
+                    else:
+                        messages.error(request, "Data organizer tidak ditemukan untuk akun ini.")
+                        return redirect("main:profile")
 
                 elif role == "admin":
+                    email = profile_form.cleaned_data.get("email", "")
                     request.user.first_name = full_name
                     request.user.email = email
                     request.user.save()
@@ -705,6 +763,7 @@ def update_event(request, id):
             return redirect("main:event_list")
 
     form = EventForm(request.POST or None, instance=event)
+    form.fields["artists"].initial = event.eventartist_set.values_list("artist_id", flat=True)
 
     if role == "penyelenggara":
         form.fields["organizer"].required = False
@@ -719,6 +778,7 @@ def update_event(request, id):
         form = EventForm(post_data, instance=event)
         if form.is_valid():
             updated_event = form.save()
+            sync_event_artists(updated_event, form.cleaned_data.get("artists", []))
             return redirect("main:event_list")
 
     return render(request, "event_form.html", {
@@ -766,12 +826,17 @@ def browse_events(request):
     venue_id = request.GET.get("venue", "")
     artist_id = request.GET.get("artist", "")
 
-    events = Event.objects.all().order_by("-event_datetime")
+    events = (
+        Event.objects
+        .select_related("venue")
+        .prefetch_related("eventartist_set__artist", "ticket_categories")
+        .order_by("-event_datetime")
+    )
 
     if q:
         events = events.filter(
             Q(event_title__icontains=q) |
-            Q(artists__name__icontains=q)
+            Q(eventartist__artist__name__icontains=q)
         ).distinct()
 
     if venue_id:
@@ -781,7 +846,7 @@ def browse_events(request):
 
     if artist_id:
         events = events.filter(
-            artists__artist_id=artist_id
+            eventartist__artist__artist_id=artist_id
         )
 
     context = {

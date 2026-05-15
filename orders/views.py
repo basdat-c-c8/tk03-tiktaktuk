@@ -106,12 +106,13 @@ def _get_order_queryset_for_user(user):
 def order_list(request):
 	role = get_user_role(request.user)
 	if request.method == 'POST':
+		action = request.POST.get('action', '').strip()
+		order_id = request.POST.get('order_id', '').strip()
+
 		if role != 'admin' and not request.user.is_superuser:
 			messages.error(request, 'Hanya admin yang dapat mengubah order.')
 			return redirect('orders:order_list')
 
-		action = request.POST.get('action', '').strip()
-		order_id = request.POST.get('order_id', '').strip()
 		order = get_object_or_404(Order, pk=order_id)
 
 		if action == 'update':

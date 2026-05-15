@@ -76,16 +76,41 @@ body {
 
 .heart {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   background: white;
   color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.45);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+  z-index: 2;
+  appearance: none;
+  transition: transform 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+
+.heart:hover {
+  color: #ef4444;
+  transform: scale(1.06);
+}
+
+.heart:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
+.heart.is-liked {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 
 .event-body {
@@ -187,15 +212,23 @@ body {
       <div class="event-card">
         <div class="event-banner">
           🎵
-          <div class="heart">♡</div>
+          <button
+            type="button"
+            class="heart"
+            data-event-id="{{ event.event_id }}"
+            aria-label="Sukai {{ event.event_title }}"
+            aria-pressed="false"
+          >
+            ♡
+          </button>
         </div>
 
         <div class="event-body">
           <h3>{{ event.event_title }}</h3>
 
           <div class="badges">
-            {% for artist in event.artists.all %}
-              <span class="badge">{{ artist.name }}</span>
+            {% for event_artist in event.eventartist_set.all %}
+              <span class="badge">{{ event_artist.artist.name }}</span>
             {% endfor %}
           </div>
 
@@ -231,5 +264,37 @@ body {
   </div>
 
 </div>
+
+<script>
+  const likedEvents = new Set(JSON.parse(localStorage.getItem("likedEvents") || "[]"));
+
+  function saveLikedEvents() {
+    localStorage.setItem("likedEvents", JSON.stringify([...likedEvents]));
+  }
+
+  function setHeartState(button, liked) {
+    button.classList.toggle("is-liked", liked);
+    button.setAttribute("aria-pressed", liked ? "true" : "false");
+    button.textContent = liked ? "♥" : "♡";
+  }
+
+  document.querySelectorAll(".heart").forEach((button) => {
+    const eventId = button.dataset.eventId;
+
+    setHeartState(button, likedEvents.has(eventId));
+
+    button.addEventListener("click", () => {
+      if (likedEvents.has(eventId)) {
+        likedEvents.delete(eventId);
+        setHeartState(button, false);
+      } else {
+        likedEvents.add(eventId);
+        setHeartState(button, true);
+      }
+
+      saveLikedEvents();
+    });
+  });
+</script>
 
 {% endblock %}

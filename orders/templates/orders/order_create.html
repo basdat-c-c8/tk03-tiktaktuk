@@ -40,7 +40,7 @@
     white-space: nowrap;
   }
 
-  .layout {
+  .checkout-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
     gap: 16px;
@@ -107,6 +107,7 @@
   }
 
   .info-box {
+    min-width: 0;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -128,6 +129,7 @@
     font-size: 14px;
     font-weight: 700;
     color: #0f172a;
+    overflow-wrap: anywhere;
   }
 
   .section-title {
@@ -215,7 +217,7 @@
     color: #0f172a;
     font-size: 18px;
     font-weight: 700;
-    cursor: default;
+    cursor: pointer;
   }
 
   .qty-value {
@@ -283,7 +285,7 @@
     padding: 11px 14px;
     font-size: 14px;
     font-weight: 800;
-    cursor: default;
+    cursor: pointer;
   }
 
   .btn-blue {
@@ -355,7 +357,7 @@
     font-size: 15px;
     font-weight: 900;
     box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
-    cursor: default;
+    cursor: pointer;
   }
 
   .summary-note {
@@ -371,7 +373,7 @@
   }
 
   @media (max-width: 980px) {
-    .layout {
+    .checkout-layout {
       grid-template-columns: 1fr;
     }
 
@@ -418,7 +420,7 @@
   </div>
   {% endif %}
 
-  <div class="layout">
+  <div class="checkout-layout">
     <div class="stack">
       <section class="card">
         <div class="card-header">

@@ -23,25 +23,30 @@
     .stat small { display: block; color: #94a3b8; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; margin-bottom: 8px; }
     .stat strong { font-size: 30px; }
     .section { margin-top: 24px; background: #fff; border-radius: 24px; padding: 22px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
-    .searchbar { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 20px; }
-    .searchbar input { width: 100%; border: 1px solid #dbe2ea; background: #f8fafc; border-radius: 14px; padding: 14px 16px; font: inherit; }
-    .result-count { color: #64748b; font-size: 14px; white-space: nowrap; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .card { border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; background: linear-gradient(180deg, #fff, #f8fafc); transition: transform .18s ease, box-shadow .18s ease; }
+    .searchbar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .searchbar input { flex: 1 1 auto; min-width: 0; border: 1px solid #dbe2ea; background: #f8fafc; border-radius: 14px; padding: 14px 16px; font: inherit; }
+    .result-count { color: #64748b; font-size: 14px; white-space: nowrap; flex: 0 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .card { min-width: 0; border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; background: linear-gradient(180deg, #fff, #f8fafc); transition: transform .18s ease, box-shadow .18s ease; }
     .card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08); }
     .card-top { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
-    .artist { display: flex; gap: 14px; align-items: center; }
+    .artist { display: flex; gap: 14px; align-items: center; min-width: 0; }
     .avatar { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: #fff; font-weight: 800; font-size: 18px; flex: 0 0 auto; }
-    .artist h3 { margin: 0; font-size: 18px; }
+    .artist h3 { margin: 0; font-size: 18px; overflow-wrap: anywhere; }
     .artist .sub { margin-top: 4px; color: #64748b; font-size: 13px; }
-    .genre { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .genre { display: inline-flex; align-items: center; max-width: 110px; padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 0 auto; }
     .card-body { margin-top: 16px; }
     .event-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .event-chip { padding: 7px 10px; border-radius: 999px; background: #f1f5f9; color: #334155; font-size: 12px; font-weight: 600; }
     .empty { text-align: center; padding: 54px 20px; color: #94a3b8; }
     .empty strong { display: block; color: #0f172a; margin-top: 8px; }
     @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 720px) { .stats, .grid, .searchbar { grid-template-columns: 1fr; } .hero-top { flex-direction: column; } }
+    @media (max-width: 720px) {
+        .stats, .grid { grid-template-columns: 1fr; }
+        .searchbar { flex-direction: column; align-items: stretch; }
+        .result-count { white-space: normal; }
+        .hero-top { flex-direction: column; }
+    }
 </style>
 
 <div class="page">
@@ -59,7 +64,7 @@
         <div class="hero-meta">
             <span class="pill">{{ total_artists }} artis</span>
             <span class="pill">{{ total_genres }} genre unik</span>
-            <span class="pill">{{ total_event }} relasi event</span>
+            <span class="pill">{{ total_event }} artis tampil</span>
         </div>
     </div>
 

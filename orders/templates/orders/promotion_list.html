@@ -248,7 +248,7 @@
     color: #ffffff;
   }
 
-  .modal {
+  .promo-modal {
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.5);
@@ -259,7 +259,7 @@
     z-index: 999;
   }
 
-  .modal.show {
+  .promo-modal.show {
     display: flex;
   }
 
@@ -344,6 +344,31 @@
     color: #334155;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+  }
+
+  .active-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    margin-top: 2px;
+  }
+
+  .active-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #2563eb;
+  }
+
+  .active-toggle label {
+    margin: 0;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-transform: none;
   }
 
   .modal-actions {
@@ -485,7 +510,7 @@
   </section>
 </div>
 
-<div class="modal" id="createPromoModal" aria-hidden="true">
+<div class="promo-modal" id="createPromoModal" aria-hidden="true">
   <div class="modal-card">
     <form method="post" action="{% url 'orders:promotion_list' %}">
     {% csrf_token %}
@@ -525,9 +550,9 @@
         <label for="createLimit">Batas Penggunaan</label>
         <input id="createLimit" name="quota" type="number" placeholder="Contoh: 100">
       </div>
-      <div class="form-group full" style="display:flex; gap:8px; align-items:center; flex-direction:row;">
+      <div class="form-group full active-toggle">
         <input id="createActive" name="is_active" type="checkbox" checked>
-        <label for="createActive" style="text-transform:none; letter-spacing:0; margin:0; font-size:13px; font-weight:700;">Promo aktif</label>
+        <label for="createActive">Promo aktif</label>
       </div>
     </div>
 
@@ -539,7 +564,7 @@
   </div>
 </div>
 
-<div class="modal" id="updatePromoModal" aria-hidden="true">
+<div class="promo-modal" id="updatePromoModal" aria-hidden="true">
   <div class="modal-card">
     <form method="post" action="{% url 'orders:promotion_list' %}">
     {% csrf_token %}
@@ -580,9 +605,9 @@
         <label for="updateLimit">Batas Penggunaan</label>
         <input id="updateLimit" name="quota" type="number">
       </div>
-      <div class="form-group full" style="display:flex; gap:8px; align-items:center; flex-direction:row;">
+      <div class="form-group full active-toggle">
         <input id="updateActive" name="is_active" type="checkbox">
-        <label for="updateActive" style="text-transform:none; letter-spacing:0; margin:0; font-size:13px; font-weight:700;">Promo aktif</label>
+        <label for="updateActive">Promo aktif</label>
       </div>
     </div>
 
@@ -594,7 +619,7 @@
   </div>
 </div>
 
-<div class="modal" id="deletePromoModal" aria-hidden="true">
+<div class="promo-modal" id="deletePromoModal" aria-hidden="true">
   <div class="modal-card">
     <form method="post" action="{% url 'orders:promotion_list' %}">
     {% csrf_token %}
