@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from accounts.models import Event, Seat, Venue
 from accounts.views import get_current_organizer, get_user_role
 from tickets.models import Ticket
-
+from utils.db_connection import get_db_connection, extract_trigger_error
 
 def _is_admin(user, role=None):
     return user.is_superuser or (role or get_user_role(user)) == 'admin'
@@ -62,6 +62,23 @@ def seat_list(request):
         seat_number = _clean_seat_value(request.POST.get('seat_number'))
         venue = _first_by_pk(manageable_venues, venue_id)
 
+        if action == 'delete':
+            seat_id = request.POST.get('seat_id', '').strip()
+            seat = _first_by_pk(
+                Seat.objects.filter(venue__in=manageable_venues),
+                seat_id
+            )
+            if not seat:
+                messages.error(request, 'Kursi tidak ditemukan atau tidak dapat diakses.')
+            else:
+                try:
+                    seat.delete()
+                    messages.success(request, 'Kursi berhasil dihapus.')
+                except Exception as e:
+                    # Error dari trigger 5.1: kursi sudah terisi
+                    messages.error(request, extract_trigger_error(e))
+            return redirect('seats:seat_list')
+ 
         if action not in ('create', 'update'):
             messages.error(request, 'Aksi kursi tidak dikenali.')
             return redirect('seats:seat_list')
@@ -131,5 +148,5 @@ def seat_list(request):
         'total_seats': total_seats,
         'available_count': total_seats - filled_count,
         'filled_count': filled_count,
-        'delete_supported': False,
+        'delete_supported': True,
     })

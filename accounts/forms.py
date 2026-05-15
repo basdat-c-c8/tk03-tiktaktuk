@@ -17,28 +17,28 @@ class VenueForm(forms.ModelForm):
             "address": forms.Textarea(attrs={"placeholder": "Jl. Gatot Subroto No.1", "rows": 4}),
         }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        venue_name = cleaned_data.get("venue_name")
-        city = cleaned_data.get("city")
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     venue_name = cleaned_data.get("venue_name")
+    #     city = cleaned_data.get("city")
 
-        if venue_name and city:
-            duplicate = Venue.objects.filter(
-                venue_name__iexact=venue_name,
-                city__iexact=city
-            )
+    #     if venue_name and city:
+    #         duplicate = Venue.objects.filter(
+    #             venue_name__iexact=venue_name,
+    #             city__iexact=city
+    #         )
 
-            # 🔥 penting: biar update ga ke-detect sebagai duplikat dirinya sendiri
-            if self.instance and self.instance.pk:
-                duplicate = duplicate.exclude(pk=self.instance.pk)
+    #         # 🔥 penting: biar update ga ke-detect sebagai duplikat dirinya sendiri
+    #         if self.instance and self.instance.pk:
+    #             duplicate = duplicate.exclude(pk=self.instance.pk)
 
-            if duplicate.exists():
-                existing = duplicate.first()
-                raise forms.ValidationError(
-                    f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar dengan ID {existing.venue_id}.'
-                )
+    #         if duplicate.exists():
+    #             existing = duplicate.first()
+    #             raise forms.ValidationError(
+    #                 f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar dengan ID {existing.venue_id}.'
+    #             )
 
-        return cleaned_data
+    #     return cleaned_data
 
 class RegisterForm(UserCreationForm):
     full_name = forms.CharField(

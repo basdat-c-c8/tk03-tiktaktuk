@@ -14,7 +14,7 @@ from accounts.views import get_user_role, get_current_organizer
 from events.models import TicketCategory
 from .models import Order, Promotion, OrderPromotion
 from tickets.models import Ticket
-
+from utils.db_connection import get_db_connection, extract_trigger_error
 
 def _get_customer(user):
 	return Customer.objects.filter(user=user).first()
@@ -269,10 +269,13 @@ def order_create(request):
 						# STORED_PROCEDURE_CANDIDATE: create_order(customer_id, event_id, category_id, seats, promo_code)
 						try:
 							with transaction.atomic():
-								if selected_seats and Ticket.objects.filter(order__event=event, seat_id__in=selected_seat_ids).exists():
+								if selected_seats and Ticket.objects.filter(
+									order__event=event,
+									seat_id__in=selected_seat_ids
+								).exists():
 									checkout_error = 'Salah satu kursi baru saja terisi. Silakan pilih kursi lain.'
 									raise ValueError('seat_taken')
-
+	
 								order = Order.objects.create(
 									customer=customer,
 									event=event,
@@ -280,10 +283,20 @@ def order_create(request):
 									quantity=quantity,
 									payment_status='pending',
 								)
-
+	
+								# TRIGGER 4: Validasi promotion lewat trigger PostgreSQL
 								if promo:
-									OrderPromotion.objects.create(order=order, promotion=promo)
-
+									try:
+										OrderPromotion.objects.create(
+											order=order,
+											promotion=promo
+										)
+									except Exception as promo_err:
+										# Error dari trigger: usage_limit atau tanggal tidak valid
+										checkout_error = extract_trigger_error(promo_err)
+										order.delete()
+										raise ValueError('promo_failed')
+	
 								for index in range(quantity):
 									Ticket.objects.create(
 										ticket_code=_generate_ticket_code(),
@@ -291,8 +304,13 @@ def order_create(request):
 										ticket_category=category,
 										seat=selected_seats[index] if selected_seats else None,
 									)
+	
 						except ValueError:
 							pass
+	
+						if not checkout_error:
+							messages.success(request, 'Order berhasil dibuat.')
+							return redirect('orders:order_list')
 
 						if not checkout_error:
 							messages.success(request, 'Order berhasil dibuat.')

@@ -28,6 +28,7 @@ from accounts.models import (
 
 from events.models import EventArtist, TicketCategory
 from tickets.models import Ticket
+from utils.db_connection import get_db_connection, extract_trigger_error
 
 def get_user_role(user):
     # TODO(TK04): candidate for a reusable scalar function in Postgres
@@ -285,7 +286,12 @@ def register(request):
             user.email = form.cleaned_data["email"]
             user.first_name = form.cleaned_data["full_name"]
 
-            user.save()
+            try:
+                user.save()
+            except Exception as e:
+                messages.error(request, extract_trigger_error(e))
+                context = {"form": form, "role": role, "role_title": role_title}
+                return render(request, "register.html", context)
 
             role_obj, created = Role.objects.get_or_create(
                 role_name=role
@@ -417,131 +423,85 @@ def venue_list(request):
 @login_required(login_url='/login')
 def create_venue(request):
     role = get_user_role(request.user)
-
     if role not in ["admin", "penyelenggara"]:
         return redirect("main:show_main")
-
+ 
     form = VenueForm(request.POST or None)
-
+ 
     if request.method == "POST":
-
-        venue_name = request.POST.get("venue_name", "").strip()
-        city = request.POST.get("city", "").strip()
-
-        existing_venue = Venue.objects.filter(
-            venue_name__iexact=venue_name,
-            city__iexact=city
-        ).first()
-
-        if existing_venue:
-
-            messages.error(
-                request,
-                    f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar.'
-            )
-
-        elif form.is_valid():
-
-            form.save()
-
-            return redirect(reverse("main:venue_list") + "?success=venue_created")
-
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect(reverse("main:venue_list") + "?success=venue_created")
+            except Exception as e:
+                messages.error(request, extract_trigger_error(e))
+ 
     context = {
         "form": form,
         "title": "Tambah Venue Baru",
         "button_text": "Tambah",
     }
-
+ 
     return render(request, "venue_form.html", context)
 
 
 @login_required(login_url='/login')
 def update_venue(request, id):
     role = get_user_role(request.user)
-
+ 
     if role not in ["admin", "penyelenggara"]:
         return redirect("main:show_main")
-
+ 
     venue = get_object_or_404(Venue, venue_id=id)
-
+ 
     if role == "penyelenggara" and not can_organizer_manage_venue(request.user, venue):
         messages.error(request, "Anda tidak memiliki akses untuk mengubah venue ini.")
         return redirect("main:venue_list")
-
+ 
     form = VenueForm(request.POST or None, instance=venue)
-
+ 
     if request.method == "POST":
-
         if form.is_valid():
-
-            venue_name = form.cleaned_data["venue_name"].strip()
-            city = form.cleaned_data["city"].strip()
-
-            existing_venue = Venue.objects.filter(
-                venue_name__iexact=venue_name,
-                city__iexact=city
-            ).exclude(venue_id=venue.venue_id).first()
-
-            if existing_venue:
-                messages.error(
-                    request,
-                    f'ERROR: Venue "{venue_name}" di kota "{city}" sudah terdaftar dengan ID {existing_venue.venue_id}.'
-                )
-
-            else:
+            try:
                 form.save()
                 messages.success(request, "Venue berhasil diperbarui.")
                 return redirect("main:venue_list")
-
+            except Exception as e:
+                messages.error(request, extract_trigger_error(e))
+ 
     context = {
         "form": form,
         "title": "Edit Venue",
         "button_text": "Simpan",
     }
-
+ 
     return render(request, "venue_form.html", context)
 
 @login_required(login_url='/login')
+@login_required(login_url='/login')
 def delete_venue(request, id):
-        role = get_user_role(request.user)
-        if role not in ["admin", "penyelenggara"]:
-            return redirect("main:show_main")
-
-        venue = get_object_or_404(Venue, venue_id=id)
-
-        if role == "penyelenggara" and not can_organizer_manage_venue(request.user, venue):
-            messages.error(request, "Anda tidak memiliki akses untuk menghapus venue ini.")
-            return redirect("main:venue_list")
-
-        # cek apakah masih ada event aktif / upcoming
-        active_event_exists = Event.objects.filter(
-            venue=venue,
-            event_datetime__gte=timezone.now()
-        ).exists()
-
-        # jika masih ada event aktif → tidak boleh dihapus
-        if active_event_exists:
-            messages.error(
-                request,
-                f'ERROR: Venue "{venue.venue_name}" masih memiliki event aktif sehingga tidak dapat dihapus.'
-            )
-
-            return redirect("main:venue_list")
-
-        # proses hapus
-        if request.method == "POST":
+    role = get_user_role(request.user)
+    if role not in ["admin", "penyelenggara"]:
+        return redirect("main:show_main")
+ 
+    venue = get_object_or_404(Venue, venue_id=id)
+ 
+    if role == "penyelenggara" and not can_organizer_manage_venue(request.user, venue):
+        messages.error(request, "Anda tidak memiliki akses untuk menghapus venue ini.")
+        return redirect("main:venue_list")
+ 
+    if request.method == "POST":
+        try:
             venue.delete()
-
-            messages.success(
-                request,
-                f'Venue "{venue.venue_name}" berhasil dihapus.'
-            )
-
+            messages.success(request, f'Venue "{venue.venue_name}" berhasil dihapus.')
             return redirect("main:venue_list")
-
-        return render(request, "venue_confirm_delete.html", {
-            "venue": venue
-        })
+        except Exception as e:
+            messages.error(request, extract_trigger_error(e))
+            return redirect("main:venue_list")
+ 
+    return render(request, "venue_confirm_delete.html", {
+        "venue": venue
+    })
 
 
 @login_required(login_url='/login')
@@ -868,3 +828,4 @@ def browse_events(request):
 
 def create_pengguna(request):
     return render(request, "cpengguna.html")
+

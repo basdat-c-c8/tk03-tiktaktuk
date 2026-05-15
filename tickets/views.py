@@ -10,7 +10,7 @@ from accounts.views import get_current_organizer, get_user_role
 from events.models import TicketCategory
 from orders.models import Order
 from .models import Ticket
-
+from utils.db_connection import get_db_connection, extract_trigger_error
 
 def _is_admin(user, role=None):
     return user.is_superuser or (role or get_user_role(user)) == 'admin'
@@ -196,14 +196,22 @@ def ticket_admin_organizer(request):
                 elif seat_id and not seat:
                     messages.error(request, 'Kursi yang dipilih tidak valid atau tidak dapat diakses.')
                 else:
-                    seat_error = _seat_assignment_error(seat, ticket.order.event, current_ticket=ticket)
+                    seat_error = _seat_assignment_error(seat, order.event)
                     if seat_error:
                         messages.error(request, seat_error)
                     else:
-                        ticket.ticket_category = category
-                        ticket.seat = seat
-                        ticket.save(update_fields=['ticket_category', 'seat'])
-                        messages.success(request, f'Tiket {ticket.ticket_code} berhasil diperbarui.')
+                        try:
+                            # TRIGGER 5.2: cek kuota kategori tiket sebelum buat tiket
+                            ticket = Ticket.objects.create(
+                                ticket_code=_generate_ticket_code(),
+                                order=order,
+                                ticket_category=category,
+                                seat=seat,
+                            )
+                            _sync_order_quantity(order)
+                            messages.success(request, f'Tiket {ticket.ticket_code} berhasil dibuat.')
+                        except Exception as e:
+                            messages.error(request, extract_trigger_error(e))
 
         elif action == 'delete':
             ticket = _first_by_pk(visible_tickets, ticket_id)
