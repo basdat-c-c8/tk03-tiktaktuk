@@ -244,11 +244,10 @@ def order_create(request):
 					if not checkout_error:
 						total = max(line_total - discount_amount, Decimal('0'))
 
-						# TODO(TK04): Transaction-sensitive flow. When migrating to raw SQL / Postgres,
-						# consider moving this entire operation to a stored procedure to ensure
-						# atomicity across: order creation, promo quota application, ticket generation,
-						# and seat assignment. Also consider triggers for promo quota decrement
-						# and oversell prevention. Current ORM `transaction.atomic()` wraps this logic.
+						# TODO(TK04): Transaction-sensitive flow.
+						# TRANSACTION_CANDIDATE: This block must be atomic.
+						# TRIGGER_CANDIDATE: Seat occupancy and promo quota validation.
+						# STORED_PROCEDURE_CANDIDATE: create_order(customer_id, event_id, category_id, seats, promo_code)
 						try:
 							with transaction.atomic():
 								if selected_seats and Ticket.objects.filter(order__event=event, seat_id__in=selected_seat_ids).exists():

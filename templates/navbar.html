@@ -73,7 +73,7 @@
       Dashboard
     </a>
 
-    {% if user.is_superuser or role == "admin" or user.accountrole_set.first.role.role_name == "admin" %}
+    {% if user.is_superuser or role == "admin" %}
       <!-- ADMIN MENU -->
       <a href="{% url 'main:venue_list' %}" class="sidebar-link">
         Manajemen Venue
@@ -121,7 +121,7 @@
         Browse Venue
       </a>
 
-    {% elif role == "penyelenggara" or user.accountrole_set.first.role.role_name == "penyelenggara" %}
+    {% elif role == "penyelenggara" %}
       <!-- ORGANIZER MENU -->
       <a href="{% url 'main:venue_list' %}" class="sidebar-link">
         Manajemen Venue
@@ -202,6 +202,15 @@
     </a>
 
   </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+  </script>
 
 {% endif %}
 {% endif %}

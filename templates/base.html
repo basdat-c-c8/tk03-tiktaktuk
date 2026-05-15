@@ -7,8 +7,23 @@
 
     <title>{% block title %}TikTakTuk{% endblock %}</title>
 
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            font-family: var(--font-main);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-main);
+        }
+    </style>
 </head>
 
 <body>

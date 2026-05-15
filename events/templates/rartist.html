@@ -1,339 +1,110 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-
 <style>
+    body { background: #f8fafc; color: #0f172a; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 40px 20px 64px; }
+    .hero {
+        background: linear-gradient(135deg, #0f172a, #1d4ed8 55%, #2563eb);
+        color: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+    .hero-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+    .back-link, .manage-link {
+        display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; border-radius: 999px; padding: 10px 16px;
+    }
+    .back-link { color: #dbeafe; background: rgba(255,255,255,.12); }
+    .manage-link { background: #fff; color: #111827; }
+    .hero h1 { margin: 18px 0 8px; font-size: clamp(30px, 4vw, 48px); line-height: 1.05; }
+    .hero p { margin: 0; color: #dbeafe; max-width: 720px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+    .pill { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); padding: 8px 12px; border-radius: 999px; font-size: 13px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 22px; }
+    .stat { background: #fff; border-radius: 18px; padding: 20px 22px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    .stat small { display: block; color: #94a3b8; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; margin-bottom: 8px; }
+    .stat strong { font-size: 30px; }
+    .section { margin-top: 24px; background: #fff; border-radius: 24px; padding: 22px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    .searchbar { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .searchbar input { width: 100%; border: 1px solid #dbe2ea; background: #f8fafc; border-radius: 14px; padding: 14px 16px; font: inherit; }
+    .result-count { color: #64748b; font-size: 14px; white-space: nowrap; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; background: linear-gradient(180deg, #fff, #f8fafc); transition: transform .18s ease, box-shadow .18s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08); }
+    .card-top { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+    .artist { display: flex; gap: 14px; align-items: center; }
+    .avatar { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: #fff; font-weight: 800; font-size: 18px; flex: 0 0 auto; }
+    .artist h3 { margin: 0; font-size: 18px; }
+    .artist .sub { margin-top: 4px; color: #64748b; font-size: 13px; }
+    .genre { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .card-body { margin-top: 16px; }
+    .event-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .event-chip { padding: 7px 10px; border-radius: 999px; background: #f1f5f9; color: #334155; font-size: 12px; font-weight: 600; }
+    .empty { text-align: center; padding: 54px 20px; color: #94a3b8; }
+    .empty strong { display: block; color: #0f172a; margin-top: 8px; }
+    @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 720px) { .stats, .grid, .searchbar { grid-template-columns: 1fr; } .hero-top { flex-direction: column; } }
+</style>
 
-  .page-wrapper{
-      padding:40px;
-  }
-  
-  .back-link{
-      color:#2563eb;
-      text-decoration:none;
-      font-size:14px;
-      font-weight:600;
-  }
-  
-  .page-title{
-      margin-top:18px;
-      font-size:40px;
-      font-weight:700;
-      color:#0f172a;
-      line-height:1.1;
-  }
-  
-  .page-subtitle{
-      margin-top:8px;
-      color:#64748b;
-      font-size:16px;
-  }
-  
-  .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:20px;
-      margin-top:28px;
-  }
-  
-  .stat-card{
-      background:white;
-      border-radius:20px;
-      padding:24px;
-      box-shadow:0 2px 8px rgba(0,0,0,.04);
-  }
-  
-  .stat-label{
-      font-size:12px;
-      font-weight:700;
-      color:#94a3b8;
-      text-transform:uppercase;
-      margin-bottom:10px;
-  }
-  
-  .stat-value{
-      font-size:24px;
-      font-weight:700;
-      color:#0f172a;
-  }
-  
-  .table-wrapper{
-      background:white;
-      border-radius:24px;
-      margin-top:28px;
-      overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0,.04);
-  }
-  
-  .table-top{
-      padding:24px 28px;
-      border-bottom:1px solid #eef2f7;
-  }
-  
-  .table-title{
-      font-size:20px;
-      font-weight:700;
-      color:#0f172a;
-  }
-  
-  .search-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:18px 24px;
-      border-bottom:1px solid #eef2f7;
-  }
-  
-  .search-input{
-      width:100%;
-      height:48px;
-      border-radius:14px;
-      border:1px solid #dbe2ea;
-      padding:0 16px;
-      font-size:14px;
-      outline:none;
-  }
-  
-  .result-count{
-      font-size:13px;
-      color:#94a3b8;
-      white-space:nowrap;
-  }
-  
-  table{
-      width:100%;
-      border-collapse:collapse;
-  }
-  
-  thead{
-      background:#f8fafc;
-  }
-  
-  thead th{
-      text-align:left;
-      padding:16px 24px;
-      font-size:11px;
-      color:#94a3b8;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-  }
-  
-  tbody td{
-      padding:20px 24px;
-      border-top:1px solid #f1f5f9;
-  }
-  
-  .artist-cell{
-      display:flex;
-      align-items:center;
-      gap:12px;
-  }
-  
-  .avatar{
-      width:40px;
-      height:40px;
-      border-radius:12px;
-      background:#4f46e5;
-      color:white;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-      font-size:14px;
-  }
-  
-  .artist-name{
-      font-size:15px;
-      font-weight:600;
-      color:#0f172a;
-  }
-  
-  .genre-badge{
-      display:inline-flex;
-      align-items:center;
-      padding:6px 12px;
-      border-radius:999px;
-      background:#fce7f3;
-      color:#be185d;
-      font-size:11px;
-      font-weight:700;
-  }
-  
-  .empty{
-      text-align:center;
-      padding:50px;
-      color:#94a3b8;
-      font-weight:600;
-  }
-  
-  </style>
-
-
-<div class="page-wrapper">
-
-    <div class="page-title">
-        Daftar Artis
-    </div>
-
-    <div class="page-subtitle">
-        Kelola artis yang ada di platform TikTakTuk
-    </div>
-
-
-    <div class="stats-grid">
-
-      <div class="stat-card">
-          <div class="stat-label">
-              Total Artis
-          </div>
-  
-          <div class="stat-value">
-              {{ total_artists }}
-          </div>
-      </div>
-  
-      <div class="stat-card">
-          <div class="stat-label">
-              Genre
-          </div>
-  
-          <div class="stat-value">
-              {{ total_genre }}
-          </div>
-      </div>
-  
-      <div class="stat-card">
-          <div class="stat-label">
-              Tampil di Event
-          </div>
-  
-          <div class="stat-value">
-              {{ tampil_event }}
-          </div>
-      </div>
-  
-  </div>
-
-
-    <div class="table-wrapper">
-
-        <div class="table-top">
-            <div class="table-title">
-                Tabel Artis
-            </div>
+<div class="page">
+    <div class="hero">
+        <div class="hero-top">
+            <a href="{% url 'main:show_main' %}" class="back-link">← Kembali ke Dashboard</a>
+            {% if role == 'admin' %}
+                <a href="{% url 'events:artist_list' %}" class="manage-link">Kelola Artis</a>
+            {% endif %}
         </div>
 
-        <div class="search-row">
+        <h1>Browse Artist</h1>
+        <p>Jelajahi artis, lihat genre, dan cek event yang benar-benar mereka isi di TikTakTuk.</p>
 
-            <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="Cari nama atau genre..."
-                onkeyup="filterArtis()"
-            >
-
-            <div class="result-count" id="resultCount">
-                {{ artists|length }} artis ditemukan
-            </div>
-
+        <div class="hero-meta">
+            <span class="pill">{{ total_artists }} artis</span>
+            <span class="pill">{{ total_genres }} genre unik</span>
+            <span class="pill">{{ total_event }} relasi event</span>
         </div>
+    </div>
 
-        <table>
+    <div class="section">
+        <form method="GET" class="searchbar">
+            <input type="text" name="q" value="{{ q }}" placeholder="Cari nama artis, genre, atau event...">
+            <div class="result-count">{{ artists|length }} artis ditemukan</div>
+        </form>
 
-            <thead>
-                <tr>
-                    <th>Artis</th>
-                    <th>Genre</th>
-                </tr>
-            </thead>
-
-            <tbody id="artistTable">
-
-                {% for artist in artists %}
-
-                <tr class="artist-row">
-
-                    <td>
-                        <div class="artist-cell">
-
-                            <div class="avatar">
-                                {{ artist.name|first|upper }}
+        <div class="grid">
+            {% for artist in artists %}
+                <article class="card">
+                    <div class="card-top">
+                        <div class="artist">
+                            <div class="avatar">{{ artist.name|first|upper }}</div>
+                            <div>
+                                <h3>{{ artist.name }}</h3>
+                                <div class="sub">{{ artist.event_count }} event tampil</div>
                             </div>
-
-                            <div class="artist-name">
-                                {{ artist.name }}
-                            </div>
-
                         </div>
-                    </td>
+                        {% if artist.genre %}
+                            <span class="genre">{{ artist.genre }}</span>
+                        {% endif %}
+                    </div>
 
-                    <td>
-                        <span class="genre-badge">
-                            {{ artist.genre }}
-                        </span>
-                    </td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-                    <td colspan="2" class="empty">
-                        Belum ada artis.
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+                    <div class="card-body">
+                        <div class="sub">Event terkait</div>
+                        <div class="event-list">
+                            {% for event_artist in artist.eventartist_set.all %}
+                                {% if forloop.counter <= 3 %}
+                                    <span class="event-chip">{{ event_artist.event.event_title }}</span>
+                                {% endif %}
+                            {% empty %}
+                                <span class="event-chip">Belum tampil di event</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty" style="grid-column:1/-1;">
+                    <strong>Belum ada artis.</strong>
+                    <span>Data artist akan muncul di sini setelah ditambahkan admin.</span>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-
 </div>
-
-
-<script>
-
-function filterArtis(){
-
-    const input =
-        document.getElementById('searchInput')
-        .value
-        .toLowerCase();
-
-    const rows =
-        document.querySelectorAll('.artist-row');
-
-    let visible = 0;
-
-    rows.forEach(row => {
-
-        const text =
-            row.innerText.toLowerCase();
-
-        if(text.includes(input)){
-
-            row.style.display = '';
-            visible++;
-
-        } else {
-
-            row.style.display = 'none';
-
-        }
-
-    });
-
-    document.getElementById('resultCount')
-        .innerText =
-        visible + ' artis ditemukan';
-}
-
-</script>
-
 {% endblock %}

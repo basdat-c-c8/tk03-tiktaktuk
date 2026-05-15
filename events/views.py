@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib import messages
+from django.db.models import Count, Q
 
-from .models import Artist, TicketCategory
+from .models import Artist, EventArtist, TicketCategory
 from .forms import ArtistForm, TicketCategoryForm
 from accounts.models import Event, Organizer
 from accounts.views import get_user_role
@@ -41,22 +42,33 @@ def can_manage_ticket_category(request, category):
     return bool(organizer and category.event.organizer_id == organizer.organizer_id)
 
 
+def get_artist_queryset(query=None):
+    artists = Artist.objects.prefetch_related('eventartist_set__event').annotate(
+        event_count=Count('eventartist', distinct=True)
+    ).order_by('name')
+
+    if query:
+        artists = artists.filter(
+            Q(name__icontains=query) |
+            Q(genre__icontains=query) |
+            Q(eventartist__event__event_title__icontains=query)
+        ).distinct()
+
+    return artists
+
+
 # ══════════════════════════════════════════════
 #  ARTIST – CUD  (hanya Admin)
 # ══════════════════════════════════════════════
-
 @login_required(login_url='/login')
 def artist_list(request):
+    if not is_admin(request):
+        return redirect('events:artist_read')
 
-    role = get_user_role(request.user)
+    query = request.GET.get('q', '').strip()
+    artists = get_artist_queryset(query)
 
-    artists = Artist.objects.all().order_by('name')
-
-    # total artis
-    total_artists = artists.count()
-
-    # total genre unik
-    total_genre = (
+    total_genres = (
         artists.exclude(genre__isnull=True)
         .exclude(genre='')
         .values('genre')
@@ -64,30 +76,20 @@ def artist_list(request):
         .count()
     )
 
-    # total artist yg tampil di event
-    tampil_event = 0
-
-    for artist in artists:
-        try:
-            if artist.event_set.exists():
-                tampil_event += 1
-        except:
-            pass
+    total_event_links = EventArtist.objects.count()
 
     context = {
-        "artists": artists,
-        "role": role,
-        "total_artists": total_artists,
-        "total_genre": total_genre,
-        "tampil_event": tampil_event,
+        'artists': artists,
+        'total_artists': artists.count(),
+        'total_genres': total_genres,
+        'total_event': total_event_links,
+        'q': query,
+        'role': get_user_role(request.user),
     }
 
-    return render(
-        request,
-        "rartist.html",
-        context
-    )
+    return render(request, 'cudartist.html', context)
 
+    
 @login_required(login_url='/login')
 @require_POST
 def artist_create(request):
@@ -145,13 +147,20 @@ def artist_delete(request, id):
 # ══════════════════════════════════════════════
 
 def artist_read(request):
-    artists = Artist.objects.all().order_by('name')
+    query = request.GET.get('q', '').strip()
+    artists = get_artist_queryset(query)
+
+    total_genres = artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count()
+    total_event_links = EventArtist.objects.count()
+    
     role = get_user_role(request.user) if request.user.is_authenticated else 'guest'
     context = {
         'artists':       artists,
         'total_artists': artists.count(),
-        'total_genres':  artists.exclude(genre__isnull=True).exclude(genre='').values('genre').distinct().count(),
-           'role':          role,
+        'total_genres':  total_genres,
+        'total_event':   total_event_links,
+        'q':             query,
+        'role':          role,
     }
     return render(request, 'rartist.html', context)
 

@@ -5,7 +5,7 @@
 <style>
 body {
   background: #f8fafc;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-main);
   color: #1f2937;
 }
 
@@ -181,6 +181,11 @@ body {
 </style>
 
 <div class="container">
+  {% if request.GET.success == 'venue_created' %}
+    <div style="padding: 10px 12px; border-radius: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-size: 13px; font-weight: 700; margin-bottom: 20px;">
+      Venue berhasil ditambahkan!
+    </div>
+  {% endif %}
 
   <div class="header">
     <div>

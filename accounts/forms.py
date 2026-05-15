@@ -95,10 +95,12 @@ class ProfileUpdateForm(forms.Form):
     phone_number = forms.CharField(
         label="Nomor Telepon",
         max_length=15,
+        required=False,
         widget=forms.TextInput(attrs={"placeholder": "Nomor telepon"})
     )
     email = forms.EmailField(
         label="Email",
+        required=False,
         widget=forms.EmailInput(attrs={"placeholder": "Email"})
     )
 

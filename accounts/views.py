@@ -10,9 +10,10 @@ import datetime
 from django.utils import timezone
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from accounts.models import Event
+from django.db.models import Sum, Count, Q
 import re
-
+from tiktaktuk.helpers import get_user_role, get_current_customer, get_current_organizer
+from orders.models import Order, OrderPromotion
 from accounts.forms import RegisterForm, VenueForm, ProfileUpdateForm, EventForm
 from accounts.models import (
     Role,
@@ -21,12 +22,14 @@ from accounts.models import (
     Organizer,
     Venue,
     Event,
+    Artist,
+    Seat,
 )
 
-from events.models import Artist, TicketCategory
+from events.models import TicketCategory
 
 def get_user_role(user):
-
+    # TODO(TK04): candidate for a reusable scalar function in Postgres
     account_role = AccountRole.objects.filter(user=user).first()
 
     if account_role:
@@ -141,10 +144,35 @@ def customer_dashboard(request):
     if user_role != "pelanggan":
         return redirect("main:show_main")
     
+    customer = get_current_customer(request.user)
+    today = timezone.now()
+
+    # Get all paid orders for statistics
+    paid_orders = Order.objects.filter(customer=customer, payment_status='lunas')
+    
+    # 1. Active/Upcoming Tickets (Orders with event in the future)
+    upcoming_orders = paid_orders.filter(event__event_datetime__gte=today).order_by('event__event_datetime')
+    active_ticket_count = upcoming_orders.count()
+    
+    # 2. Total Events Attended or Planning to Attend (Unique events from all paid orders)
+    unique_event_count = paid_orders.values('event').distinct().count()
+    
+    # 3. Available Promo Codes used by this customer (Count from OrderPromotion)
+    promo_count = OrderPromotion.objects.filter(order__customer=customer).values('promotion').distinct().count()
+    
+    # 4. Total Spent (Sum of total_price from all paid orders)
+    total_spent_result = paid_orders.aggregate(total=Sum('total_price'))
+    total_spent = total_spent_result['total'] or 0
+
     context = {
         "name": request.user.username,
         "role": "pelanggan",
         "last_login": request.COOKIES.get("last_login", "Never"),
+        "active_ticket_count": active_ticket_count,
+        "unique_event_count": unique_event_count,
+        "promo_count": promo_count,
+        "total_spent": total_spent,
+        "upcoming_orders": upcoming_orders[:5], # Limit to top 5 for dashboard
     }
 
     return render(request, "dashboard_customer.html", context)
@@ -235,12 +263,10 @@ def register(request):
                     contact_email=form.cleaned_data["email"]
                 )
 
-            messages.success(
-                request,
-                "Akun berhasil dibuat!"
-            )
-
-            return redirect("main:login")
+            # Account successfully created, but we don't want a sticky success message 
+            # that follows the user until they are in the dashboard.
+            # Instead of a global message, we'll let the login page handle the confirmation.
+            return redirect(reverse("main:login") + "?registered=1")
 
     context = {
         "form": form,
@@ -369,12 +395,7 @@ def create_venue(request):
 
             form.save()
 
-            messages.success(
-                request,
-                "Venue berhasil ditambahkan."
-            )
-
-            return redirect("main:venue_list")
+            return redirect(reverse("main:venue_list") + "?success=venue_created")
 
     context = {
         "form": form,
@@ -477,14 +498,26 @@ def delete_venue(request, id):
 @login_required(login_url='/login')
 def profile_view(request):
     role = get_user_role(request.user)
-
-    profile_form = ProfileUpdateForm(initial={
+    
+    # Initialize data
+    initial_data = {
         "full_name": request.user.first_name,
         "email": request.user.email,
-        "phone_number": Customer.objects.filter(user=request.user).first().phone_number
-        if Customer.objects.filter(user=request.user).exists()
-        else "",
-    })
+        "phone_number": "",
+    }
+
+    if role == "pelanggan":
+        customer = Customer.objects.filter(user=request.user).first()
+        if customer:
+            initial_data["full_name"] = customer.full_name
+            initial_data["phone_number"] = customer.phone_number
+    elif role == "penyelenggara":
+        organizer = get_current_organizer(request.user)
+        if organizer:
+            initial_data["full_name"] = organizer.organizer_name
+            initial_data["email"] = organizer.contact_email
+
+    profile_form = ProfileUpdateForm(initial=initial_data)
 
     password_form = PasswordChangeForm(request.user)
 
@@ -493,43 +526,31 @@ def profile_view(request):
             profile_form = ProfileUpdateForm(request.POST)
 
             if profile_form.is_valid():
+                full_name = profile_form.cleaned_data.get("full_name")
+                email = profile_form.cleaned_data.get("email")
+                phone_number = profile_form.cleaned_data.get("phone_number")
+
                 if role == "pelanggan":
-                    customer, created = Customer.objects.get_or_create(
-                        user=request.user,
-                        defaults={
-                            "full_name": profile_form.cleaned_data["full_name"],
-                            "phone_number": profile_form.cleaned_data["phone_number"],
-                        }
-                    )
-
-                    customer.full_name = profile_form.cleaned_data["full_name"]
-                    customer.phone_number = profile_form.cleaned_data["phone_number"]
+                    customer, created = Customer.objects.get_or_create(user=request.user)
+                    customer.full_name = full_name
+                    customer.phone_number = phone_number
                     customer.save()
-
-                    request.user.first_name = profile_form.cleaned_data["full_name"]
-                    request.user.email = profile_form.cleaned_data["email"]
+                    # Also update User model for consistency if needed
+                    request.user.first_name = full_name
                     request.user.save()
 
                 elif role == "penyelenggara":
-                    organizer, created = Organizer.objects.get_or_create(
-                        user=request.user,
-                        defaults={
-                            "organizer_name": profile_form.cleaned_data["full_name"],
-                            "contact_email": profile_form.cleaned_data["email"],
-                        }
-                    )
-
-                    organizer.organizer_name = profile_form.cleaned_data["full_name"]
-                    organizer.contact_email = profile_form.cleaned_data["email"]
-                    organizer.save()
-
-                    request.user.first_name = profile_form.cleaned_data["full_name"]
-                    request.user.email = profile_form.cleaned_data["email"]
-                    request.user.save()
+                    organizer = get_current_organizer(request.user)
+                    if organizer:
+                        organizer.organizer_name = full_name
+                        organizer.contact_email = email
+                        organizer.save()
+                        request.user.email = email
+                        request.user.save()
 
                 elif role == "admin":
-                    request.user.first_name = profile_form.cleaned_data["full_name"]
-                    request.user.email = profile_form.cleaned_data["email"]
+                    request.user.first_name = full_name
+                    request.user.email = email
                     request.user.save()
 
                 messages.success(request, "Profil berhasil diperbarui.")
@@ -537,24 +558,23 @@ def profile_view(request):
 
         elif "update_password" in request.POST:
             password_form = PasswordChangeForm(request.user, request.POST)
-
             if password_form.is_valid():
                 user = password_form.save()
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password berhasil diperbarui.")
                 return redirect("main:profile")
+            else:
+                messages.error(request, "Gagal memperbarui password. Silakan periksa input Anda.")
 
     context = {
-        "role": role,
         "profile_form": profile_form,
         "password_form": password_form,
+        "role": role,
     }
 
     return render(request, "profile.html", context)
 
 
-@login_required(login_url='/login')
-@login_required(login_url='/login')
 @login_required(login_url='/login')
 def event_list(request):
     # ROLE PROTECTION: Only admin and organizer can access
@@ -750,8 +770,9 @@ def browse_events(request):
 
     if q:
         events = events.filter(
-            event_title__icontains=q
-        )
+            Q(event_title__icontains=q) |
+            Q(artists__name__icontains=q)
+        ).distinct()
 
     if venue_id:
         events = events.filter(

@@ -6,7 +6,7 @@
 body {
   margin: 0;
   background: #f8fafc;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-main);
   color: #1f2937;
 }
 
@@ -55,7 +55,7 @@ body {
   text-decoration: none;
   font-weight: 700;
   font-size: 16px;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-main);
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -225,7 +225,7 @@ body {
     <div class="card">
       <div>
         <h4>Tiket Aktif</h4>
-        <h2>2</h2>
+        <h2>{{ active_ticket_count }}</h2>
         <small>Siap digunakan</small>
       </div>
       <div class="icon blue">🎟️</div>
@@ -234,7 +234,7 @@ body {
     <div class="card">
       <div>
         <h4>Acara Diikuti</h4>
-        <h2>12</h2>
+        <h2>{{ unique_event_count }}</h2>
         <small>Total pengalaman</small>
       </div>
       <div class="icon green">📅</div>
@@ -243,7 +243,7 @@ body {
     <div class="card">
       <div>
         <h4>Kode Promo</h4>
-        <h2>3</h2>
+        <h2>{{ promo_count }}</h2>
         <small>Tersedia untuk Anda</small>
       </div>
       <div class="icon purple">↗️</div>
@@ -252,7 +252,7 @@ body {
     <div class="card">
       <div>
         <h4>Total Belanja</h4>
-        <h2>Rp 1.6M</h2>
+        <h2>Rp {{ total_spent|floatformat:0 }}</h2>
         <small>Bulan ini</small>
       </div>
       <div class="icon orange">🎵</div>
@@ -269,25 +269,19 @@ body {
       <a href="{% url 'main:browse_events' %}" class="see-all">Lihat Semua</a>
     </div>
 
+    {% for order in upcoming_orders %}
     <div class="ticket-row">
       <div>
         <div class="ticket-title">
-          Konser Melodi Senja <span class="badge">VVIP</span>
+          {{ order.event.event_title }} <span class="badge">{{ order.quantity }} Tiket</span>
         </div>
-        <div class="ticket-meta">📅 15 Mei 2024 &nbsp;&nbsp; 📍 Jakarta Convention Center</div>
+        <div class="ticket-meta">📅 {{ order.event.event_datetime|date:"d M Y" }} &nbsp;&nbsp; 📍 {{ order.event.venue.venue_name }}</div>
       </div>
       <div class="arrow">›</div>
     </div>
-
-    <div class="ticket-row">
-      <div>
-        <div class="ticket-title">
-          Festival Seni Budaya <span class="badge">GENERAL</span>
-        </div>
-        <div class="ticket-meta">📅 22 Mei 2024 &nbsp;&nbsp; 📍 Taman Impian Jayakarta</div>
-      </div>
-      <div class="arrow">›</div>
-    </div>
+    {% empty %}
+    <p class="empty">Belum ada tiket mendatang. <a href="{% url 'main:browse_events' %}">Cari acara menarik?</a></p>
+    {% endfor %}
   </div>
 
 </div>
