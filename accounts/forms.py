@@ -104,6 +104,20 @@ class ProfileUpdateForm(forms.Form):
         widget=forms.EmailInput(attrs={"placeholder": "Email"})
     )
 
+    def __init__(self, *args, role=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if role == "pelanggan":
+            self.fields.pop("email", None)
+        elif role == "penyelenggara":
+            self.fields.pop("phone_number", None)
+            self.fields["full_name"].label = "Nama Organizer"
+            self.fields["full_name"].widget.attrs["placeholder"] = "Nama organizer"
+            self.fields["email"].label = "Email Kontak"
+            self.fields["email"].widget.attrs["placeholder"] = "Email kontak"
+        elif role == "admin":
+            self.fields.pop("phone_number", None)
+
 class EventForm(forms.ModelForm):
 
     artists = forms.ModelMultipleChoiceField(

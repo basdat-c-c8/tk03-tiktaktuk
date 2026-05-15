@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daftar Artis – TikTakTuk</title>
+{% extends 'base.html' %}
+
+{% block title %}Daftar Artis - TikTakTuk{% endblock %}
+
+{% block content %}
+
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -190,17 +190,16 @@
     .btn-icon:hover      { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
     .btn-icon.del:hover  { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
 
-    /* ── primary button ── */
+    /* ── PRIMARY BUTTON ── */
     .btn-primary {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 10px 18px;
-      background: var(--text-main); color: #fff;
+      background: var(--accent); color: #fff;
       border: none; border-radius: var(--radius-sm);
       font-family: inherit; font-size: .875rem; font-weight: 600;
       cursor: pointer; transition: background .15s;
-      text-decoration: none;
     }
-    .btn-primary:hover { background: #000; }
+    .btn-primary:hover { background: var(--accent-hover); }
 
     /* ── EMPTY STATE ── */
     .empty-state { text-align: center; padding: 56px 24px; color: var(--text-sub); }
@@ -335,273 +334,103 @@
   width: 17px;
   height: 17px;
 }
-
-.artist-page {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 40px 20px 64px;
-}
-
-.artist-hero {
-  background: linear-gradient(135deg, #0f172a, #1d4ed8 55%, #2563eb);
-  color: #fff;
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-}
-
-.artist-hero-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.artist-hero h1 {
-  margin: 16px 0 8px;
-  font-size: clamp(30px, 4vw, 48px);
-  line-height: 1.05;
-}
-
-.artist-hero p {
-  margin: 0;
-  max-width: 760px;
-  color: #dbeafe;
-}
-
-.artist-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.artist-pill {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.artist-section {
-  margin-top: 24px;
-  background: #fff;
-  border-radius: 24px;
-  padding: 22px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-}
-
-.artist-toolbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.artist-search {
-  width: 100%;
-  border: 1px solid #dbe2ea;
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 14px 16px;
-  font: inherit;
-}
-
-.artist-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.artist-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 18px;
-  background: linear-gradient(180deg, #fff, #f8fafc);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-
-.artist-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-}
-
-.artist-card-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.artist-card .artist-cell {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-.artist-card .avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-weight: 800;
-  font-size: 18px;
-  flex: 0 0 auto;
-}
-
-.artist-card .artist-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.artist-card .artist-sub {
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 13px;
-}
-
-.artist-card .genre-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-
-.artist-events {
-  margin-top: 14px;
-}
-
-.artist-events-label {
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.event-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.event-chip {
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: #334155;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.artist-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.artist-action-btn {
-  border: 1px solid #dbe2ea;
-  background: #fff;
-  color: #0f172a;
-  border-radius: 12px;
-  padding: 9px 12px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.artist-action-btn.danger {
-  color: #dc2626;
-}
-
-.artist-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 54px 20px;
-  color: #94a3b8;
-}
-
-.artist-empty strong {
-  display: block;
-  color: #0f172a;
-  margin-top: 8px;
-}
-
-@media (max-width: 1024px) {
-  .artist-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 720px) {
-  .artist-grid,
-  .artist-toolbar {
-    grid-template-columns: 1fr;
-  }
-
-  .artist-hero-top {
-    flex-direction: column;
-  }
-}
     @media (max-width: 600px) {
       .stat-row { grid-template-columns: 1fr; }
       .page-header { flex-direction: column; gap: 12px; }
     }
   </style>
-</head>
-<body>
 
 <!-- PAGE -->
-<div class="artist-page">
-  <div class="artist-hero">
-    <div class="artist-hero-top">
+<div class="page-wrapper">
+
+  <div class="page-header">
+
+    <div>
+  
       <a href="{% url 'main:show_main' %}" class="back-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                <svg xmlns="http://www.w3.org/2000/svg"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+          <path stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 19l-7-7 7-7"/>
         </svg>
+  
         <span>Kembali ke Dashboard</span>
-      </a>
+        </a>
+        <h1>Daftar Artis</h1>
+      <p>Kelola artis yang ada di platform TikTakTuk</p>
+  
+    </div>
+  
+    <button class="btn-primary" onclick="openCreate()">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="15"
+           height="15"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2.5">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"/>
+      </svg>
+  
+      Tambah Artis
+    </button>
+  
+  </div>
 
-      <button class="btn-primary" onclick="openCreate()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+  <!-- stats -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="label">Total Artis</div>
+      <div class="value" id="statTotal">6</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Genre</div>
+      <div class="value" id="statGenre">6</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Tampil di Event</div>
+      <div class="value" id="statEvent">{{ total_event }}</div>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="table-box">
+    <div class="table-top">
+      <h2>Tabel Artis</h2>
+      <div class="toggle">
+        <button class="active">Tabel</button>
+        <button>Daftar</button>
+      </div>
+    </div>
+    <div class="table-controls">
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
         </svg>
-        Tambah Artis
-      </button>
+        <input type="text" id="searchInput" placeholder="Cari nama atau genre..." oninput="filterTable()" />
+      </div>
+      <span class="result-count" id="resultCount">6 artis ditemukan</span>
     </div>
 
-    <h1>Daftar Artis</h1>
-    <p>Kelola artis yang ada di platform TikTakTuk. Data, genre, dan relasi event ditarik langsung dari database.</p>
-
-    <div class="artist-meta">
-      <span class="artist-pill">{{ total_artists }} artis</span>
-      <span class="artist-pill">{{ total_genres }} genre unik</span>
-      <span class="artist-pill">{{ total_event }} relasi event</span>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Artis</th>
+          <th>Genre</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="artistBody"></tbody>
+    </table>
   </div>
 
-  <div class="artist-section">
-    <div class="artist-toolbar">
-      <input type="text" id="searchInput" class="artist-search" placeholder="Cari nama, genre, atau event..." oninput="filterTable()" />
-      <span class="result-count" id="resultCount">{{ artists|length }} artis ditemukan</span>
-    </div>
-
-    <div class="artist-grid" id="artistBody"></div>
-  </div>
-</div><!-- /artist-page -->
+</div><!-- /page-wrapper -->
 
 
 <!-- MODAL: CREATE -->
@@ -687,12 +516,7 @@
     id: "{{ artist.artist_id }}",
     name: "{{ artist.name|escapejs }}",
     genre: "{{ artist.genre|default:''|escapejs }}",
-    event_count: {{ artist.event_count|default:0 }},
-    events: [
-      {% for event_artist in artist.eventartist_set.all %}
-      "{{ event_artist.event.event_title|escapejs }}"{% if not forloop.last %},{% endif %}
-      {% endfor %}
-    ]
+    eventCount: {{ artist.event_count|default:0 }}
   }{% if not forloop.last %},{% endif %}
   {% endfor %}
   ];
@@ -761,17 +585,20 @@
       ).size;
 
     document.getElementById('statEvent').textContent =
-      ARTISTS.reduce((sum, artist) => sum + (artist.event_count || 0), 0);
-  
+      ARTISTS.filter(a => a.eventCount > 0).length;
+
     const body = document.getElementById('artistBody');
   
     if (!filtered.length) {
   
       body.innerHTML = `
-        <div class="artist-empty">
-          <p>Tidak ada artis ditemukan.</p>
-          <strong>Coba kata kunci lain.</strong>
-        </div>
+        <tr>
+          <td colspan="3">
+            <div class="empty-state">
+              <p>Tidak ada artis ditemukan.</p>
+            </div>
+          </td>
+        </tr>
       `;
   
       return;
@@ -781,37 +608,60 @@
   
       const gs = genreStyle(a.genre);
   
-      const eventHtml = (a.events || []).slice(0, 3).map(eventTitle => `
-        <span class="event-chip">${esc(eventTitle)}</span>
-      `).join('') || '<span class="event-chip">Belum tampil di event</span>';
-
       const badgeHtml = a.genre
-        ? `<span class="genre-badge" style="background:${gs.bg};color:${gs.color}">${esc(a.genre)}</span>`
-        : `<span class="genre-badge" style="background:#f1f5f9;color:#475569">Tidak ada genre</span>`;
+        ? `
+          <span
+            class="genre-badge"
+            style="background:${gs.bg};color:${gs.color}"
+          >
+            ${esc(a.genre).toUpperCase()}
+          </span>
+        `
+        : `<span>—</span>`;
   
       return `
-        <article class="artist-card">
-          <div class="artist-card-top">
+        <tr>
+          <td>
             <div class="artist-cell">
-              <div class="avatar" style="background:${avatarColor(a.name)}">${a.name[0].toUpperCase()}</div>
-              <div>
-                <div class="artist-name">${esc(a.name)}</div>
-                <div class="artist-sub">${a.event_count || 0} event tampil</div>
+  
+              <div
+                class="avatar"
+                style="background:${avatarColor(a.name)}"
+              >
+                ${a.name[0].toUpperCase()}
               </div>
+  
+              <span class="artist-name">
+                ${esc(a.name)}
+              </span>
+  
             </div>
+          </td>
+  
+          <td>
             ${badgeHtml}
-          </div>
-
-          <div class="artist-events">
-            <div class="artist-events-label">Event terkait</div>
-            <div class="event-chips">${eventHtml}</div>
-          </div>
-
-          <div class="artist-actions">
-            <button class="artist-action-btn" onclick="openEdit('${a.id}')">Edit</button>
-            <button class="artist-action-btn danger" onclick="openDelete('${a.id}')">Hapus</button>
-          </div>
-        </article>
+          </td>
+  
+          <td>
+            <div class="actions">
+  
+              <button
+                class="btn-icon"
+                onclick="openEdit('${a.id}')"
+              >
+                ✏️
+              </button>
+  
+              <button
+                class="btn-icon del"
+                onclick="openDelete('${a.id}')"
+              >
+                🗑️
+              </button>
+  
+            </div>
+          </td>
+        </tr>
       `;
   
     }).join('');
@@ -975,5 +825,4 @@ form.submit();
   
   </script>
 
-</body>
-</html>
+{% endblock %}

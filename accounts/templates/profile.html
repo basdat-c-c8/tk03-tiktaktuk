@@ -147,25 +147,31 @@ button {
       {% csrf_token %}
 
       {% if role == "pelanggan" %}
-        <label>Nama Lengkap</label>
+        <label>{{ profile_form.full_name.label }}</label>
         {{ profile_form.full_name }}
+        {{ profile_form.full_name.errors }}
 
-        <label>Nomor Telepon</label>
+        <label>{{ profile_form.phone_number.label }}</label>
         {{ profile_form.phone_number }}
+        {{ profile_form.phone_number.errors }}
 
       {% elif role == "penyelenggara" %}
-        <label>Nama Organizer</label>
+        <label>{{ profile_form.full_name.label }}</label>
         {{ profile_form.full_name }}
+        {{ profile_form.full_name.errors }}
 
-        <label>Contact Email</label>
+        <label>{{ profile_form.email.label }}</label>
         {{ profile_form.email }}
+        {{ profile_form.email.errors }}
 
       {% elif role == "admin" %}
-        <label>Nama Lengkap</label>
+        <label>{{ profile_form.full_name.label }}</label>
         {{ profile_form.full_name }}
+        {{ profile_form.full_name.errors }}
 
-        <label>Email</label>
+        <label>{{ profile_form.email.label }}</label>
         {{ profile_form.email }}
+        {{ profile_form.email.errors }}
       {% endif %}
 
       <button type="submit" name="update_profile">Simpan Perubahan</button>

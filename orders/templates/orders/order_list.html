@@ -230,7 +230,7 @@
     color: #b91c1c;
   }
 
-  .modal {
+  .order-modal {
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.45);
@@ -241,7 +241,7 @@
     z-index: 999;
   }
 
-  .modal.show {
+  .order-modal.show {
     display: flex;
   }
 
@@ -414,11 +414,11 @@
       <input type="text" id="searchInput" placeholder="Cari order ID...">
     </div>
 
-    <select>
-      <option>Semua Status</option>
-      <option>Lunas</option>
-      <option>Pending</option>
-      <option>Dibatalkan</option>
+    <select id="statusFilter">
+      <option value="">Semua Status</option>
+      <option value="paid">Lunas</option>
+      <option value="pending">Pending</option>
+      <option value="cancelled">Dibatalkan</option>
     </select>
   </section>
 
@@ -488,7 +488,7 @@
       </thead>
       <tbody>
         {% for order in orders %}
-        <tr>
+        <tr class="order-row" data-order-id="{{ order.order_id }}" data-status="{{ order.payment_status }}">
           <td>{{ order.order_id }}</td>
           <td>{{ order.event.event_title }}</td>
           <td>{{ order.order_datetime }}</td>
@@ -523,7 +523,7 @@
       </thead>
       <tbody>
         {% for order in orders %}
-        <tr>
+        <tr class="order-row" data-order-id="{{ order.order_id }}" data-status="{{ order.payment_status }}">
           <td>{{ order.order_id }}</td>
           <td>{{ order.customer.full_name }}</td>
           <td>{{ order.order_datetime }}</td>
@@ -559,7 +559,7 @@
       </thead>
       <tbody>
         {% for order in orders %}
-        <tr>
+        <tr class="order-row" data-order-id="{{ order.order_id }}" data-status="{{ order.payment_status }}">
           <td>{{ order.order_id }}</td>
           <td>{{ order.customer.full_name }}</td>
           <td>{{ order.order_datetime }}</td>
@@ -588,7 +588,7 @@
   </section>
 </div>
 
-<div class="modal" id="updateModal" aria-hidden="true">
+<div class="order-modal" id="updateModal" aria-hidden="true">
   <div class="modal-card">
     <form method="post" action="{% url 'orders:order_list' %}">
     {% csrf_token %}
@@ -617,7 +617,7 @@
   </div>
 </div>
 
-<div class="modal" id="deleteModal" aria-hidden="true">
+<div class="order-modal" id="deleteModal" aria-hidden="true">
   <div class="modal-card">
     <form method="post" action="{% url 'orders:order_list' %}">
     {% csrf_token %}
@@ -664,6 +664,28 @@
     openModal('deleteModal');
   }
 
+  function normalizeStatus(status) {
+    if (status === 'lunas') return 'paid';
+    if (status === 'dibatalkan') return 'cancelled';
+    return status || '';
+  }
+
+  function applyOrderFilters() {
+    const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+    const selectedStatus = document.getElementById('statusFilter').value;
+
+    document.querySelectorAll('.role-section.active .order-row').forEach(function(row) {
+      const orderId = (row.getAttribute('data-order-id') || '').toLowerCase();
+      const rowStatus = normalizeStatus(row.getAttribute('data-status'));
+      const matchesQuery = !query || orderId.includes(query);
+      const matchesStatus = !selectedStatus || rowStatus === selectedStatus;
+      row.hidden = !(matchesQuery && matchesStatus);
+    });
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyOrderFilters);
+  document.getElementById('statusFilter').addEventListener('change', applyOrderFilters);
+
   document.getElementById('updateModal').addEventListener('click', function(event) {
     if (event.target === this) {
       closeModal('updateModal');
@@ -676,6 +698,7 @@
     }
   });
 
+  applyOrderFilters();
 </script>
 
 {% endblock %}

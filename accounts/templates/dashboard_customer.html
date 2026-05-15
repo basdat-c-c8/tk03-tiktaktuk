@@ -274,6 +274,7 @@ body {
       <div>
         <div class="ticket-title">
           {{ order.event.event_title }} <span class="badge">{{ order.quantity }} Tiket</span>
+          <span class="badge">{{ order.payment_status|title }}</span>
         </div>
         <div class="ticket-meta">📅 {{ order.event.event_datetime|date:"d M Y" }} &nbsp;&nbsp; 📍 {{ order.event.venue.venue_name }}</div>
       </div>
